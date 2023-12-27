@@ -8,7 +8,6 @@
     "db:push": "dotenv drizzle-kit push:mysql",
     "db:generate": "dotenv drizzle-kit generate:mysql",
     "db:migrate": "dotenv tsx src/server/db/migrate.ts",
-    "db:seed": "dotenv tsx src/server/db/seed.ts",
     "db:studio": "dotenv drizzle-kit studio",
     "dev": "next dev",
     "lint": "next lint",

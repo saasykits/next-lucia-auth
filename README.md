@@ -1,28 +1,41 @@
-# Create T3 App
+# Create T3 App + Lucia Authentication
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This is a [T3 Stack](https://create.t3.gg/) project With Lucia Auth implemented.
 
-## What's next? How do I make an app with this?
+[Lucia](https://lucide.dev) is a server-side authentication library for TypeScript that aims to be unintrusive, straightforward, and flexible. At its core, it’s a library for managing users and sessions, providing the building blocks for setting up auth just how you want.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Lucia v/s NextAuth.js (Auth.js)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Lucia is less opinionated than Next Auth. NextAuth is too rigid if you want to customize it. Although lucia has more setup but with that comes so much more flexibility.
+
+## Key Features
+
+- **Authentication and Authorization:** Signup and Login and protected app and api routes with Lucia auth
+- **Email Verification:** User verification using email.
+- **Password Reset:** Reset user passwords by emailing password reset link.
+- **Lucia + Trpc:** similar to NextAuth with tRpc,access session and user from trpc proceedures.
+
+## Tech Stack
 
 - [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
+- [Lucia](https://lucide.dev)
 - [tRPC](https://trpc.io)
+- [Drizzle ORM](https://orm.drizzle.team/)
+- [Planetscale](https://planetscale.com/)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Shadcn UI](https://ui.shadcn.com/)
+- [React Hook Form](https://www.react-hook-form.com/)
+- [React Email](https://react.email/)
 
-## Learn More
+## Get Started
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+1. Clone this repository in your pc.
+2. Copy `.env.example` to `.env` and fill in the necessary environment variables.
+3. Run `pnpm install` to install dependencies.
+4. Update app title, database prefix and other parameters from `src/lib/constants.ts` file.
+5. Run `pnpm db:push` to push your schema to database.
+6. `pnpm dev` and enjoy!
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Contributing
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+If you would like to contribute, please fork the repository and use a feature branch. Pull requests are warmly welcome.

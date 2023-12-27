@@ -13,7 +13,6 @@ export const auth = lucia({
     session: `${DATABASE_PREFIX}_user_sessions`,
   }),
   middleware: nextjs_future(),
-  csrfProtection: false,
   sessionCookie: { expires: false },
   getUserAttributes: (data) => ({
     fullName: data.full_name,

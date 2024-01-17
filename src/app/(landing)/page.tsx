@@ -3,12 +3,8 @@ import { type Metadata } from "next";
 import Image from "next/image";
 import { PlusIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import {
-  ClipboardCopyIcon,
-  FileTextIcon,
-  GitHubLogoIcon,
-} from "@radix-ui/react-icons";
-import { Input } from "@/components/ui/input";
+import { FileTextIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
+import { CopyToClipboard } from "./copy-to-clipboard";
 
 export const metadata: Metadata = {
   title: "NextJs Lucia Auth Starter Template",
@@ -17,6 +13,8 @@ export const metadata: Metadata = {
 };
 
 const githubUrl = "https://github.com/iamtouha/t3-lucia_auth-example";
+const docUrl =
+  "https://www.touha.dev/posts/simple-nextjs-t3-authentication-with-lucia";
 
 const HomePage = () => {
   return (
@@ -47,11 +45,8 @@ const HomePage = () => {
           tailwindcss, shadcn-ui and react-email
         </p>
         <div className="mb-10">
-          <div className="flex justify-center">
-            <Input readOnly value={"asdasdas"} className="max-w-sm" />
-            <Button size="icon">
-              <ClipboardCopyIcon className="h-5 w-5" />
-            </Button>
+          <div className="mx-auto max-w-sm">
+            <CopyToClipboard text={"git clone " + githubUrl} />
           </div>
         </div>
         <div className="flex justify-center gap-4">
@@ -62,10 +57,10 @@ const HomePage = () => {
             </a>
           </Button>
           <Button size="lg" variant="outline" asChild>
-            <Link href="/documentation">
+            <a href={docUrl}>
               <FileTextIcon className="mr-1 h-5 w-5" />
               Docs
-            </Link>
+            </a>
           </Button>
         </div>
       </div>

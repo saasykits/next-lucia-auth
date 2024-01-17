@@ -7,7 +7,8 @@ export {
   ExitIcon,
   EnterIcon,
   GearIcon,
-  PaperPlaneIcon,
+  RocketIcon,
+  PlusIcon,
 } from "@radix-ui/react-icons";
 
 export { AnimatedSpinner } from "./spinner";

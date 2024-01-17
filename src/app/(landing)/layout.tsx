@@ -1,6 +1,7 @@
 import { APP_TITLE } from "@/lib/constants";
 import { type ReactNode } from "react";
 import { type Metadata } from "next";
+import Header from "./header";
 
 export const metadata: Metadata = {
   title: APP_TITLE,
@@ -8,7 +9,12 @@ export const metadata: Metadata = {
 };
 
 function LandingPageLayout({ children }: { children: ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <Header></Header>
+      {children}
+    </>
+  );
 }
 
 export default LandingPageLayout;

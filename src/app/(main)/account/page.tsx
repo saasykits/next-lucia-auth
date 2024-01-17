@@ -10,7 +10,7 @@ import {
 import { getPageSession } from "@/lib/auth/helpers";
 import { redirect } from "next/navigation";
 
-export default async function HomePage() {
+export default async function AccountPage() {
   const session = await getPageSession();
   if (!session) redirect("/login");
 

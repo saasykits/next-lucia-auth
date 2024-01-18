@@ -2,6 +2,7 @@ import { APP_TITLE } from "@/lib/constants";
 import { type ReactNode } from "react";
 import { type Metadata } from "next";
 import Header from "./header";
+import { Footer } from "./footer";
 
 export const metadata: Metadata = {
   title: APP_TITLE,
@@ -11,8 +12,10 @@ export const metadata: Metadata = {
 function LandingPageLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <Header></Header>
+      <Header />
       {children}
+      <div className="h-10"></div>
+      <Footer />
     </>
   );
 }

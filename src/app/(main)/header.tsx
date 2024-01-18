@@ -2,6 +2,8 @@ import Link from "next/link";
 import { RocketIcon } from "@/components/icons";
 import { APP_TITLE } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { type User } from "lucia";
+import { UserDropdown } from "@/components/user-dropdown";
 
 const routes = [
   { name: "Home", href: "/" },
@@ -12,10 +14,10 @@ const routes = [
   },
 ] as const;
 
-const Header = () => {
+const Header = ({ user }: { user: User }) => {
   return (
-    <header className="px-2 py-4 lg:py-6">
-      <div className="container flex items-center">
+    <header className="sticky border-b bg-background/80 px-4 py-2 shadow-lg backdrop-blur-sm">
+      <div className="flex items-center">
         <Link
           className="flex items-center justify-center text-xl font-medium"
           href="/"
@@ -34,9 +36,7 @@ const Header = () => {
           ))}
         </nav>
         <div className="ml-auto">
-          <Button asChild variant={"secondary"}>
-            <Link href="/login">Login</Link>
-          </Button>
+          <UserDropdown username={user.fullName} email={user.email} />
         </div>
       </div>
     </header>

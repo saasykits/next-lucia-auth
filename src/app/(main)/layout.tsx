@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getPageSession } from "@/lib/auth/helpers";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { APP_TITLE } from "@/lib/constants";
+import Header from "./header";
 
 const MainLayout = async ({ children }: { children: ReactNode }) => {
   const session = await getPageSession();
@@ -12,10 +13,7 @@ const MainLayout = async ({ children }: { children: ReactNode }) => {
 
   return (
     <>
-      <div className="flex items-center justify-between border-b bg-card px-4 py-3 text-card-foreground shadow-sm md:mb-12">
-        <h2 className="text-xl font-bold">{APP_TITLE}</h2>
-        <ThemeToggle />
-      </div>
+      <Header user={session.user}></Header>
       {children}
     </>
   );

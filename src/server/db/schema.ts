@@ -18,13 +18,13 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
-export const key = mysqlTable("user_keys", {
+export const keys = mysqlTable("user_keys", {
   id: varchar("id", { length: 255 }).primaryKey(),
   userId: varchar("user_id", { length: 15 }).notNull(),
   hashedPassword: varchar("hashed_password", { length: 255 }),
 });
 
-export const session = mysqlTable("user_sessions", {
+export const sessions = mysqlTable("user_sessions", {
   id: varchar("id", { length: 128 }).primaryKey(),
   userId: varchar("user_id", { length: 15 }).notNull(),
   activeExpires: bigint("active_expires", { mode: "number" }).notNull(),
@@ -43,3 +43,4 @@ export const emailVerificationTokens = mysqlTable("email_verification_tokens", {
   userId: varchar("user_id", { length: 15 }).notNull(),
   expires: bigint("expires", { mode: "number" }).notNull(),
 });
+ 

@@ -107,14 +107,14 @@ const HomePage = () => {
             Next.js for large scale applications. Feel free to add or remove
             features to suit your needs.
           </p>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
             {features.map((feature) => (
               <Card key={feature.name}>
                 <div className="pl-6 pt-6">
                   <feature.logo className="h-12 w-12" />
                 </div>
                 <CardHeader className="pb-6">
-                  <CardTitle>{feature.name}</CardTitle>
+                  <CardTitle className="text-xl">{feature.name}</CardTitle>
                   <CardDescription>{feature.description}</CardDescription>
                 </CardHeader>
               </Card>

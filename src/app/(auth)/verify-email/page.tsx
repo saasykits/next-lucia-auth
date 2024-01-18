@@ -20,7 +20,7 @@ export default async function ForgotPasswordPage() {
   const session = await getPageSession();
 
   if (!session) redirect("/login");
-  if (session.user.emailVerified) redirect("/");
+  if (session.user.emailVerified) redirect("/dashboard");
 
   return (
     <main className="p-4">

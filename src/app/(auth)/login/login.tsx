@@ -49,7 +49,7 @@ export function Login() {
     {
       onSuccess: () => {
         toast("Login successful");
-        router.push("/");
+        router.push("/dashboard");
       },
       onError: (err: Error) => {
         toast("Login failed", {

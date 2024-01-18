@@ -8,7 +8,7 @@ import {
 
 function DashboardPage() {
   return (
-    <div className="container mx-auto p-2">
+    <div className="container mx-auto min-h-screen p-2">
       <div className="flex">
         <h1 className="text-3xl font-bold">Tasks</h1>
       </div>

@@ -10,7 +10,10 @@ dependencies:
     version: 3.3.2(react-hook-form@7.49.0)
   '@lucia-auth/adapter-mysql':
     specifier: ^2.1.0
-    version: 2.1.0(@planetscale/database@1.11.0)(lucia@2.7.4)(mysql2@3.6.5)
+    version: 2.1.0(@planetscale/database@1.11.0)(lucia@2.7.6)(mysql2@3.6.5)
+  '@lucia-auth/oauth':
+    specifier: ^3.5.2
+    version: 3.5.2(lucia@2.7.6)
   '@planetscale/database':
     specifier: ^1.11.0
     version: 1.11.0
@@ -66,8 +69,8 @@ dependencies:
     specifier: ^0.28.5
     version: 0.28.6(@planetscale/database@1.11.0)(mysql2@3.6.5)
   lucia:
-    specifier: ^2.7.4
-    version: 2.7.4
+    specifier: ^2.7.6
+    version: 2.7.6
   next:
     specifier: ^14.0.3
     version: 14.0.4(react-dom@18.2.0)(react@18.2.0)
@@ -753,6 +756,14 @@ packages:
       '@planetscale/database': 1.11.0
       lucia: 2.7.6
       mysql2: 3.6.5
+    dev: false
+
+  /@lucia-auth/oauth@3.5.2(lucia@2.7.6):
+    resolution: {integrity: sha512-GAYKHs2d6VMx64f0gWk5ljdeEKLa4EsoFOWSZHVHVtsFHOLuaFtJBT2ybLGIUb6oyJbQ/fibjRwYoNXxI54iHQ==}
+    peerDependencies:
+      lucia: ^2.0.0
+    dependencies:
+      lucia: 2.7.6
     dev: false
 
   /@next/env@14.0.4:

@@ -109,6 +109,11 @@ export function Login() {
                 </FormItem>
               )}
             />
+            <Link href={"/login/discord"}>
+              <Button variant={"link"} size={"sm"} className="p-0">
+                Sign up with Discord
+              </Button>
+            </Link>
             <div className="flex flex-wrap justify-between">
               <Link href={"/signup"}>
                 <Button variant={"link"} size={"sm"} className="p-0">

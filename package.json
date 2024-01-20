@@ -16,6 +16,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
     "@lucia-auth/adapter-mysql": "^2.1.0",
+    "@lucia-auth/oauth": "^3.5.2",
     "@planetscale/database": "^1.11.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",

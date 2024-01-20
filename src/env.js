@@ -17,6 +17,8 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+    DISCORD_CLIENT_ID: z.string().trim().min(1),
+    DISCORD_CLIENT_SECRET: z.string().trim().min(1),
     SMTP_HOST: z.string().trim().min(1),
     SMTP_PORT: z.number().int().min(1),
     SMTP_USER: z.string().trim().min(1),
@@ -45,6 +47,8 @@ export const env = createEnv({
     SMTP_PORT: parseInt(process.env.SMTP_PORT ?? ""),
     SMTP_USER: process.env.SMTP_USER,
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+    DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
+    DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     // Client-side env vars
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },

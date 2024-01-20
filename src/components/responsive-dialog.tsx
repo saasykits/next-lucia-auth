@@ -27,6 +27,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "@/lib/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 
 type StatefulContent = ({
   open,
@@ -42,6 +43,7 @@ export const ResponsiveDialog = (props: {
   description?: ReactNode;
   children: ReactNode | ReactNode[] | StatefulContent;
   footer?: ReactNode;
+  contentClassName?: string;
 }) => {
   const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 640px)");
@@ -49,7 +51,7 @@ export const ResponsiveDialog = (props: {
   return isDesktop ? (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{props.trigger}</DialogTrigger>
-      <DialogContent className="max-w-sm">
+      <DialogContent className={cn("max-w-md", props.contentClassName)}>
         <DialogHeader>
           <DialogTitle>{props.title}</DialogTitle>
           <DialogDescription>{props.description}</DialogDescription>
@@ -68,7 +70,7 @@ export const ResponsiveDialog = (props: {
           <DrawerTitle>{props.title}</DrawerTitle>
           <DrawerDescription>{props.description}</DrawerDescription>
         </DrawerHeader>
-        <div className="px-4">
+        <div className={cn("px-4", props.contentClassName)}>
           {isFunctionType(props.children)
             ? props.children({ open, setOpen })
             : props.children}

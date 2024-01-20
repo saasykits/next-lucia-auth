@@ -13,6 +13,10 @@ export {
   Pencil2Icon,
   UpdateIcon,
   CheckCircledIcon,
+  PlayIcon,
+  TrashIcon,
+  ArchiveIcon,
+  ResetIcon,
 } from "@radix-ui/react-icons";
 
 export { AnimatedSpinner } from "./spinner";

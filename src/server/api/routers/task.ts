@@ -23,6 +23,25 @@ export const taskRouter = createTRPCRouter({
     });
     return data;
   }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().trim().length(15),
+        status: z.enum(["todo", "doing", "done"]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db
+        .update(tasks)
+        .set({ status: input.status })
+        .where(
+          and(
+            eq(tasks.id, input.id),
+            eq(tasks.userId, ctx.session.user.userId),
+          ),
+        );
+      return { id: input.id };
+    }),
   archivedList: protectedProcedure.query(({ ctx }) =>
     ctx.db.query.tasks.findMany({
       where: and(

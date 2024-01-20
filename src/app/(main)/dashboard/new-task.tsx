@@ -1,6 +1,5 @@
 "use client";
-
-import { useRouter } from "next/navigation";
+ 
 import { LoadingButton } from "@/components/loading-button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -49,7 +48,6 @@ function CreateTask({
 }: {
   onChange: Dispatch<SetStateAction<boolean>>;
 }) {
-  const router = useRouter();
   const utils = api.useUtils();
   const form = useForm<{ title: string; description: string }>({
     defaultValues: { title: "", description: "" },
@@ -77,7 +75,7 @@ function CreateTask({
     onError: (e, _, ctx) => {
       utils.task.list.setData(undefined, ctx?.prevData);
       if (e instanceof Error) {
-        toast("Couldn't send invitation", {
+        toast("Couldn't create task", {
           icon: (
             <ExclamationTriangleIcon className="h-4 w-4 text-destructive" />
           ),

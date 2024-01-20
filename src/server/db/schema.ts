@@ -75,5 +75,8 @@ export const tasks = mysqlTable(
 );
 
 export const taskRelations = relations(tasks, ({ one }) => ({
-  user: one(users),
+  user: one(users, {
+    fields: [tasks.userId],
+    references: [users.id],
+  }),
 }));

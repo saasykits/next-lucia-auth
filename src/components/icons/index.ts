@@ -10,6 +10,9 @@ export {
   RocketIcon,
   PlusIcon,
   HamburgerMenuIcon,
+  Pencil2Icon,
+  UpdateIcon,
+  CheckCircledIcon,
 } from "@radix-ui/react-icons";
 
 export { AnimatedSpinner } from "./spinner";

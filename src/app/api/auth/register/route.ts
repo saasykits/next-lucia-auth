@@ -28,8 +28,6 @@ export const POST = async (request: NextRequest) => {
         full_name: data.fullName,
         email: data.email,
         email_verified: false,
-        active: true,
-        role: "user",
       },
     });
 

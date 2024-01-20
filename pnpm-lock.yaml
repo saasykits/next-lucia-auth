@@ -738,7 +738,7 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  /@lucia-auth/adapter-mysql@2.1.0(@planetscale/database@1.11.0)(lucia@2.7.4)(mysql2@3.6.5):
+  /@lucia-auth/adapter-mysql@2.1.0(@planetscale/database@1.11.0)(lucia@2.7.6)(mysql2@3.6.5):
     resolution: {integrity: sha512-LkqsJHQS9KuMs+cTJQJnaqb6obqMyJfblyyLM0Ogoimzikb5orbkWI0C8eY3Supr60bgP4PYuQxYZm8xxera0Q==}
     peerDependencies:
       '@planetscale/database': ^1.0.0
@@ -751,7 +751,7 @@ packages:
         optional: true
     dependencies:
       '@planetscale/database': 1.11.0
-      lucia: 2.7.4
+      lucia: 2.7.6
       mysql2: 3.6.5
     dev: false
 
@@ -3154,8 +3154,8 @@ packages:
       es5-ext: 0.10.62
     dev: true
 
-  /lucia@2.7.4:
-    resolution: {integrity: sha512-do6Aah5kX2DUl7N0CvELWV1/b+qZGF0AUmUrkthYeNfXfgx4RAkWi4BkAlgGDBB/0c1WApb18mUD1pA5qTaWmw==}
+  /lucia@2.7.6:
+    resolution: {integrity: sha512-xyRkNtevf0DUM4nGC6F2nCFFNphZ1qqBrfWwAgPa9zkpQsVJ/hN32I8zAY+pm+ZKWPPS/C/Sqqmo2LreSCzg7w==}
     dev: false
 
   /memoizee@0.4.15:

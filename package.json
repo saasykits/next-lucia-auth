@@ -14,6 +14,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.1",
     "@hookform/resolvers": "^3.3.2",
     "@lucia-auth/adapter-mysql": "^2.1.0",
     "@lucia-auth/oauth": "^3.5.2",

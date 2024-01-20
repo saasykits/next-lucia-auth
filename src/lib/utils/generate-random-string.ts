@@ -1,4 +1,3 @@
-import "server-only";
 import crypto from "crypto";
 
 export function generateRandomString(length = 15) {

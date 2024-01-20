@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
-import { type RouterOutputs } from "@/trpc/shared";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 export const Tasks = () => {
   const utils = api.useUtils();
@@ -68,18 +68,26 @@ export const Tasks = () => {
   const doingTasks = tasks.data?.filter((t) => t.status === "doing") ?? [];
   const doneTasks = tasks.data?.filter((t) => t.status === "done") ?? [];
 
+  const [todoAnimate] = useAutoAnimate();
+  const [doingAnimate] = useAutoAnimate();
+  const [doneAnimate] = useAutoAnimate();
+
   return (
     <div className="grid gap-10 md:grid-cols-3 md:gap-6">
       <div>
         <h2 className="mb-6 flex items-center gap-2 text-2xl font-medium">
           <Pencil2Icon className="h-6 w-6" /> Tasks To Do
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-4" ref={todoAnimate}>
           {tasks.isLoading ? (
             <CardSkeleton />
           ) : todoTasks.length ? (
             todoTasks.map((task) => (
-              <TaskCard task={task} key={task.id}>
+              <TaskCard
+                key={task.id}
+                title={task.title}
+                description={task.description}
+              >
                 <Button
                   aria-label="delete task"
                   variant="outline"
@@ -113,12 +121,16 @@ export const Tasks = () => {
         <h2 className="mb-6 flex items-center gap-2 text-2xl font-medium">
           <UpdateIcon className="h-6 w-6" /> Tasks In Progress
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-4" ref={doingAnimate}>
           {tasks.isLoading ? (
             <CardSkeleton />
           ) : doingTasks.length ? (
             doingTasks.map((task) => (
-              <TaskCard task={task} key={task.id}>
+              <TaskCard
+                key={task.id}
+                title={task.title}
+                description={task.description}
+              >
                 <Button
                   aria-label="reset task"
                   variant="outline"
@@ -152,12 +164,16 @@ export const Tasks = () => {
         <h2 className="mb-6 flex items-center gap-2 text-2xl font-medium">
           <CheckCircledIcon className="h-6 w-6" /> Tasks Completed
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-4" ref={doneAnimate}>
           {tasks.isLoading ? (
             <CardSkeleton />
           ) : doneTasks.length ? (
             doneTasks.map((task) => (
-              <TaskCard task={task} key={task.id}>
+              <TaskCard
+                key={task.id}
+                title={task.title}
+                description={task.description}
+              >
                 <Button
                   aria-label="reset task"
                   variant="outline"
@@ -192,17 +208,19 @@ export const Tasks = () => {
 };
 
 const TaskCard = ({
-  task,
+  title,
+  description,
   children,
 }: {
-  task: RouterOutputs["task"]["list"][number];
+  title: string;
+  description?: string | null;
   children: React.ReactNode | React.ReactNode[];
 }) => {
   return (
     <div className="flex rounded-lg border bg-card p-4 text-card-foreground">
       <div className="w-full">
-        <h3 className="font-medium">{task.title}</h3>
-        <p className="text-sm text-muted-foreground">{task.description}</p>
+        <h3 className="font-medium">{title}</h3>
+        <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       <div className="flex gap-2">{children}</div>
     </div>

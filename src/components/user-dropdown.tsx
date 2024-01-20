@@ -50,7 +50,7 @@ export const UserDropdown = ({
             className="cursor-pointer text-muted-foreground"
             asChild
           >
-            <Link href="/settings">Settings</Link>
+            <Link href="/account">Account</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

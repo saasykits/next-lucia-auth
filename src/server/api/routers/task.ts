@@ -12,6 +12,14 @@ export const taskRouter = createTRPCRouter({
         eq(tasks.archived, false),
       ),
       orderBy: desc(tasks.createdAt),
+      columns: {
+        id: true,
+        title: true,
+        description: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
     return data;
   }),

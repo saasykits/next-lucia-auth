@@ -50,25 +50,43 @@ function CreateTask({
   onChange: Dispatch<SetStateAction<boolean>>;
 }) {
   const router = useRouter();
+  const utils = api.useUtils();
   const form = useForm<{ title: string; description: string }>({
     defaultValues: { title: "", description: "" },
     resolver: zodResolver(schema),
   });
 
   const newTask = api.task.create.useMutation({
-    onSuccess: () => {
+    onMutate: async (data) => {
+      await utils.task.list.cancel();
+      const prevData = utils.task.list.getData();
+      utils.task.list.setData(undefined, (old) => [
+        {
+          title: data.title,
+          description: data.description ?? null,
+          id: (Math.random() * 100).toString(),
+          status: "todo",
+          createdAt: new Date(),
+          updatedAt: null,
+        },
+        ...(old ?? []),
+      ]);
       onChange(false);
-      toast("Invitation sent successfully");
-      router.refresh();
+      return { prevData };
     },
-    onError: (e) => {
-      if (e instanceof Error)
+    onError: (e, _, ctx) => {
+      utils.task.list.setData(undefined, ctx?.prevData);
+      if (e instanceof Error) {
         toast("Couldn't send invitation", {
           icon: (
             <ExclamationTriangleIcon className="h-4 w-4 text-destructive" />
           ),
           description: e.message,
         });
+      }
+    },
+    onSettled: () => {
+      void utils.task.list.invalidate();
     },
   });
 

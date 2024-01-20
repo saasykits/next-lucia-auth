@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/form";
 import { PasswordInput } from "@/components/password-input";
 import { loginSchema, type LoginInput } from "@/lib/validators/auth";
-import { ExclamationTriangleIcon } from "@/components/icons";
+import { DiscordLogoIcon, ExclamationTriangleIcon } from "@/components/icons";
+import { APP_TITLE } from "@/lib/constants";
 
 export function Login() {
   const router = useRouter();
@@ -69,14 +70,25 @@ export function Login() {
     resolver: zodResolver(loginSchema),
   });
   return (
-    <Card className="mx-auto max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle>Log In</CardTitle>
+    <Card className="w-full max-w-md">
+      <CardHeader className="text-center">
+        <CardTitle>{APP_TITLE} Log In</CardTitle>
         <CardDescription>
-          Enter your username and password to login.
+          Log in to your account to access your dashboard
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <Button variant="outline" className="w-full" asChild>
+          <Link href="/login/discord">
+            <DiscordLogoIcon className="mr-2 h-5 w-5" />
+            Log in with Discord
+          </Link>
+        </Button>
+        <div className="my-2 flex items-center">
+          <div className="flex-grow border-t border-muted" />
+          <div className="mx-2 text-muted-foreground">or</div>
+          <div className="flex-grow border-t border-muted" />
+        </div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((data) => login.mutate(data))}
@@ -109,11 +121,6 @@ export function Login() {
                 </FormItem>
               )}
             />
-            <Link href={"/login/discord"}>
-              <Button variant={"link"} size={"sm"} className="p-0">
-                Sign up with Discord
-              </Button>
-            </Link>
             <div className="flex flex-wrap justify-between">
               <Link href={"/signup"}>
                 <Button variant={"link"} size={"sm"} className="p-0">
@@ -130,6 +137,9 @@ export function Login() {
             <LoadingButton loading={login.isLoading} className="w-full">
               Log In
             </LoadingButton>
+            <Button variant="outline" className="w-full" asChild>
+              <Link href="/">Cancel</Link>
+            </Button>
           </form>
         </Form>
       </CardContent>

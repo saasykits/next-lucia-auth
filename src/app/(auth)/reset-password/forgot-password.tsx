@@ -67,9 +67,9 @@ export function ForgotPassword() {
     resolver: zodResolver(forgotPasswordSchema),
   });
   return (
-    <Card className="mx-auto max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle>Forgot password</CardTitle>
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Forgot password?</CardTitle>
         <CardDescription>Enter your email to get reset link.</CardDescription>
       </CardHeader>
       <CardContent>
@@ -103,6 +103,9 @@ export function ForgotPassword() {
             <LoadingButton loading={forgotPass.isLoading} className="w-full">
               Send password reset email
             </LoadingButton>
+            <Button variant="outline" className="w-full" asChild>
+              <Link href="/">Cancel</Link>
+            </Button>
           </form>
         </Form>
       </CardContent>

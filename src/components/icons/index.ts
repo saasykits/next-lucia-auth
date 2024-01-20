@@ -17,6 +17,7 @@ export {
   TrashIcon,
   ArchiveIcon,
   ResetIcon,
+  DiscordLogoIcon,
 } from "@radix-ui/react-icons";
 
 export { AnimatedSpinner } from "./spinner";

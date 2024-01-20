@@ -23,11 +23,12 @@ import { Input } from "@/components/ui/input";
 import { LoadingButton } from "@/components/loading-button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ExclamationTriangleIcon } from "@/components/icons";
+import { DiscordLogoIcon, ExclamationTriangleIcon } from "@/components/icons";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
 import { registerSchema, type RegisterInput } from "@/lib/validators/auth";
+import { APP_TITLE } from "@/lib/constants";
 
 export function Register() {
   const router = useRouter();
@@ -74,14 +75,23 @@ export function Register() {
     resolver: zodResolver(registerSchema),
   });
   return (
-    <Card className="mx-auto max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle>Sign Up</CardTitle>
-        <CardDescription>
-          Enter your information below to sign up.
-        </CardDescription>
+    <Card className="w-full max-w-md">
+      <CardHeader className="text-center">
+        <CardTitle>{APP_TITLE} Sign Up</CardTitle>
+        <CardDescription>Sign up to start using the app</CardDescription>
       </CardHeader>
       <CardContent>
+        <Button variant="outline" className="w-full" asChild>
+          <Link href="/login/discord">
+            <DiscordLogoIcon className="mr-2 h-5 w-5" />
+            Sign up with Discord
+          </Link>
+        </Button>
+        <div className="my-2 flex items-center">
+          <div className="flex-grow border-t border-muted" />
+          <div className="mx-2 text-muted-foreground">or</div>
+          <div className="flex-grow border-t border-muted" />
+        </div>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((data) => register.mutate(data))}
@@ -146,6 +156,9 @@ export function Register() {
             </div>
           </form>
         </Form>
+        <Button variant="outline" className="w-full" asChild>
+          <Link href="/">Cancel</Link>
+        </Button>
       </CardContent>
     </Card>
   );

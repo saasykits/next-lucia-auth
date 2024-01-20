@@ -12,9 +12,5 @@ export default async function ForgotPasswordPage() {
 
   if (session) redirect("/dashboard");
 
-  return (
-    <main className="p-4">
-      <ForgotPassword />
-    </main>
-  );
+  return <ForgotPassword />;
 }

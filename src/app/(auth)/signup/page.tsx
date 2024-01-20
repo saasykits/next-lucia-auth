@@ -12,9 +12,5 @@ export default async function RegisterPage() {
 
   if (session) redirect("/dashboard");
 
-  return (
-    <main className="p-4">
-      <Register />
-    </main>
-  );
+  return <Register />;
 }

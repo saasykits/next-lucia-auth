@@ -54,7 +54,6 @@ export const taskRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       z.object({
-        id: z.string().trim().length(15),
         title: z.string().trim().min(1).max(255),
         description: z.string().trim().optional(),
       }),
@@ -63,7 +62,7 @@ export const taskRouter = createTRPCRouter({
       const id = generateRandomString();
 
       await ctx.db.insert(tasks).values({
-        id,
+        id: generateRandomString(),
         userId: ctx.session.user.userId,
         title: input.title,
         description: input.description,

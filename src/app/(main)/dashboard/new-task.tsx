@@ -21,7 +21,6 @@ import type { Dispatch, SetStateAction } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { generateRandomString } from "@/lib/utils/generate-random-string";
 
 const schema = z.object({
   title: z.string().min(1, { message: "Task title is required" }).max(255),
@@ -61,7 +60,7 @@ function CreateTask({
       const prevData = utils.task.list.getData();
       utils.task.list.setData(undefined, (old) => [
         {
-          id: data.id,
+          id: new Date().getTime().toString(),
           title: data.title,
           description: data.description ?? null,
           status: "todo",
@@ -92,9 +91,7 @@ function CreateTask({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((data) =>
-          newTask.mutate({ id: generateRandomString(15), ...data }),
-        )}
+        onSubmit={form.handleSubmit((data) => newTask.mutate(data))}
         className="space-y-4"
       >
         <FormField

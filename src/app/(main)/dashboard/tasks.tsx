@@ -14,6 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { useEffect } from "react";
 
 export const Tasks = () => {
   const utils = api.useUtils();
@@ -68,9 +69,18 @@ export const Tasks = () => {
   const doingTasks = tasks.data?.filter((t) => t.status === "doing") ?? [];
   const doneTasks = tasks.data?.filter((t) => t.status === "done") ?? [];
 
-  const [todoAnimate] = useAutoAnimate();
+  const [todoAnimate, enableTodoAnimations] = useAutoAnimate();
   const [doingAnimate] = useAutoAnimate();
   const [doneAnimate] = useAutoAnimate();
+
+  useEffect(() => {
+    console.log(tasks.isRefetching);
+    if (tasks.isRefetching) return enableTodoAnimations(false);
+    const timeout = setTimeout(() => {
+      enableTodoAnimations(true);
+    }, 100);
+    return () => clearTimeout(timeout);
+  }, [tasks.isRefetching]);
 
   return (
     <div className="grid gap-10 md:grid-cols-3 md:gap-6">

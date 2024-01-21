@@ -1,7 +1,7 @@
 import { CodeIcon } from "@radix-ui/react-icons";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const githubUrl = "https://github.com/iamtouha/t3-lucia_auth-example";
+const githubUrl = "https://github.com/iamtouha/next-lucia-auth";
 const twitterUrl = "https://twitter.com/iamtouha";
 
 export const Footer = () => {

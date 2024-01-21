@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     "A Next.js starter with Nextjs and Lucia auth. Includes drizzle, trpc, react-email, tailwindcss and shadcn-ui",
 };
 
-const githubUrl = "https://github.com/iamtouha/t3-lucia_auth-example";
+const githubUrl = "https://github.com/iamtouha/next-lucia-auth";
 
 const features = [
   {
@@ -80,7 +80,7 @@ const HomePage = () => {
             tailwindcss, shadcn-ui and react-email.
           </p>
           <div className="mb-10">
-            <div className="mx-auto max-w-sm">
+            <div className="mx-auto max-w-[430px]">
               <CopyToClipboard text={"git clone " + githubUrl} />
             </div>
           </div>

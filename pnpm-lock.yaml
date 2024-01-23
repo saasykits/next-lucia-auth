@@ -12,14 +12,8 @@ dependencies:
     specifier: ^3.3.2
     version: 3.3.2(react-hook-form@7.49.0)
   '@lucia-auth/adapter-drizzle':
-    specifier: 1.0.0-beta.6
-    version: 1.0.0-beta.6(lucia@3.0.0-beta.14)
-  '@lucia-auth/adapter-mysql':
-    specifier: ^2.1.0
-    version: 2.1.0(@planetscale/database@1.11.0)(lucia@3.0.0-beta.14)(mysql2@3.6.5)
-  '@lucia-auth/oauth':
-    specifier: ^3.5.2
-    version: 3.5.2(lucia@3.0.0-beta.14)
+    specifier: 1.0.0-beta.7
+    version: 1.0.0-beta.7(lucia@3.0.0-beta.15)
   '@planetscale/database':
     specifier: ^1.11.0
     version: 1.11.0
@@ -75,8 +69,8 @@ dependencies:
     specifier: ^0.28.5
     version: 0.28.6(@planetscale/database@1.11.0)(mysql2@3.6.5)
   lucia:
-    specifier: 3.0.0-beta.14
-    version: 3.0.0-beta.14
+    specifier: 3.0.0-beta.15
+    version: 3.0.0-beta.15
   next:
     specifier: ^14.0.3
     version: 14.0.4(react-dom@18.2.0)(react@18.2.0)
@@ -770,37 +764,12 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  /@lucia-auth/adapter-drizzle@1.0.0-beta.6(lucia@3.0.0-beta.14):
-    resolution: {integrity: sha512-wYh99PeFcgsJ2/OyeDblkCrj6lw7gkeENZrhFacD8t9KZwkBhobDRe3q4hf38+MTOn+W9csE87La/OK4qTCsPA==}
+  /@lucia-auth/adapter-drizzle@1.0.0-beta.7(lucia@3.0.0-beta.15):
+    resolution: {integrity: sha512-RXe9bX/ZvfSSKtEp3skraqHd3zwoX/Qt4r/GkCzJDJOA03t2PBrVVJZZXRizmHliAoADcG1aMkjksOkP7Czz9g==}
     peerDependencies:
-      lucia: 3.0.0-beta.14
+      lucia: 3.0.0-beta.15
     dependencies:
-      lucia: 3.0.0-beta.14
-    dev: false
-
-  /@lucia-auth/adapter-mysql@2.1.0(@planetscale/database@1.11.0)(lucia@3.0.0-beta.14)(mysql2@3.6.5):
-    resolution: {integrity: sha512-LkqsJHQS9KuMs+cTJQJnaqb6obqMyJfblyyLM0Ogoimzikb5orbkWI0C8eY3Supr60bgP4PYuQxYZm8xxera0Q==}
-    peerDependencies:
-      '@planetscale/database': ^1.0.0
-      lucia: ^2.0.0
-      mysql2: ^3.0.0
-    peerDependenciesMeta:
-      '@planetscale/database':
-        optional: true
-      mysql2:
-        optional: true
-    dependencies:
-      '@planetscale/database': 1.11.0
-      lucia: 3.0.0-beta.14
-      mysql2: 3.6.5
-    dev: false
-
-  /@lucia-auth/oauth@3.5.2(lucia@3.0.0-beta.14):
-    resolution: {integrity: sha512-GAYKHs2d6VMx64f0gWk5ljdeEKLa4EsoFOWSZHVHVtsFHOLuaFtJBT2ybLGIUb6oyJbQ/fibjRwYoNXxI54iHQ==}
-    peerDependencies:
-      lucia: ^2.0.0
-    dependencies:
-      lucia: 3.0.0-beta.14
+      lucia: 3.0.0-beta.15
     dev: false
 
   /@napi-rs/wasm-runtime@0.1.1:
@@ -3514,8 +3483,8 @@ packages:
       es5-ext: 0.10.62
     dev: true
 
-  /lucia@3.0.0-beta.14:
-    resolution: {integrity: sha512-MXJILHb4xyvf3qjO7w7mDnvVOub2LGWLSjgP1TBGPLDkBF62uXNfvPNH7QRvOwvuSLtQK+w7JoPjnjiFiIj9rg==}
+  /lucia@3.0.0-beta.15:
+    resolution: {integrity: sha512-xSQMylJSoHwR704RcvgS8tUlI1aUaWDnuSen0MxhnFiB9OajxHYUPW5ODot5NiadKhewOdLx7q17cF4Ld13eRg==}
     dependencies:
       oslo: 0.27.1
     dev: false

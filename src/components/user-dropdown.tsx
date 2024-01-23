@@ -14,19 +14,13 @@ import {
 
 import Link from "next/link";
 
-export const UserDropdown = ({
-  username,
-  email,
-}: {
-  username: string;
-  email: string;
-}) => {
+export const UserDropdown = ({ email }: { email: string }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none">
         {/* eslint @next/next/no-img-element:off */}
         <img
-          src={"https://source.boringavatars.com/marble/60/" + username}
+          src={"https://source.boringavatars.com/marble/60/" + email}
           alt="Avatar"
           className="h-8 w-8"
           width={64}
@@ -34,9 +28,8 @@ export const UserDropdown = ({
         ></img>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>
-          <p>{username}</p>
-          <p className="text-muted-foreground">{email}</p>
+        <DropdownMenuLabel className="text-muted-foreground">
+          {email}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>

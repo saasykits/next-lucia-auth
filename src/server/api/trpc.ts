@@ -6,13 +6,12 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
-
-import * as context from "next/headers";
+ 
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { db } from "@/server/db";
-import { auth } from "@/lib/auth/lucia";
+import { uncachedValidateRequest } from "@/lib/auth/validate-request";
 
 /**
  * 1. CONTEXT
@@ -26,14 +25,11 @@ import { auth } from "@/lib/auth/lucia";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: {
-  headers: Headers;
-  method?: string;
-}) => {
-  const authRequest = auth.handleRequest(opts.method ?? "GET", context);
-  const session = await authRequest.validate();
+export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const { session, user } = await uncachedValidateRequest();
   return {
     session,
+    user,
     db,
     headers: opts.headers,
   };
@@ -85,13 +81,14 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session || !ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      // infers the `session` and `user` as non-nullable
+      session: { ...ctx.session },
+      user: { ...ctx.user },
     },
   });
 });

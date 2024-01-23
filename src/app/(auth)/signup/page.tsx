@@ -1,16 +1,16 @@
 import { redirect } from "next/navigation";
-import { getPageSession } from "@/lib/auth/helpers";
-import { Register } from "./register";
+import { Signup } from "./signup";
+import { validateRequest } from "@/lib/auth/validate-request";
 
 export const metadata = {
   title: "Sign Up",
   description: "Signup Page",
 };
 
-export default async function RegisterPage() {
-  const session = await getPageSession();
+export default async function SignupPage() {
+  const { user } = await validateRequest();
 
-  if (session) redirect("/dashboard");
+  if (user) redirect("/dashboard");
 
-  return <Register />;
+  return <Signup />;
 }

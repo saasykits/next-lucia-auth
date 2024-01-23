@@ -1,6 +1,6 @@
 import {
-  bigint,
   boolean,
+  datetime,
   index,
   timestamp,
   varchar,
@@ -10,14 +10,12 @@ import { mysqlTable } from "@/server/db/util";
 import { relations } from "drizzle-orm";
 
 export const users = mysqlTable("users", {
-  id: varchar("id", { length: 15 }).primaryKey(),
-  fullName: varchar("full_name", { length: 255 }).notNull(),
+  id: varchar("id", { length: 21 }).primaryKey(),
+  discordId: varchar("discord_id", { length: 255 }).unique(),
   email: varchar("email", { length: 255 }).unique().notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
-  active: boolean("active").default(false).notNull(),
-  role: varchar("role", { length: 15, enum: ["admin", "user", "super_admin"] })
-    .default("user")
-    .notNull(),
+  hashedPassword: varchar("hashed_password", { length: 255 }).notNull(),
+  avatar: varchar("avatar", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").onUpdateNow(),
 });
@@ -25,37 +23,17 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
-export const keys = mysqlTable("user_keys", {
+export const sessions = mysqlTable("sessions", {
   id: varchar("id", { length: 255 }).primaryKey(),
-  userId: varchar("user_id", { length: 15 }).notNull(),
-  hashedPassword: varchar("hashed_password", { length: 255 }),
-});
-
-export const sessions = mysqlTable("user_sessions", {
-  id: varchar("id", { length: 128 }).primaryKey(),
-  userId: varchar("user_id", { length: 15 }).notNull(),
-  activeExpires: bigint("active_expires", { mode: "number" }).notNull(),
-  idleExpires: bigint("idle_expires", { mode: "number" }).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const passwordResetTokens = mysqlTable("password_reset_tokens", {
-  id: varchar("id", { length: 63 }).primaryKey(),
-  userId: varchar("user_id", { length: 15 }).notNull(),
-  expires: bigint("expires", { mode: "number" }).notNull(),
-});
-
-export const emailVerificationTokens = mysqlTable("email_verification_tokens", {
-  id: varchar("id", { length: 63 }).primaryKey(),
-  userId: varchar("user_id", { length: 15 }).notNull(),
-  expires: bigint("expires", { mode: "number" }).notNull(),
+  userId: varchar("user_id", { length: 21 }).notNull(),
+  expiresAt: datetime("expires_at").notNull(),
 });
 
 export const tasks = mysqlTable(
   "tasks",
   {
     id: varchar("id", { length: 15 }).primaryKey(),
-    userId: varchar("user_id", { length: 15 }).notNull(),
+    userId: varchar("user_id", { length: 255 }).notNull(),
     title: varchar("title", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }),
     status: varchar("status", {

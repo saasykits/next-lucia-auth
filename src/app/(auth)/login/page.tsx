@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-import { getPageSession } from "@/lib/auth/helpers";
 import { Login } from "./login";
 
 export const metadata = {
@@ -8,8 +6,5 @@ export const metadata = {
 };
 
 export default async function LoginPage() {
-  const session = await getPageSession();
-
-  if (session) redirect("/dashboard");
   return <Login />;
 }

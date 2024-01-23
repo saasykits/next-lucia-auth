@@ -1,15 +1,17 @@
 import { z } from "zod";
 
-export const registerSchema = z.object({
-  fullName: z.string().min(8, "Name is too short.").max(255),
-  email: z.string().email(),
-  password: z.string().min(8, "Password is too short").max(255),
+export const signupSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(1, "Please provide your password.").max(255),
 });
-export type RegisterInput = z.infer<typeof registerSchema>;
+export type SignupInput = z.infer<typeof signupSchema>;
 
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8).max(255),
+  email: z.string().email("Please enter a valid email."),
+  password: z
+    .string()
+    .min(8, "Password is too short. Minimum 8 characters required.")
+    .max(255),
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 

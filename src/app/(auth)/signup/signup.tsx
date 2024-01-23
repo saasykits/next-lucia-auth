@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LoadingButton } from "@/components/loading-button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/password-input";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,29 +10,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { PasswordInput } from "@/components/password-input";
+import { Input } from "@/components/ui/input";
+import { LoadingButton } from "@/components/loading-button";
 import { DiscordLogoIcon } from "@/components/icons";
 import { APP_TITLE } from "@/lib/constants";
-import { useFormState, useFormStatus } from "react-dom";
-import { login } from "@/lib/auth/actions";
 import { Label } from "@/components/ui/label";
+import { signup } from "@/lib/auth/actions";
+import { useFormState, useFormStatus } from "react-dom";
 
-export function Login() {
-  const [state, formAction] = useFormState(login, null);
+export function Signup() {
+  const [state, formAction] = useFormState(signup, null);
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <CardTitle>{APP_TITLE} Log In</CardTitle>
-        <CardDescription>
-          Log in to your account to access your dashboard
-        </CardDescription>
+        <CardTitle>{APP_TITLE} Sign Up</CardTitle>
+        <CardDescription>Sign up to start using the app</CardDescription>
       </CardHeader>
       <CardContent>
         <Button variant="outline" className="w-full" asChild>
           <Link href="/login/discord">
             <DiscordLogoIcon className="mr-2 h-5 w-5" />
-            Log in with Discord
+            Sign up with Discord
           </Link>
         </Button>
         <div className="my-2 flex items-center">
@@ -41,48 +39,53 @@ export function Login() {
           <div className="mx-2 text-muted-foreground">or</div>
           <div className="flex-grow border-t border-muted" />
         </div>
-        <form action={formAction} className="grid gap-4">
+
+        <form action={formAction} className="space-y-4">
           <div className="space-y-2">
             <Label>Email</Label>
             <Input
-              required
+              className={state?.fieldError?.email ? "border-destructive" : ""}
               placeholder="email@example.com"
               autoComplete="email"
               name="email"
               type="email"
             />
+            {state?.fieldError?.email ? (
+              <p className="text-[0.8rem] font-medium text-destructive">
+                {state.fieldError.email}
+              </p>
+            ) : null}
           </div>
 
           <div className="space-y-2">
             <Label>Password</Label>
             <PasswordInput
+              className={
+                state?.fieldError?.password ? "border-destructive" : ""
+              }
               name="password"
-              required
               autoComplete="current-password"
               placeholder="********"
             />
+            {state?.fieldError?.password ? (
+              <p className="text-[0.8rem] font-medium text-destructive">
+                {state.fieldError.password}
+              </p>
+            ) : null}
           </div>
-
-          <div className="flex flex-wrap justify-between">
-            <Button variant={"link"} size={"sm"} className="p-0" asChild>
-              <Link href={"/signup"}>Not signed up? Sign up now.</Link>
-            </Button>
-            <Button variant={"link"} size={"sm"} className="p-0" asChild>
-              <Link href={"/reset-password"}>Forgot password?</Link>
-            </Button>
-          </div>
-
-          {state?.fieldError ? (
-            <ul className="space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-              {Object.values(state.fieldError).map((err) => (
-                <li key={err}>{err}</li>
-              ))}
-            </ul>
-          ) : state?.formError ? (
-            <ul className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-              <li>{state?.formError}</li>
-            </ul>
+          {state?.formError ? (
+            <p className="text-[0.8rem] font-medium text-destructive">
+              {state.formError}
+            </p>
           ) : null}
+          <div>
+            <Link href={"/login"}>
+              <Button variant={"link"} size={"sm"} className="p-0">
+                Already signed up? Login instead.
+              </Button>
+            </Link>
+          </div>
+
           <Submit />
           <Button variant="outline" className="w-full" asChild>
             <Link href="/">Cancel</Link>
@@ -97,7 +100,7 @@ const Submit = () => {
   const { pending } = useFormStatus();
   return (
     <LoadingButton className="w-full" loading={pending}>
-      Log In
+      Sign Up
     </LoadingButton>
   );
 };

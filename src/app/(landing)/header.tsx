@@ -22,7 +22,7 @@ const routes = [
 const Header = () => {
   return (
     <header className="px-2 py-4 lg:py-6">
-      <div className="container flex items-center gap-2">
+      <div className="container flex items-center gap-2 p-0">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button

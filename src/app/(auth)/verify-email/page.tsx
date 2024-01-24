@@ -2,14 +2,13 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPageSession } from "@/lib/auth/helpers";
 import { redirect } from "next/navigation";
-import { SendVerification } from "./send-verification";
-import { Button } from "@/components/ui/button";
+import { validateRequest } from "@/lib/auth/validate-request";
+import { VerifyCode } from "./verify-code";
+import { redirects } from "@/lib/constants";
 
 export const metadata = {
   title: "Verify Email",
@@ -17,32 +16,23 @@ export const metadata = {
 };
 
 export default async function ForgotPasswordPage() {
-  const session = await getPageSession();
+  const { user } = await validateRequest();
 
-  if (!session) redirect("/login");
-  if (session.user.emailVerified) redirect("/dashboard");
+  if (!user) redirect(redirects.toLogin);
+  if (user.emailVerified) redirect(redirects.afterVerify);
 
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Verify Email</CardTitle>
         <CardDescription>
-          Verify your email address to continue.
+          Verification code was sent to <strong>{user.email}</strong>. Check
+          your spam folder if you can't find the email.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p>
-          Welcome, {session.user.fullName}! Click the button below to send a
-          verification link to your email. If you don't receive the email, check
-          your spam folder.
-        </p>
+        <VerifyCode />
       </CardContent>
-      <CardFooter className="items-start justify-between gap-2">
-        <SendVerification />
-        <form action="/api/auth/logout" method="POST">
-          <Button variant="ghost">Logout</Button>
-        </form>
-      </CardFooter>
     </Card>
   );
 }

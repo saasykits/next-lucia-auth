@@ -2,6 +2,7 @@ import {
   boolean,
   datetime,
   index,
+  int,
   timestamp,
   varchar,
 } from "drizzle-orm/mysql-core";
@@ -39,6 +40,21 @@ export const sessions = mysqlTable(
   },
   (t) => ({
     userIdx: index("user_idx").on(t.userId),
+  }),
+);
+
+export const emailVerificationCodes = mysqlTable(
+  "email_verification_codes",
+  {
+    id: int("id").primaryKey().autoincrement(),
+    userId: varchar("user_id", { length: 21 }).unique().notNull(),
+    email: varchar("email", { length: 255 }).notNull(),
+    code: varchar("code", { length: 8 }).notNull(),
+    expiresAt: datetime("expires_at").notNull(),
+  },
+  (t) => ({
+    userIdx: index("user_idx").on(t.userId),
+    emailIdx: index("email_idx").on(t.email),
   }),
 );
 

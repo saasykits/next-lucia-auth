@@ -11,6 +11,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"; 
+import { logout } from "@/lib/auth/actions";
 
 import Link from "next/link";
 
@@ -49,7 +50,7 @@ export const UserDropdown = ({ email }: { email: string }) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="text-muted-foreground" asChild>
-          <form method="POST" action="/api/auth/logout">
+          <form action={logout}>
             <button>Sign out</button>
           </form>
         </DropdownMenuItem>

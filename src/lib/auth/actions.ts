@@ -1,12 +1,16 @@
 "use server";
 
-/* eslint @typescript-eslint/no-explicit-any:0 */
+/* eslint @typescript-eslint/no-explicit-any:0, @typescript-eslint/prefer-optional-chain:0 */
 
-import { db } from "@/server/db";
-import { lucia } from "@/lib/auth";
+import { z } from "zod";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Scrypt, generateId } from "lucia";
+import { generateId, Scrypt } from "lucia";
+import { isWithinExpirationDate, TimeSpan, createDate } from "oslo";
+import { generateRandomString, alphabet } from "oslo/random";
+import { eq } from "drizzle-orm";
+import { lucia } from "@/lib/auth";
+import { db } from "@/server/db";
 import {
   loginSchema,
   signupSchema,
@@ -19,16 +23,12 @@ import {
   passwordResetTokens,
   users,
 } from "@/server/db/schema";
-import { isWithinExpirationDate, TimeSpan, createDate } from "oslo";
-import { generateRandomString, alphabet } from "oslo/random";
 import { sendMail } from "@/server/send-mail";
 import { renderVerificationCodeEmail } from "@/lib/email-templates/email-verification";
 import { renderResetPasswordEmail } from "@/lib/email-templates/reset-password";
 import { validateRequest } from "@/lib/auth/validate-request";
-import { eq } from "drizzle-orm";
 import { redirects } from "../constants";
-import { z } from "zod";
-import { env } from "@/env"; 
+import { env } from "@/env";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -59,6 +59,12 @@ export async function login(
   });
 
   if (!existingUser) {
+    return {
+      formError: "Incorrect username or password",
+    };
+  }
+
+  if (!existingUser || !existingUser?.hashedPassword) {
     return {
       formError: "Incorrect username or password",
     };
@@ -232,7 +238,7 @@ export async function verifyEmail(
     sessionCookie.value,
     sessionCookie.attributes,
   );
-   redirect(redirects.afterLogin);
+  redirect(redirects.afterLogin);
 }
 
 export async function sendPasswordResetLink(

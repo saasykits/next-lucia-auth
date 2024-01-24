@@ -16,7 +16,7 @@ export const users = mysqlTable(
     discordId: varchar("discord_id", { length: 255 }).unique(),
     email: varchar("email", { length: 255 }).unique().notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
-    hashedPassword: varchar("hashed_password", { length: 255 }).notNull(),
+    hashedPassword: varchar("hashed_password", { length: 255 }),
     avatar: varchar("avatar", { length: 255 }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").onUpdateNow(),

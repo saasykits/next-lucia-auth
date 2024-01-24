@@ -15,15 +15,21 @@ import { logout } from "@/lib/auth/actions";
 
 import Link from "next/link";
 
-export const UserDropdown = ({ email }: { email: string }) => {
+export const UserDropdown = ({
+  email,
+  avatar,
+}: {
+  email: string;
+  avatar?: string | null;
+}) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none">
         {/* eslint @next/next/no-img-element:off */}
         <img
-          src={"https://source.boringavatars.com/marble/60/" + email}
+          src={avatar ?? "https://source.boringavatars.com/marble/60/" + email}
           alt="Avatar"
-          className="h-8 w-8"
+          className="h-8 w-8 rounded-full"
           width={64}
           height={64}
         ></img>

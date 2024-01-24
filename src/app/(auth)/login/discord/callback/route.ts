@@ -16,6 +16,7 @@ export async function GET(request: Request): Promise<Response> {
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
       status: 400,
+      headers: { Location: redirects.toLogin },
     });
   }
 
@@ -34,7 +35,7 @@ export async function GET(request: Request): Promise<Response> {
         JSON.stringify({
           error: "Your Discord account must have a verified email address.",
         }),
-        { status: 400 },
+        { status: 400, headers: { Location: redirects.toLogin } },
       );
     }
     const existingUser = await db.query.users.findFirst({
@@ -99,11 +100,12 @@ export async function GET(request: Request): Promise<Response> {
     // the specific error message depends on the provider
     if (e instanceof OAuth2RequestError) {
       // invalid code
-      return new Response(null, {
+      return new Response(JSON.stringify({ message: "Invalid code" }), {
         status: 400,
       });
     }
-    return new Response(null, {
+
+    return new Response(JSON.stringify({ message: "internal server error" }), {
       status: 500,
     });
   }

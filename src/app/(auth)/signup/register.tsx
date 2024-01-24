@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { LoadingButton } from "@/components/loading-button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/password-input";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,17 +19,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PasswordInput } from "@/components/password-input";
-import { loginSchema, type LoginInput } from "@/lib/validators/auth";
+import { Input } from "@/components/ui/input";
+import { LoadingButton } from "@/components/loading-button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { DiscordLogoIcon, ExclamationTriangleIcon } from "@/components/icons";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+
+import { registerSchema, type RegisterInput } from "@/lib/validators/auth";
 import { APP_TITLE } from "@/lib/constants";
 
-export function Login() {
+export function Register() {
   const router = useRouter();
-  const login = useMutation(
-    ["login"],
-    async (input: LoginInput) => {
-      const res = await fetch("/api/auth/login", {
+  const register = useMutation(
+    ["register"],
+    async (input: RegisterInput) => {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,18 +43,21 @@ export function Login() {
         body: JSON.stringify(input),
       });
       const data = (await res.json()) as Record<string, string>;
+
       if (!res.ok) {
-        throw new Error(data.error ?? "Invalid login");
+        throw new Error(data.error ?? "Invalid register");
       }
       return data;
     },
     {
       onSuccess: () => {
-        toast("Login successful");
-        router.push("/dashboard");
+        toast("Successfully signed up", {
+          description: "Please verify your email",
+        });
+        router.push("/verify-email");
       },
       onError: (err: Error) => {
-        toast("Login failed", {
+        toast("Registration failed", {
           icon: (
             <ExclamationTriangleIcon className="h-4 w-4 text-destructive" />
           ),
@@ -62,26 +66,25 @@ export function Login() {
       },
     },
   );
-  const form = useForm<LoginInput>({
+  const form = useForm<RegisterInput>({
     defaultValues: {
+      fullName: "",
       email: "",
       password: "",
     },
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(registerSchema),
   });
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <CardTitle>{APP_TITLE} Log In</CardTitle>
-        <CardDescription>
-          Log in to your account to access your dashboard
-        </CardDescription>
+        <CardTitle>{APP_TITLE} Sign Up</CardTitle>
+        <CardDescription>Sign up to start using the app</CardDescription>
       </CardHeader>
       <CardContent>
         <Button variant="outline" className="w-full" asChild>
           <Link href="/login/discord">
             <DiscordLogoIcon className="mr-2 h-5 w-5" />
-            Log in with Discord
+            Sign up with Discord
           </Link>
         </Button>
         <div className="my-2 flex items-center">
@@ -91,9 +94,22 @@ export function Login() {
         </div>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) => login.mutate(data))}
-            className="grid gap-4"
+            onSubmit={form.handleSubmit((data) => register.mutate(data))}
+            className="space-y-4"
           >
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Full Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
@@ -101,7 +117,11 @@ export function Login() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="email@example.com" {...field} />
+                    <Input
+                      placeholder="example@email.com"
+                      type="email"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -121,27 +141,24 @@ export function Login() {
                 </FormItem>
               )}
             />
-            <div className="flex flex-wrap justify-between">
-              <Link href={"/signup"}>
+
+            <div>
+              <Link href={"/login"}>
                 <Button variant={"link"} size={"sm"} className="p-0">
-                  Not signed up? Sign up now.
-                </Button>
-              </Link>
-              <Link href={"/reset-password"}>
-                <Button variant={"link"} size={"sm"} className="p-0">
-                  Forgot password?
+                  Already signed up? Login instead.
                 </Button>
               </Link>
             </div>
-
-            <LoadingButton loading={login.isLoading} className="w-full">
-              Log In
-            </LoadingButton>
-            <Button variant="outline" className="w-full" asChild>
-              <Link href="/">Cancel</Link>
-            </Button>
+            <div>
+              <LoadingButton loading={register.isLoading} className="w-full">
+                Sign up
+              </LoadingButton>
+            </div>
           </form>
         </Form>
+        <Button variant="outline" className="w-full" asChild>
+          <Link href="/">Cancel</Link>
+        </Button>
       </CardContent>
     </Card>
   );

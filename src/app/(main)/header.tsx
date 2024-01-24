@@ -64,7 +64,7 @@ const Header = ({ user }: { user: User }) => {
         </nav>
 
         <div className="ml-auto">
-          <UserDropdown email={user.email} avatar={user.avatar} />
+          <UserDropdown username={user.fullName} email={user.email} />
         </div>
       </div>
     </header>

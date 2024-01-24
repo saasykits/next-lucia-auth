@@ -1,10 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ResetPassword } from "./reset-password";
 
 export const metadata = {
@@ -18,14 +11,8 @@ export default function ResetPasswordPage({
   params: { token: string };
 }) {
   return (
-    <Card className="mx-auto max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle>Reset password</CardTitle>
-        <CardDescription>Enter your email to get reset link.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ResetPassword token={params.token} />
-      </CardContent>
-    </Card>
+    <main className="p-4">
+      <ResetPassword token={params.token} />
+    </main>
   );
 }

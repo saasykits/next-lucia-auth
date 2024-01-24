@@ -6,12 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
- 
+
+import * as context from "next/headers";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 import { db } from "@/server/db";
-import { uncachedValidateRequest } from "@/lib/auth/validate-request";
+import { auth } from "@/lib/auth/lucia";
 
 /**
  * 1. CONTEXT
@@ -25,11 +26,14 @@ import { uncachedValidateRequest } from "@/lib/auth/validate-request";
  *
  * @see https://trpc.io/docs/server/context
  */
-export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const { session, user } = await uncachedValidateRequest();
+export const createTRPCContext = async (opts: {
+  headers: Headers;
+  method?: string;
+}) => {
+  const authRequest = auth.handleRequest(opts.method ?? "GET", context);
+  const session = await authRequest.validate();
   return {
     session,
-    user,
     db,
     headers: opts.headers,
   };
@@ -79,7 +83,19 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
- 
+/** Reusable middleware that enforces users are logged in before running the procedure. */
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
 /**
  * Protected (authenticated) procedure
  *
@@ -88,15 +104,4 @@ export const publicProcedure = t.procedure;
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
-  if (!ctx.session || !ctx.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      // infers the `session` and `user` as non-nullable
-      session: { ...ctx.session },
-      user: { ...ctx.user },
-    },
-  });
-});
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);

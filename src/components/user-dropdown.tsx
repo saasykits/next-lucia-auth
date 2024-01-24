@@ -11,32 +11,32 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"; 
-import { logout } from "@/lib/auth/actions";
 
 import Link from "next/link";
 
 export const UserDropdown = ({
+  username,
   email,
-  avatar,
 }: {
+  username: string;
   email: string;
-  avatar?: string | null;
 }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none">
         {/* eslint @next/next/no-img-element:off */}
         <img
-          src={avatar ?? "https://source.boringavatars.com/marble/60/" + email}
+          src={"https://source.boringavatars.com/marble/60/" + username}
           alt="Avatar"
-          className="h-8 w-8 rounded-full"
+          className="h-8 w-8"
           width={64}
           height={64}
         ></img>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel className="text-muted-foreground">
-          {email}
+        <DropdownMenuLabel>
+          <p>{username}</p>
+          <p className="text-muted-foreground">{email}</p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -56,7 +56,7 @@ export const UserDropdown = ({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem className="text-muted-foreground" asChild>
-          <form action={logout}>
+          <form method="POST" action="/api/auth/logout">
             <button>Sign out</button>
           </form>
         </DropdownMenuItem>

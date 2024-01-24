@@ -1,14 +1,6 @@
 import { redirect } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { SendResetEmail } from "./send-reset-email";
-import { validateRequest } from "@/lib/auth/validate-request";
-import { redirects } from "@/lib/constants";
+import { getPageSession } from "@/lib/auth/helpers";
+import { ForgotPassword } from "./forgot-password";
 
 export const metadata = {
   title: "Forgot Password",
@@ -16,21 +8,9 @@ export const metadata = {
 };
 
 export default async function ForgotPasswordPage() {
-  const { user } = await validateRequest();
+  const session = await getPageSession();
 
-  if (user) redirect(redirects.afterLogin);
+  if (session) redirect("/dashboard");
 
-  return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Forgot password?</CardTitle>
-        <CardDescription>
-          Password reset link will be sent to your email.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <SendResetEmail />
-      </CardContent>
-    </Card>
-  );
+  return <ForgotPassword />;
 }

@@ -1,13 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-
-import { LoadingButton } from "@/components/loading-button";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { ExclamationTriangleIcon } from "@/components/icons";
+import { LoadingButton } from "@/components/loading-button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -24,17 +25,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
-  resetPasswordSchema,
-  type ResetPasswordInput,
+  forgotPasswordSchema,
+  type ForgotPasswordInput,
 } from "@/lib/validators/auth";
-import { PasswordInput } from "@/components/password-input";
 
-export function ResetPassword({ token }: { token: string }) {
-  const router = useRouter();
-  const resetPass = useMutation(
-    ["reset-password"],
-    async (input: ResetPasswordInput) => {
-      const res = await fetch("/api/auth/reset-password", {
+export function ForgotPassword() {
+  const forgotPass = useMutation(
+    ["forgot-password"],
+    async (input: ForgotPasswordInput) => {
+      const res = await fetch("/api/auth/forgot-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,16 +42,15 @@ export function ResetPassword({ token }: { token: string }) {
       });
       const data = (await res.json()) as Record<string, string>;
       if (!res.ok) {
-        throw new Error(data.error ?? "Invalid data");
+        throw new Error(data.error ?? "Invalid Email");
       }
       return data;
     },
     {
       onSuccess: () => {
-        toast("Successful", {
-          description: "Password reset successful.",
+        toast("Reset link sent", {
+          description: "Check your email for the reset link.",
         });
-        router.push("/login");
       },
       onError: (err: Error) => {
         toast("Operation failed", {
@@ -64,40 +62,50 @@ export function ResetPassword({ token }: { token: string }) {
       },
     },
   );
-  const form = useForm<ResetPasswordInput>({
-    defaultValues: { password: "", token },
-    resolver: zodResolver(resetPasswordSchema),
+  const form = useForm<ForgotPasswordInput>({
+    defaultValues: { email: "" },
+    resolver: zodResolver(forgotPasswordSchema),
   });
   return (
-    <Card className="mx-auto max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle>Reset password</CardTitle>
+    <Card className="w-full max-w-md">
+      <CardHeader>
+        <CardTitle>Forgot password?</CardTitle>
         <CardDescription>Enter your email to get reset link.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((data) => resetPass.mutate(data))}
+            onSubmit={form.handleSubmit((data) => forgotPass.mutate(data))}
             className="grid gap-4"
           >
-            <input type="hidden" {...form.register("token")} />
             <FormField
               control={form.control}
-              name="password"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="********" {...field} />
+                    <Input placeholder="example@email.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <LoadingButton loading={resetPass.isLoading} className="w-full">
-              Reset Password
+            <div className="flex flex-wrap justify-between">
+              <Link href={"/signup"}>
+                <Button variant={"link"} size={"sm"} className="p-0">
+                  Not signed up? Sign up now
+                </Button>
+              </Link>
+            </div>
+
+            <LoadingButton loading={forgotPass.isLoading} className="w-full">
+              Send password reset email
             </LoadingButton>
+            <Button variant="outline" className="w-full" asChild>
+              <Link href="/">Cancel</Link>
+            </Button>
           </form>
         </Form>
       </CardContent>

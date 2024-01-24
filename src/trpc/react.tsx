@@ -10,7 +10,10 @@ import { getUrl, transformer } from "./shared";
 
 export const api = createTRPCReact<AppRouter>();
 
-export function TRPCReactProvider(props: { children: React.ReactNode }) {
+export function TRPCReactProvider(props: {
+  children: React.ReactNode;
+  cookies: string;
+}) {
   const [queryClient] = useState(() => new QueryClient());
 
   const [trpcClient] = useState(() =>
@@ -24,9 +27,15 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
         }),
         unstable_httpBatchStreamLink({
           url: getUrl(),
+          headers() {
+            return {
+              cookie: props.cookies,
+              "x-trpc-source": "react",
+            };
+          },
         }),
       ],
-    }),
+    })
   );
 
   return (

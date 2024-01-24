@@ -1,12 +1,4 @@
 export const APP_TITLE = "Acme";
-export const DATABASE_PREFIX = "acme_v3";
+export const DATABASE_PREFIX = "acme";
 export const EMAIL_SENDER = '"Acme" <noreply@acme.com>';
-
-export const redirects = {
-  toLogin: "/login",
-  toSignup: "/signup",
-  afterLogin: "/dashboard",
-  afterLogout: "/",
-  toVerify: "/verify-email",
-  afterVerify: "/dashboard",
-} as const;
+export const RESET_TOKEN_EXPIRATION = 1000 * 60 * 60 * 2; // 2 hours

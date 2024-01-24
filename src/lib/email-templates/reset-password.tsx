@@ -1,4 +1,3 @@
-import { render } from "@react-email/render";
 import {
   Body,
   Button,
@@ -12,10 +11,11 @@ import {
 import { APP_TITLE } from "@/lib/constants";
 
 interface Props {
-  link: string;
+  username: string;
+  link?: string;
 }
 
-export const ResetPasswordEmail = ({ link }: Props) => {
+export const ResetPasswordEmail = ({ username, link }: Props) => {
   return (
     <Html>
       <Head />
@@ -24,7 +24,7 @@ export const ResetPasswordEmail = ({ link }: Props) => {
         <Container style={container}>
           <Section>
             <Text style={title}>{APP_TITLE}</Text>
-            <Text style={text}>Hi,</Text>
+            <Text style={text}>Hi {username},</Text>
             <Text style={text}>
               Someone recently requested a password change for your {APP_TITLE}{" "}
               account. If this was you, you can set a new password here:
@@ -48,8 +48,7 @@ export const ResetPasswordEmail = ({ link }: Props) => {
   );
 };
 
-export const renderResetPasswordEmail = ({ link }: Props) =>
-  render(<ResetPasswordEmail link={link} />);
+export default ResetPasswordEmail;
 
 const main = {
   backgroundColor: "#f6f9fc",

@@ -1,13 +1,16 @@
+import crypto from "crypto";
 import { z } from "zod";
 import { and, desc, eq } from "drizzle-orm";
 import { tasks } from "@/server/db/schema";
 import { protectedProcedure, createTRPCRouter } from "../trpc";
-import { generateId } from "lucia";
 
 export const taskRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
     const data = await ctx.db.query.tasks.findMany({
-      where: and(eq(tasks.userId, ctx.user.id), eq(tasks.archived, false)),
+      where: and(
+        eq(tasks.userId, ctx.session.user.userId),
+        eq(tasks.archived, false),
+      ),
       orderBy: desc(tasks.createdAt),
       columns: {
         id: true,
@@ -31,12 +34,20 @@ export const taskRouter = createTRPCRouter({
       await ctx.db
         .update(tasks)
         .set({ status: input.status })
-        .where(and(eq(tasks.id, input.id), eq(tasks.userId, ctx.user.id)));
+        .where(
+          and(
+            eq(tasks.id, input.id),
+            eq(tasks.userId, ctx.session.user.userId),
+          ),
+        );
       return { id: input.id };
     }),
   archivedList: protectedProcedure.query(({ ctx }) =>
     ctx.db.query.tasks.findMany({
-      where: and(eq(tasks.userId, ctx.user.id), eq(tasks.archived, true)),
+      where: and(
+        eq(tasks.userId, ctx.session.user.userId),
+        eq(tasks.archived, true),
+      ),
       orderBy: desc(tasks.createdAt),
     }),
   ),
@@ -48,11 +59,11 @@ export const taskRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const id = generateId(15);
+      const id = generateRandomString();
 
       await ctx.db.insert(tasks).values({
-        id,
-        userId: ctx.user.id,
+        id: generateRandomString(),
+        userId: ctx.session.user.userId,
         title: input.title,
         description: input.description,
       });
@@ -63,7 +74,23 @@ export const taskRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       await ctx.db
         .delete(tasks)
-        .where(and(eq(tasks.id, input), eq(tasks.userId, ctx.user.id)));
+        .where(
+          and(eq(tasks.id, input), eq(tasks.userId, ctx.session.user.userId)),
+        );
       return { id: input };
     }),
 });
+
+function generateRandomString(length = 15) {
+  const characters =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const randomBytes = crypto.randomBytes(length);
+  let randomString = "";
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = randomBytes[i]! % characters.length;
+    randomString += characters.charAt(randomIndex);
+  }
+
+  return randomString;
+}

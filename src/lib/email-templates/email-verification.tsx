@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Container,
   Head,
   Html,
@@ -9,13 +8,13 @@ import {
   Text,
 } from "@react-email/components";
 import { APP_TITLE } from "@/lib/constants";
+import { render } from "@react-email/render";
 
 interface Props {
-  username: string;
-  link?: string;
+  code: string;
 }
 
-export const EmailVerificationEmail = ({ username, link }: Props) => {
+export const VerificationCodeEmail = ({ code }: Props) => {
   return (
     <Html>
       <Head />
@@ -26,15 +25,13 @@ export const EmailVerificationEmail = ({ username, link }: Props) => {
         <Container style={container}>
           <Section>
             <Text style={title}>{APP_TITLE}</Text>
-            <Text style={text}>Hi {username},</Text>
+            <Text style={text}>Hi,</Text>
             <Text style={text}>
               Thank you for registering for an account on {APP_TITLE}. To
-              complete your registration, please verify your email address by
-              clicking the link below:
+              complete your registration, please verify your your account by
+              using the following code:
             </Text>
-            <Button style={button} href={link}>
-              Verify Email
-            </Button>
+            <Text style={codePlaceholder}>{code}</Text>
 
             <Text style={text}>Have a nice day!</Text>
           </Section>
@@ -44,7 +41,8 @@ export const EmailVerificationEmail = ({ username, link }: Props) => {
   );
 };
 
-export default EmailVerificationEmail;
+export const renderVerificationCodeEmail = ({ code }: Props) =>
+  render(<VerificationCodeEmail code={code} />);
 
 const main = {
   backgroundColor: "#f6f9fc",
@@ -73,10 +71,11 @@ const title = {
   lineHeight: "32px",
 };
 
-const button = {
-  backgroundColor: "#09090b",
+const codePlaceholder = {
+  backgroundColor: "#fbfbfb",
+  border: "1px solid #f0f0f0",
   borderRadius: "4px",
-  color: "#fafafa",
+  color: "#1c1c1c",
   fontFamily: "'Open Sans', 'Helvetica Neue', Arial",
   fontSize: "15px",
   textDecoration: "none",

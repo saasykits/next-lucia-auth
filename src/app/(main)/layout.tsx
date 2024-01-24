@@ -1,18 +1,20 @@
 import { type ReactNode } from "react";
 import { redirect } from "next/navigation";
-
-import { getPageSession } from "@/lib/auth/helpers";
+ 
 import Header from "./header";
 import { Footer } from "./footer";
+import { validateRequest } from "@/lib/auth/validate-request";
+import { redirects } from "@/lib/constants";
 
 const MainLayout = async ({ children }: { children: ReactNode }) => {
-  const session = await getPageSession();
+  const { user } = await validateRequest();
 
-  if (!session) redirect("/login");
+  if (!user) redirect(redirects.toLogin);
+  if (user.emailVerified === false) redirect(redirects.toVerify);
 
   return (
     <>
-      <Header user={session.user} />
+      <Header user={user} />
       {children}
       <div className="h-20"></div>
       <Footer />

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getPageSession } from "@/lib/auth/helpers";
+import { validateRequest } from "@/lib/auth/validate-request";
+import { redirects } from "@/lib/constants";
 import { Login } from "./login";
 
 export const metadata = {
@@ -8,8 +9,9 @@ export const metadata = {
 };
 
 export default async function LoginPage() {
-  const session = await getPageSession();
+  const { user } = await validateRequest();
 
-  if (session) redirect("/dashboard");
+  if (user) redirect(redirects.afterLogin);
+
   return <Login />;
 }

@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { SubmitButton } from "@/components/submit-button";
 import {
   Card,
   CardContent,
@@ -7,24 +8,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getPageSession } from "@/lib/auth/helpers";
-import { redirect } from "next/navigation";
+import { logout } from "@/lib/auth/actions";
+import { validateRequest } from "@/lib/auth/validate-request";
+import { redirects } from "@/lib/constants";
 
 export default async function AccountPage() {
-  const session = await getPageSession();
-  if (!session) redirect("/login");
+  const { user } = await validateRequest();
+  if (!user) redirect(redirects.toLogin);
 
   return (
     <main className="container mx-auto min-h-screen p-4">
       <Card className="max-w-sm">
         <CardHeader>
-          <CardTitle>Welcome, {session.user.fullName}!</CardTitle>
+          <CardTitle> {user.email}!</CardTitle>
           <CardDescription>You've successfully logged in!</CardDescription>
         </CardHeader>
         <CardContent>This is a private page.</CardContent>
         <CardFooter>
-          <form action="/api/auth/logout" method="post">
-            <Button variant="outline">Logout</Button>
+          <form action={logout}>
+            <SubmitButton variant="outline">Logout</SubmitButton>
           </form>
         </CardFooter>
       </Card>

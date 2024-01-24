@@ -18,7 +18,7 @@ export default function ResetPasswordPage({
   params: { token: string };
 }) {
   return (
-    <Card className="mx-auto max-w-md">
+    <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
         <CardTitle>Reset password</CardTitle>
         <CardDescription>Enter your email to get reset link.</CardDescription>

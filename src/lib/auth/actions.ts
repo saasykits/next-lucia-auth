@@ -12,15 +12,23 @@ import {
   signupSchema,
   type LoginInput,
   type SignupInput,
+  resetPasswordSchema,
 } from "@/lib/validators/auth";
-import { emailVerificationCodes, users } from "@/server/db/schema";
-import { generateEmailVerificationCode } from "@/lib/auth/generate-verification-code";
+import {
+  emailVerificationCodes,
+  passwordResetTokens,
+  users,
+} from "@/server/db/schema";
+import { isWithinExpirationDate, TimeSpan, createDate } from "oslo";
+import { generateRandomString, alphabet } from "oslo/random";
 import { sendMail } from "@/server/send-mail";
 import { renderVerificationCodeEmail } from "@/lib/email-templates/email-verification";
+import { renderResetPasswordEmail } from "@/lib/email-templates/reset-password";
 import { validateRequest } from "@/lib/auth/validate-request";
-import { isWithinExpirationDate } from "oslo";
 import { eq } from "drizzle-orm";
 import { redirects } from "../constants";
+import { z } from "zod";
+import { env } from "@/env"; 
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -224,7 +232,89 @@ export async function verifyEmail(
     sessionCookie.value,
     sessionCookie.attributes,
   );
-  return redirect(redirects.afterLogin);
+   redirect(redirects.afterLogin);
+}
+
+export async function sendPasswordResetLink(
+  _: any,
+  formData: FormData,
+): Promise<{ error?: string; success?: boolean }> {
+  const email = formData.get("email");
+  const parsed = z.string().trim().email().safeParse(email);
+  if (!parsed.success) {
+    return { error: "Provided email is invalid." };
+  }
+  try {
+    const user = await db.query.users.findFirst({
+      where: (table, { eq }) => eq(table.email, parsed.data),
+    });
+
+    if (!user || !user.emailVerified)
+      return { error: "Provided email is invalid." };
+
+    const verificationToken = await generatePasswordResetToken(user.id);
+
+    const verificationLink = `${env.NEXT_PUBLIC_APP_URL}/reset-password/${verificationToken}`;
+
+    await sendMail({
+      to: user.email,
+      subject: "Reset your password",
+      body: renderResetPasswordEmail({ link: verificationLink }),
+    });
+
+    return { success: true };
+  } catch (error) {
+    return { error: "Failed to send verification email." };
+  }
+}
+
+export async function resetPassword(
+  _: any,
+  formData: FormData,
+): Promise<{ error?: string; success?: boolean }> {
+  const obj = Object.fromEntries(formData.entries());
+
+  const parsed = resetPasswordSchema.safeParse(obj);
+
+  if (!parsed.success) {
+    const err = parsed.error.flatten();
+    return {
+      error: err.fieldErrors.password?.[0] ?? err.fieldErrors.token?.[0],
+    };
+  }
+  const { token, password } = parsed.data;
+
+  const dbToken = await db.transaction(async (tx) => {
+    const item = await tx.query.passwordResetTokens.findFirst({
+      where: (table, { eq }) => eq(table.id, token),
+    });
+    if (item) {
+      await tx
+        .delete(passwordResetTokens)
+        .where(eq(passwordResetTokens.id, item.id));
+    }
+    return item;
+  });
+
+  if (!dbToken) return { error: "Invalid password reset link" };
+
+  if (!isWithinExpirationDate(dbToken.expiresAt))
+    return { error: "Password reset link expired." };
+
+  await lucia.invalidateUserSessions(dbToken.userId);
+  const hashedPassword = await new Scrypt().hash(password);
+  await db
+    .update(users)
+    .set({ hashedPassword })
+    .where(eq(users.id, dbToken.userId));
+  const session = await lucia.createSession(dbToken.userId, {});
+  const sessionCookie = lucia.createSessionCookie(session.id);
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes,
+  );
+  redirect(redirects.afterLogin);
 }
 
 const timeFromNow = (time: Date) => {
@@ -234,3 +324,33 @@ const timeFromNow = (time: Date) => {
   const seconds = Math.floor(diff / 1000) % 60;
   return `${minutes}m ${seconds}s`;
 };
+
+async function generateEmailVerificationCode(
+  userId: string,
+  email: string,
+): Promise<string> {
+  await db
+    .delete(emailVerificationCodes)
+    .where(eq(emailVerificationCodes.userId, userId));
+  const code = generateRandomString(8, alphabet("0-9")); // 8 digit code
+  await db.insert(emailVerificationCodes).values({
+    userId,
+    email,
+    code,
+    expiresAt: createDate(new TimeSpan(10, "m")), // 10 minutes
+  });
+  return code;
+}
+
+async function generatePasswordResetToken(userId: string): Promise<string> {
+  await db
+    .delete(passwordResetTokens)
+    .where(eq(passwordResetTokens.userId, userId));
+  const tokenId = generateId(40);
+  await db.insert(passwordResetTokens).values({
+    id: tokenId,
+    userId,
+    expiresAt: createDate(new TimeSpan(2, "h")),
+  });
+  return tokenId;
+}

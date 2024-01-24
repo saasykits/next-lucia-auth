@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LoadingButton } from "@/components/loading-button";
+import { useFormState } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,9 +14,9 @@ import {
 import { PasswordInput } from "@/components/password-input";
 import { DiscordLogoIcon } from "@/components/icons";
 import { APP_TITLE } from "@/lib/constants";
-import { useFormState, useFormStatus } from "react-dom";
 import { login } from "@/lib/auth/actions";
 import { Label } from "@/components/ui/label";
+import { SubmitButton } from "@/components/submit-button";
 
 export function Login() {
   const [state, formAction] = useFormState(login, null);
@@ -83,7 +83,7 @@ export function Login() {
               <li>{state?.formError}</li>
             </ul>
           ) : null}
-          <Submit />
+          <SubmitButton className="w-full">Log In</SubmitButton>
           <Button variant="outline" className="w-full" asChild>
             <Link href="/">Cancel</Link>
           </Button>
@@ -93,11 +93,4 @@ export function Login() {
   );
 }
 
-const Submit = () => {
-  const { pending } = useFormStatus();
-  return (
-    <LoadingButton className="w-full" loading={pending}>
-      Log In
-    </LoadingButton>
-  );
-};
+ 

@@ -26,7 +26,7 @@ export const VerifyCode = () => {
         icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
       });
     }
-  }, [resendState]);
+  }, [resendState?.error, resendState?.success]);
 
   useEffect(() => {
     if (verifyEmailState?.error) {
@@ -34,7 +34,7 @@ export const VerifyCode = () => {
         icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
       });
     }
-  }, [verifyEmailState]);
+  }, [verifyEmailState?.error]);
 
   return (
     <div className="flex flex-col gap-2">

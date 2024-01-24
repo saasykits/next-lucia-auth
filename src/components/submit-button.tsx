@@ -1,3 +1,5 @@
+"use client";
+
 import { forwardRef } from "react";
 import { useFormStatus } from "react-dom";
 import { LoadingButton } from "@/components/loading-button";

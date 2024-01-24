@@ -1,5 +1,6 @@
 "use client";
 
+import { useFormState } from "react-dom";
 import Link from "next/link";
 import { PasswordInput } from "@/components/password-input";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { LoadingButton } from "@/components/loading-button";
 import { DiscordLogoIcon } from "@/components/icons";
 import { APP_TITLE } from "@/lib/constants";
 import { Label } from "@/components/ui/label";
 import { signup } from "@/lib/auth/actions";
-import { useFormState, useFormStatus } from "react-dom";
+import { SubmitButton } from "@/components/submit-button";
 
 export function Signup() {
   const [state, formAction] = useFormState(signup, null);
@@ -44,35 +44,23 @@ export function Signup() {
           <div className="space-y-2">
             <Label>Email</Label>
             <Input
-              className={state?.fieldError?.email ? "border-destructive" : ""}
+              required
               placeholder="email@example.com"
               autoComplete="email"
               name="email"
               type="email"
             />
-            {state?.fieldError?.email ? (
-              <p className="text-[0.8rem] font-medium text-destructive">
-                {state.fieldError.email}
-              </p>
-            ) : null}
           </div>
-
           <div className="space-y-2">
             <Label>Password</Label>
             <PasswordInput
-              className={
-                state?.fieldError?.password ? "border-destructive" : ""
-              }
               name="password"
+              required
               autoComplete="current-password"
               placeholder="********"
             />
-            {state?.fieldError?.password ? (
-              <p className="text-[0.8rem] font-medium text-destructive">
-                {state.fieldError.password}
-              </p>
-            ) : null}
           </div>
+
           {state?.formError ? (
             <p className="text-[0.8rem] font-medium text-destructive">
               {state.formError}
@@ -86,7 +74,7 @@ export function Signup() {
             </Link>
           </div>
 
-          <Submit />
+          <SubmitButton className="w-full"> Sign Up</SubmitButton>
           <Button variant="outline" className="w-full" asChild>
             <Link href="/">Cancel</Link>
           </Button>
@@ -96,11 +84,4 @@ export function Signup() {
   );
 }
 
-const Submit = () => {
-  const { pending } = useFormStatus();
-  return (
-    <LoadingButton className="w-full" loading={pending}>
-      Sign Up
-    </LoadingButton>
-  );
-};
+ 

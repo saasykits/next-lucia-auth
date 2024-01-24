@@ -6,9 +6,8 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/mysql-core";
-
-import { mysqlTable } from "@/server/db/util";
 import { relations } from "drizzle-orm";
+import { mysqlTable } from "@/server/db/util";
 
 export const users = mysqlTable(
   "users",
@@ -55,6 +54,18 @@ export const emailVerificationCodes = mysqlTable(
   (t) => ({
     userIdx: index("user_idx").on(t.userId),
     emailIdx: index("email_idx").on(t.email),
+  }),
+);
+
+export const passwordResetTokens = mysqlTable(
+  "password_reset_tokens",
+  {
+    id: varchar("id", { length: 40 }).primaryKey(),
+    userId: varchar("user_id", { length: 21 }).notNull(),
+    expiresAt: datetime("expires_at").notNull(),
+  },
+  (t) => ({
+    userIdx: index("user_idx").on(t.userId),
   }),
 );
 

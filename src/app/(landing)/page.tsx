@@ -3,7 +3,7 @@ import { type Metadata } from "next";
 import { PlusIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { GitHubLogoIcon } from "@radix-ui/react-icons";
-import { CopyToClipboard } from "./copy-to-clipboard";
+import { CopyToClipboard } from "./_components/copy-to-clipboard";
 import {
   Drizzle,
   LuciaAuth,
@@ -11,7 +11,7 @@ import {
   ReactJs,
   ShadcnUi,
   TRPC,
-} from "./feature-icons";
+} from "./_components/feature-icons";
 import {
   Card,
   CardDescription,

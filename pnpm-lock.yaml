@@ -12,8 +12,8 @@ dependencies:
     specifier: ^3.3.2
     version: 3.3.2(react-hook-form@7.49.0)
   '@lucia-auth/adapter-drizzle':
-    specifier: 1.0.0-beta.7
-    version: 1.0.0-beta.7(lucia@3.0.0-beta.15)
+    specifier: 1.0.0
+    version: 1.0.0(lucia@3.0.0)
   '@planetscale/database':
     specifier: ^1.11.0
     version: 1.11.0
@@ -63,8 +63,8 @@ dependencies:
     specifier: ^10.43.6
     version: 10.44.1
   arctic:
-    specifier: ^0.10.5
-    version: 0.10.5
+    specifier: ^1.1.0
+    version: 1.1.0
   class-variance-authority:
     specifier: ^0.7.0
     version: 0.7.0
@@ -75,8 +75,8 @@ dependencies:
     specifier: ^0.28.5
     version: 0.28.6(@planetscale/database@1.11.0)(mysql2@3.6.5)
   lucia:
-    specifier: 3.0.0-beta.15
-    version: 3.0.0-beta.15
+    specifier: 3.0.0
+    version: 3.0.0
   next:
     specifier: ^14.0.3
     version: 14.0.4(react-dom@18.2.0)(react@18.2.0)
@@ -87,8 +87,8 @@ dependencies:
     specifier: ^6.9.7
     version: 6.9.7
   oslo:
-    specifier: ^0.27.1
-    version: 0.27.1
+    specifier: ^1.0.1
+    version: 1.0.1
   react:
     specifier: 18.2.0
     version: 18.2.0
@@ -770,12 +770,12 @@ packages:
       '@jridgewell/resolve-uri': 3.1.1
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  /@lucia-auth/adapter-drizzle@1.0.0-beta.7(lucia@3.0.0-beta.15):
-    resolution: {integrity: sha512-RXe9bX/ZvfSSKtEp3skraqHd3zwoX/Qt4r/GkCzJDJOA03t2PBrVVJZZXRizmHliAoADcG1aMkjksOkP7Czz9g==}
+  /@lucia-auth/adapter-drizzle@1.0.0(lucia@3.0.0):
+    resolution: {integrity: sha512-3NJbAgEcgFn1bJ+s/XVBdatnQZCtSjKJ880H25SVB9X+V2jhYfsSu/mcW3PSis5bLial188Pd4oNTTHonh+6vg==}
     peerDependencies:
-      lucia: 3.0.0-beta.15
+      lucia: 3.x
     dependencies:
-      lucia: 3.0.0-beta.15
+      lucia: 3.0.0
     dev: false
 
   /@napi-rs/wasm-runtime@0.1.1:
@@ -2345,10 +2345,10 @@ packages:
       normalize-path: 3.0.0
       picomatch: 2.3.1
 
-  /arctic@0.10.5:
-    resolution: {integrity: sha512-RcT3OlqQxklgZeBJzreNzs13ATRHaAK4ns58axBsA8akrsvTlIlLZy4x7Jw34G8cxD9gr8JaQrtoHogqSOep0w==}
+  /arctic@1.1.0:
+    resolution: {integrity: sha512-O2Mcoq991UMI2KCb2zuw7jWfCYCfMu4aveXVDUmfro3MAeq0gMCk7qTl4Y5WB0YXs21xgQFMsh2gs6WBlorAyQ==}
     dependencies:
-      oslo: 0.27.1
+      oslo: 1.0.1
     dev: false
 
   /arg@5.0.2:
@@ -3521,10 +3521,10 @@ packages:
       es5-ext: 0.10.62
     dev: true
 
-  /lucia@3.0.0-beta.15:
-    resolution: {integrity: sha512-xSQMylJSoHwR704RcvgS8tUlI1aUaWDnuSen0MxhnFiB9OajxHYUPW5ODot5NiadKhewOdLx7q17cF4Ld13eRg==}
+  /lucia@3.0.0:
+    resolution: {integrity: sha512-60NQqjKuaqPrjHL10CQ1j3rQy8qwKd3XpSNNnNcZyZI+4w1QFJdtNcR4l0dZJ4kJ0DdwI/943yplL47V7IZbGQ==}
     dependencies:
-      oslo: 0.27.1
+      oslo: 1.0.1
     dev: false
 
   /memoizee@0.4.15:
@@ -3739,8 +3739,8 @@ packages:
       type-check: 0.4.0
     dev: true
 
-  /oslo@0.27.1:
-    resolution: {integrity: sha512-AYU0LpwZ50wIMD3dr4NX0tQzjwxaejSSV9reiY9jbQfgODt49al3f3tMcijyddyvPknUPArz845vpswWyJTWvA==}
+  /oslo@1.0.1:
+    resolution: {integrity: sha512-esfzZry+HfGgK/GCYkg7BRlLd3RH5aHa08wgLJPYjENXybi0BvXxGk0LbUj+lXfz2TkjPDHe4rB/o6JxRLHxBg==}
     dependencies:
       '@node-rs/argon2': 1.7.2
       '@node-rs/bcrypt': 1.9.2

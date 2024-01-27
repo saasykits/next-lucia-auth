@@ -74,7 +74,6 @@ export const Tasks = () => {
   const [doneAnimate] = useAutoAnimate();
 
   useEffect(() => {
-    console.log(tasks.isRefetching);
     if (tasks.isRefetching) return enableTodoAnimations(false);
     const timeout = setTimeout(() => {
       enableTodoAnimations(true);

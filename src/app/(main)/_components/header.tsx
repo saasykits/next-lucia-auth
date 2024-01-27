@@ -3,7 +3,7 @@ import { RocketIcon } from "@/components/icons";
 import { APP_TITLE } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { type User } from "lucia";
-import { UserDropdown } from "@/components/user-dropdown";
+import { UserDropdown } from "@/app/(main)/_components/user-dropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,7 @@ const routes = [
   },
 ] as const;
 
-const Header = ({ user }: { user: User }) => {
+export const Header = ({ user }: { user: User }) => {
   return (
     <header className="sticky border-b bg-background/80 px-2 py-2 shadow-lg backdrop-blur-sm md:px-4">
       <div className="container flex items-center gap-2 p-0">
@@ -70,5 +70,3 @@ const Header = ({ user }: { user: User }) => {
     </header>
   );
 };
-
-export default Header;

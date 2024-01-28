@@ -7,7 +7,8 @@ import { CopyToClipboard } from "./_components/copy-to-clipboard";
 import {
   Drizzle,
   LuciaAuth,
-  NextJs,
+  NextjsLight,
+  NextjsDark,
   ReactJs,
   ShadcnUi,
   TRPC,
@@ -31,7 +32,7 @@ const features = [
   {
     name: "NextJs",
     description: "The React Framework for Production",
-    logo: NextJs,
+    logo: NextJsIcon,
   },
   {
     name: "ReactJs",
@@ -67,7 +68,7 @@ const HomePage = () => {
       <section className="mx-auto grid min-h-[calc(100vh-80px)] items-center">
         <div className="p-4">
           <div className="mb-10 flex items-center justify-center gap-3">
-            <NextJs className="h-12 w-12" />
+            <NextjsIcon className="h-[52px] w-[52px]" />
             <PlusIcon className="h-8 w-8" />
             <LuciaAuth className="h-14 w-14" />
           </div>
@@ -125,5 +126,14 @@ const HomePage = () => {
     </>
   );
 };
- 
+
 export default HomePage;
+
+function NextjsIcon({ className }: { className?: string }) {
+  return (
+    <>
+      <NextjsLight className={className + " dark:hidden"} />
+      <NextjsDark className={className + " hidden dark:block"} />
+    </>
+  );
+}

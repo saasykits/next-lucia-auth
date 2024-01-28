@@ -21,21 +21,21 @@ import {
 } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "NextJs Lucia Auth Starter Template",
+  title: "Next.js Lucia Auth Starter Template",
   description:
-    "A Next.js starter with Nextjs and Lucia auth. Includes drizzle, trpc, react-email, tailwindcss and shadcn-ui",
+    "A Next.js starter template with nextjs and Lucia auth. Includes drizzle, trpc, react-email, tailwindcss and shadcn-ui",
 };
 
 const githubUrl = "https://github.com/iamtouha/next-lucia-auth";
 
 const features = [
   {
-    name: "NextJs",
+    name: "Next.js",
     description: "The React Framework for Production",
-    logo: NextJsIcon,
+    logo: NextjsIcon,
   },
   {
-    name: "ReactJs",
+    name: "React.js",
     description: "Server and client components.",
     logo: ReactJs,
   },
@@ -73,7 +73,7 @@ const HomePage = () => {
             <LuciaAuth className="h-14 w-14" />
           </div>
           <h1 className="text-balance text-center text-3xl font-bold md:text-4xl lg:text-5xl">
-            NextJs Lucia Auth Starter Template
+            Next.js Lucia Auth Starter Template
           </h1>
           <p className="text-balance mb-10 mt-4 text-center text-muted-foreground md:text-lg lg:text-xl">
             A Next.js starter template with Authentication (with password reset

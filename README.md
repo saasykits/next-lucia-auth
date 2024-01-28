@@ -1,6 +1,6 @@
-# Create T3 App + Lucia Authentication
+# Next.js + Lucia Authentication
 
-Auth implementation for Nextjs is a pain. Specially Email+Password
+Auth implementation for nextjs is a pain. Specially Email+Password
 authentication. NextAuth intentionally limeted email password functionality to-
 
 > discourage use of passwords due to the inherent security risks associated with
@@ -10,7 +10,7 @@ authentication. NextAuth intentionally limeted email password functionality to-
 But in some projects clients require user password authentication. Using 3rd
 party auth providers are costly. Here, lucia comes to the rescure. Lucia is a
 more flexible alternative to NextAuth.js. This template is a starting point for
-building a Next.js app with Lucia authentication.
+building a nextjs app with Lucia authentication.
 
 [Lucia](https://lucide.dev) is a server-side authentication library for TypeScript that aims to be unintrusive, straightforward, and flexible. At its core, it’s a library for managing users and sessions, providing the building blocks for setting up auth just how you want.
 

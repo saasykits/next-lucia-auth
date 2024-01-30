@@ -2,7 +2,7 @@
 
 ## Motivation
 
-Implementing authentication in Next.js, especially Email+Password authentication, can be challenging. NextAuth intentionally limits email password functionality to discourage the use of passwords due to security risks and added complexity. However, in certain projects, clients may require user password authentication. Lucia offers a flexible alternative to NextAuth.js, providing more customization options. This template serves as a starting point for building a Next.js app with Lucia authentication.
+Implementing authentication in Next.js, especially Email+Password authentication, can be challenging. NextAuth intentionally limits email password functionality to discourage the use of passwords due to security risks and added complexity. However, in certain projects, clients may require user password authentication. Lucia offers a flexible alternative to NextAuth.js, providing more customization options without compromising on security. This template serves as a starting point for building a Next.js app with Lucia authentication.
 
 ## Lucia vs. NextAuth.js
 
@@ -51,7 +51,3 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 ## Contributing
 
 If you wish to contribute, fork the repository and use a feature branch. Pull requests are warmly welcome.
-
-```
-
-```

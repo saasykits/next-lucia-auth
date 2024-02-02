@@ -61,9 +61,17 @@ export function Signup() {
             />
           </div>
 
-          {state?.formError ? (
-            <p className="text-[0.8rem] font-medium text-destructive">
-              {state.formError}
+          {state?.fieldError ? (
+            <ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+              {Object.values(state.fieldError).map((err) => (
+                <li className="ml-4" key={err}>
+                  {err}
+                </li>
+              ))}
+            </ul>
+          ) : state?.formError ? (
+            <p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+              {state?.formError}
             </p>
           ) : null}
           <div>
@@ -83,5 +91,3 @@ export function Signup() {
     </Card>
   );
 }
-
- 

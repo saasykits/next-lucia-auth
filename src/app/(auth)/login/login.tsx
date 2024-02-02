@@ -73,15 +73,17 @@ export function Login() {
           </div>
 
           {state?.fieldError ? (
-            <ul className="space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+            <ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
               {Object.values(state.fieldError).map((err) => (
-                <li key={err}>{err}</li>
+                <li className="ml-4" key={err}>
+                  {err}
+                </li>
               ))}
             </ul>
           ) : state?.formError ? (
-            <ul className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-              <li>{state?.formError}</li>
-            </ul>
+            <p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
+              {state?.formError}
+            </p>
           ) : null}
           <SubmitButton className="w-full">Log In</SubmitButton>
           <Button variant="outline" className="w-full" asChild>
@@ -92,5 +94,3 @@ export function Login() {
     </Card>
   );
 }
-
- 

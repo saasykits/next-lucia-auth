@@ -61,13 +61,13 @@ export async function login(
 
   if (!existingUser) {
     return {
-      formError: "Incorrect username or password",
+      formError: "Incorrect email or password",
     };
   }
 
   if (!existingUser || !existingUser?.hashedPassword) {
     return {
-      formError: "Incorrect username or password",
+      formError: "Incorrect email or password",
     };
   }
 
@@ -77,7 +77,7 @@ export async function login(
   );
   if (!validPassword) {
     return {
-      formError: "Incorrect username or password",
+      formError: "Incorrect email or password",
     };
   }
 

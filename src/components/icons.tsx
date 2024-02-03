@@ -1,5 +1,4 @@
 import { forwardRef, type SVGProps } from "react";
-
 import { cn } from "@/lib/utils";
 
 const AnimatedSpinner = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
@@ -61,4 +60,51 @@ const AnimatedSpinner = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
 );
 AnimatedSpinner.displayName = "AnimatedSpinner";
 
-export { AnimatedSpinner };
+const CreditCard = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
+  ({ className, ...props }, ref) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      ref={ref}
+      {...props}
+      viewBox="0 0 24 24"
+      className={cn(className)}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+      <line x1="2" y1="10" x2="22" y2="10"></line>
+    </svg>
+  ),
+);
+CreditCard.displayName = "CreditCard";
+
+export { AnimatedSpinner, CreditCard };
+
+export {
+  EyeOpenIcon,
+  EyeNoneIcon as EyeCloseIcon,
+  SunIcon,
+  MoonIcon,
+  ExclamationTriangleIcon,
+  ExitIcon,
+  EnterIcon,
+  GearIcon,
+  RocketIcon,
+  PlusIcon,
+  HamburgerMenuIcon,
+  Pencil2Icon,
+  UpdateIcon,
+  CheckCircledIcon,
+  PlayIcon,
+  TrashIcon,
+  ArchiveIcon,
+  ResetIcon,
+  DiscordLogoIcon,
+  FileTextIcon,
+  IdCardIcon,
+  PlusCircledIcon,
+  FilePlusIcon,
+} from "@radix-ui/react-icons";

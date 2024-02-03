@@ -31,18 +31,20 @@ import { toast } from "sonner";
 export const UserDropdown = ({
   email,
   avatar,
+  className,
 }: {
   email: string;
   avatar?: string | null;
+  className?: string;
 }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="focus:outline-none">
+      <DropdownMenuTrigger className={className}>
         {/* eslint @next/next/no-img-element:off */}
         <img
           src={avatar ?? "https://source.boringavatars.com/marble/60/" + email}
           alt="Avatar"
-          className="h-8 w-8 rounded-full"
+          className="block h-8 w-8 rounded-full leading-none"
           width={64}
           height={64}
         ></img>

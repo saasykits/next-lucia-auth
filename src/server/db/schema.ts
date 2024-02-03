@@ -69,21 +69,18 @@ export const passwordResetTokens = mysqlTable(
   }),
 );
 
-export const tasks = mysqlTable(
-  "tasks",
+export const posts = mysqlTable(
+  "posts",
   {
     id: varchar("id", { length: 15 }).primaryKey(),
     userId: varchar("user_id", { length: 255 }).notNull(),
     title: varchar("title", { length: 255 }).notNull(),
+    slug: varchar("slug", { length: 255 }).notNull(),
     description: varchar("description", { length: 255 }),
-    status: varchar("status", {
-      length: 5,
-      enum: ["todo", "doing", "done"],
-    })
-      .default("todo")
+    status: varchar("status", { length: 10, enum: ["draft", "published"] })
+      .default("draft")
       .notNull(),
     tags: varchar("tags", { length: 255 }),
-    archived: boolean("archived").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").onUpdateNow(),
   },
@@ -92,9 +89,9 @@ export const tasks = mysqlTable(
   }),
 );
 
-export const taskRelations = relations(tasks, ({ one }) => ({
+export const postRelations = relations(posts, ({ one }) => ({
   user: one(users, {
-    fields: [tasks.userId],
+    fields: [posts.userId],
     references: [users.id],
   }),
 }));

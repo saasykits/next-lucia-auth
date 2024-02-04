@@ -3,6 +3,7 @@ import {
   datetime,
   index,
   int,
+  text,
   timestamp,
   varchar,
 } from "drizzle-orm/mysql-core";
@@ -75,8 +76,8 @@ export const posts = mysqlTable(
     id: varchar("id", { length: 15 }).primaryKey(),
     userId: varchar("user_id", { length: 255 }).notNull(),
     title: varchar("title", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 255 }).notNull(),
-    description: varchar("description", { length: 255 }),
+    excerpt: varchar("excerpt", { length: 255 }).notNull(),
+    content: text("content").notNull(),
     status: varchar("status", { length: 10, enum: ["draft", "published"] })
       .default("draft")
       .notNull(),
@@ -86,6 +87,7 @@ export const posts = mysqlTable(
   },
   (t) => ({
     userIdx: index("user_idx").on(t.userId),
+    createdAtIdx: index("post_created_at_idx").on(t.createdAt),
   }),
 );
 

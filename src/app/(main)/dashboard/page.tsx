@@ -9,8 +9,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { NewPost } from "./_components/new-post";
+import { api } from "@/trpc/server";
+import { PostCard } from "./_components/post-card";
 
-export default function DashboardPage() {
+interface Props {
+  searchParams: {
+    page?: string | string[];
+  };
+}
+
+export default async function DashboardPage({ searchParams }: Props) {
+  const page = parseInt(
+    typeof searchParams.page === "string" ? searchParams.page : "1",
+  );
+  const posts = await api.post.myPosts.query({ page: page ?? 1 });
+
   return (
     <div>
       <div className="mb-6">
@@ -19,30 +32,16 @@ export default function DashboardPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <NewPost />
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Post 1</CardTitle>
-            <CardDescription className="text-sm">
-              <span>Published on 12th May 2021</span>
-              <span>by John Doe</span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-sm">asdasd asd asd</CardContent>
-          <CardFooter className="gap-2">
-            <Button variant="secondary" size="sm">
-              <Pencil2Icon className="mr-1 h-4 w-4" />
-              <span>Edit</span>
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="h-8 w-8 text-destructive"
-            >
-              <TrashIcon className="h-5 w-5" />
-              <span className="sr-only">Delete</span>
-            </Button>
-          </CardFooter>
-        </Card>
+        {posts.map((post) => (
+          <PostCard
+            key={post.id}
+            postId={post.id}
+            title={post.title}
+            status={post.status}
+            createdAt={post.createdAt.toJSON()}
+            excerpt={post.excerpt}
+          />
+        ))}
       </div>
     </div>
   );

@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import { generateId } from "lucia";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { stripe } from "@/lib/stripe";
 
 export const stripeRouter = createTRPCRouter({
   getSubscriptionPlan: protectedProcedure.query(async ({ ctx }) => {
@@ -33,11 +34,10 @@ export const stripeRouter = createTRPCRouter({
     // Check if user has canceled subscription
     let isCanceled = false;
     if (isPro && !!user.stripeSubscriptionId) {
-      const subscription = await ctx.stripe.subscriptions.retrieve(
+      const stripePlan = await stripe.subscriptions.retrieve(
         user.stripeSubscriptionId,
       );
-
-      isCanceled = subscription.status === "canceled";
+      isCanceled = stripePlan.cancel_at_period_end;
     }
 
     return {

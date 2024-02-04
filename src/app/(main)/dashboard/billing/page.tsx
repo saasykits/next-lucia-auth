@@ -18,6 +18,7 @@ import { env } from "@/env";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { api } from "@/trpc/server";
 import { ManageSubscriptionForm } from "./_components/manage-subscription-form";
+import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -54,9 +55,7 @@ export default async function BillingPage() {
                 ? "Your plan will be canceled on "
                 : "Your plan renews on "}
             {subscriptionPlan?.stripeCurrentPeriodEnd
-              ? `${new Date(
-                  subscriptionPlan.stripeCurrentPeriodEnd,
-                ).toLocaleDateString("en-US")}`
+              ? formatDate(subscriptionPlan.stripeCurrentPeriodEnd)
               : null}
           </p>
         </Card>

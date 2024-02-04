@@ -5,10 +5,9 @@
 import { z } from "zod";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { generateId } from "lucia";
+import { generateId, Scrypt } from "lucia";
 import { isWithinExpirationDate, TimeSpan, createDate } from "oslo";
 import { generateRandomString, alphabet } from "oslo/crypto";
-import { Argon2id } from "oslo/password";
 import { eq } from "drizzle-orm";
 import { lucia } from "@/lib/auth";
 import { db } from "@/server/db";
@@ -71,7 +70,7 @@ export async function login(
     };
   }
 
-  const validPassword = await new Argon2id().verify(
+  const validPassword = await new Scrypt().verify(
     existingUser.hashedPassword,
     password,
   );
@@ -122,7 +121,7 @@ export async function signup(
   }
 
   const userId = generateId(21);
-  const hashedPassword = await new Argon2id().hash(password);
+  const hashedPassword = await new Scrypt().hash(password);
   await db.insert(users).values({
     id: userId,
     email,
@@ -309,7 +308,7 @@ export async function resetPassword(
     return { error: "Password reset link expired." };
 
   await lucia.invalidateUserSessions(dbToken.userId);
-  const hashedPassword = await new Argon2id().hash(password);
+  const hashedPassword = await new Scrypt().hash(password);
   await db
     .update(users)
     .set({ hashedPassword })

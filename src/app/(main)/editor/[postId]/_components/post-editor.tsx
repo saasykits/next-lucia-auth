@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PostPreview } from "./post-preview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/trpc/react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 
 interface Props {
@@ -35,7 +35,7 @@ const schema = z.object({
 
 export const PostEditor = ({ post }: Props) => {
   if (!post) return null;
-
+  const formRef = useRef<HTMLFormElement>(null);
   const updatePost = api.post.update.useMutation();
 
   const form = useForm({
@@ -46,18 +46,18 @@ export const PostEditor = ({ post }: Props) => {
     },
     resolver: zodResolver(schema),
   });
-  const { title, excerpt, content } = useDebounce(form.watch(), 1000);
-
-  useEffect(() => {
-    if (title && excerpt && content) {
-      updatePost.mutate({ id: post.id, title, excerpt, content });
-    }
-  }, [title, excerpt, content]);
+  const onSubmit = form.handleSubmit(async (values) => {
+    updatePost.mutate({ id: post.id, ...values });
+  });
 
   return (
     <div>
       <Form {...form}>
-        <form className="block max-w-screen-md space-y-4">
+        <form
+          ref={formRef}
+          onSubmit={onSubmit}
+          className="block max-w-screen-md space-y-4"
+        >
           <FormField
             control={form.control}
             name="title"

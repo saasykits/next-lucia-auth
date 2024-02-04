@@ -15,7 +15,6 @@ const MainLayout = async ({ children }: { children: ReactNode }) => {
     <>
       <Header user={user} />
       {children}
-      <div className="h-20"></div>
       <Footer />
     </>
   );

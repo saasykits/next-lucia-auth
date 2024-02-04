@@ -69,11 +69,15 @@ export default async function BillingPage() {
                 {plan.description}
               </CardDescription>
             </CardHeader>
-            <CardContent className="h-full flex-1 place-items-start space-y-2 text-sm text-muted-foreground">
+            <CardContent className="h-full flex-1 place-items-start space-y-2">
               {plan.features.map((feature) => (
                 <div key={feature} className="flex items-center gap-2">
-                  <CheckIcon className="size-4" aria-hidden="true" />
-                  <span>{feature}</span>
+                  <div className="aspect-square shrink-0 rounded-full bg-foreground p-px text-background">
+                    <CheckIcon className="size-4" aria-hidden="true" />
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {feature}
+                  </span>
                 </div>
               ))}
             </CardContent>

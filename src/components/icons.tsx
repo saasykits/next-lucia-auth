@@ -107,4 +107,5 @@ export {
   IdCardIcon,
   PlusCircledIcon,
   FilePlusIcon,
+  CheckIcon,
 } from "@radix-ui/react-icons";

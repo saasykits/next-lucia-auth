@@ -1,20 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Pencil2Icon, TrashIcon } from "@/components/icons";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { NewPost } from "./_components/new-post";
 import { api } from "@/trpc/server";
 import { PostCard } from "./_components/post-card";
 import { z } from "zod";
 import { type Metadata } from "next";
 import { env } from "@/env";
-import { revalidatePath } from "next/cache";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -40,7 +29,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   ]);
 
   return (
-    <div>
+    <div className="py-10 md:py-8">
       <div className="mb-6">
         <h1 className="text-3xl font-bold md:text-4xl">Posts</h1>
         <p className="text-sm text-muted-foreground">Manage your posts here</p>

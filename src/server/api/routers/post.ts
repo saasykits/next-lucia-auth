@@ -1,8 +1,8 @@
-import { z } from "zod";
-import { generateId } from "lucia";
-import { eq } from "drizzle-orm";
 import { posts } from "@/server/db/schema";
-import { protectedProcedure, createTRPCRouter } from "../trpc";
+import { eq } from "drizzle-orm";
+import { generateId } from "lucia";
+import { z } from "zod";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
   list: protectedProcedure
@@ -45,6 +45,7 @@ export const postRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const id = generateId(15);
+
       await ctx.db.insert(posts).values({
         id,
         userId: ctx.user.id,
@@ -52,6 +53,7 @@ export const postRouter = createTRPCRouter({
         excerpt: input.excerpt,
         content: input.content,
       });
+
       return { id };
     }),
 
@@ -73,6 +75,16 @@ export const postRouter = createTRPCRouter({
           content: input.content,
         })
         .where(eq(posts.id, input.id));
+    }),
+
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.delete(posts).where(eq(posts.id, input.id));
     }),
 
   myPosts: protectedProcedure

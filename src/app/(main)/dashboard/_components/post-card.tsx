@@ -1,17 +1,21 @@
 "use client";
-import React from "react";
+
+import { Pencil2Icon, TrashIcon } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardTitle,
-  CardHeader,
   CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Pencil2Icon, TrashIcon } from "@/components/icons";
-import { Badge, badgeVariants } from "@/components/ui/badge";
+import { api } from "@/trpc/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { toast } from "sonner";
 
 interface Props {
   postId: string;
@@ -30,6 +34,10 @@ export const PostCard = ({
   createdAt,
   userName,
 }: Props) => {
+  const router = useRouter();
+  const postMutation = api.post.delete.useMutation();
+  const [isDeletePending, startDeleteTransition] = React.useTransition();
+
   return (
     <Card>
       <CardHeader>
@@ -54,6 +62,18 @@ export const PostCard = ({
           variant="secondary"
           size="icon"
           className="h-8 w-8 text-destructive"
+          onClick={() => {
+            startDeleteTransition(async () => {
+              try {
+                await postMutation.mutateAsync({ id: postId });
+                toast.success("Post deleted");
+                router.refresh();
+              } catch (err) {
+                toast.error("Failed to delete post");
+              }
+            });
+          }}
+          disabled={isDeletePending}
         >
           <TrashIcon className="h-5 w-5" />
           <span className="sr-only">Delete</span>

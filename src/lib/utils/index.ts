@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -24,3 +25,7 @@ export const getExceptionType = (error: unknown) => {
 
   return UnknownException;
 };
+
+export function absoluteUrl(path: string) {
+  return `${env.NEXT_PUBLIC_APP_URL}${path}`;
+}

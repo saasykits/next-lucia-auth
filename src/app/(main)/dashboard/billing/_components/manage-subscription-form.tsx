@@ -46,7 +46,7 @@ export function ManageSubscriptionForm({
   return (
     <form className="w-full" onSubmit={onSubmit}>
       <Button className="w-full" disabled={isPending}>
-        {isPro ? "Manage plan" : "Subscribe now"}
+        {isPending ? "Loading..." : isPro ? "Manage plan" : "Subscribe now"}
       </Button>
     </form>
   );

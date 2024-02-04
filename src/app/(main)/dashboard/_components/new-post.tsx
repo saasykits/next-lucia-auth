@@ -17,19 +17,16 @@ export const NewPost = () => {
       content: "Write your content here",
       excerpt: "untitled post",
     });
-    toast.promise(promise, {
-      loading: "Creating post...",
-      success: "Post created",
-      error: "Failed to create post",
-    });
-
-    promise
-      .then(({ id }) => {
+    toast.promise(
+      promise.then(({ id }) => {
         router.push("/editor/" + id);
-      })
-      .catch(() => {
-        // noop
-      });
+      }),
+      {
+        loading: "Creating post...",
+        success: "Post created",
+        error: "Failed to create post",
+      },
+    );
   };
 
   return (

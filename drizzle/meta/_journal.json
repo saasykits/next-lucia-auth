@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1707040027391,
+      "tag": "0000_lovely_vivisector",
+      "breakpoints": true
+    }
+  ]
+}

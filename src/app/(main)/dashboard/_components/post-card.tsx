@@ -42,7 +42,6 @@ export const PostCard = ({
           })}
         </CardDescription>
       </CardHeader>
-
       <CardContent className="line-clamp-3 text-sm">{excerpt}</CardContent>
       <CardFooter className="flex-row-reverse gap-2">
         <Button variant="secondary" size="sm" asChild>

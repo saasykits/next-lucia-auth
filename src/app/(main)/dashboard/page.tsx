@@ -11,18 +11,20 @@ import {
 import { NewPost } from "./_components/new-post";
 import { api } from "@/trpc/server";
 import { PostCard } from "./_components/post-card";
+import { z } from "zod";
 
 interface Props {
-  searchParams: {
-    page?: string | string[];
-  };
+  searchParams: Record<string, string | string[] | undefined>;
 }
 
+const schmea = z.object({
+  page: z.coerce.number().default(1).optional(),
+});
+
 export default async function DashboardPage({ searchParams }: Props) {
-  const page = parseInt(
-    typeof searchParams.page === "string" ? searchParams.page : "1",
-  );
-  const posts = await api.post.myPosts.query({ page: page ?? 1 });
+  const { page } = schmea.parse(searchParams);
+
+  const posts = await api.post.myPosts.query({ page });
 
   return (
     <div>

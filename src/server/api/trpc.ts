@@ -6,12 +6,13 @@
  * TL;DR - This is where all the tRPC server stuff is created and plugged in. The pieces you will
  * need to use are documented accordingly near the end.
  */
- 
+
+import { uncachedValidateRequest } from "@/lib/auth/validate-request";
+import { stripe } from "@/lib/stripe";
+import { db } from "@/server/db";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { db } from "@/server/db";
-import { uncachedValidateRequest } from "@/lib/auth/validate-request";
 
 /**
  * 1. CONTEXT
@@ -32,6 +33,7 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     user,
     db,
     headers: opts.headers,
+    stripe: stripe,
   };
 };
 
@@ -79,7 +81,6 @@ export const createTRPCRouter = t.router;
  */
 export const publicProcedure = t.procedure;
 
- 
 /**
  * Protected (authenticated) procedure
  *

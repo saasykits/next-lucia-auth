@@ -1,46 +1,63 @@
 "use client";
 
-import React from "react";
 import { FilePlusIcon } from "@/components/icons";
-import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+interface NewPostProps {
+  isEligible: boolean;
+}
 
-export const NewPost = () => {
+import * as React from "react";
+
+export const NewPost = ({ isEligible }: NewPostProps) => {
   const router = useRouter();
   const post = api.post.create.useMutation();
+  const [isCreatePending, startCreateTransaction] = React.useTransition();
 
   const createPost = () => {
-    const promise = post.mutateAsync({
-      title: "Untitled Post",
-      content: "Write your content here",
-      excerpt: "untitled post",
-    });
-    toast.promise(promise, {
-      loading: "Creating post...",
-      success: "Post created",
-      error: "Failed to create post",
-    });
-
-    promise
-      .then(({ id }) => {
-        router.push("/editor/" + id);
-      })
-      .catch(() => {
-        // noop
+    if (!isEligible) {
+      toast.message("You've reached the limit of posts for your current plan", {
+        description: "Upgrade to create more posts",
       });
+      return;
+    }
+
+    startCreateTransaction(async () => {
+      await post.mutateAsync(
+        {
+          title: "Untitled Post",
+          content: "Write your content here",
+          excerpt: "untitled post",
+        },
+        {
+          onSuccess: ({ id }) => {
+            toast.success("Post created");
+            router.refresh();
+            // This is a workaround for a bug in navigation because of router.refresh()
+            setTimeout(() => {
+              router.push(`/editor/${id}`);
+            }, 100);
+          },
+          onError: () => {
+            toast.error("Failed to create post");
+          },
+        },
+      );
+    });
   };
 
   return (
-    <Card
+    <Button
       onClick={createPost}
-      className="flex cursor-pointer items-center justify-center bg-card p-6 text-muted-foreground transition-colors hover:bg-secondary/10 dark:border-none dark:bg-secondary/30 dark:hover:bg-secondary/50"
+      className="flex h-full cursor-pointer items-center justify-center bg-card p-6 text-muted-foreground transition-colors hover:bg-secondary/10 dark:border-none dark:bg-secondary/30 dark:hover:bg-secondary/50"
+      disabled={isCreatePending}
     >
       <div className="flex flex-col items-center gap-4">
         <FilePlusIcon className="h-10 w-10" />
         <p className="text-sm">New Post</p>
       </div>
-    </Card>
+    </Button>
   );
 };

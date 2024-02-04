@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { CheckIcon } from "@radix-ui/react-icons";
+import { CheckIcon, ExclamationTriangleIcon } from "@/components/icons";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +19,8 @@ import { validateRequest } from "@/lib/auth/validate-request";
 import { api } from "@/trpc/server";
 import { ManageSubscriptionForm } from "./_components/manage-subscription-form";
 import { formatDate } from "@/lib/utils";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { APP_TITLE } from "@/lib/constants";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -43,6 +45,27 @@ export default async function BillingPage() {
           Manage your billing and subscription
         </p>
       </div>
+      {
+        <section>
+          <Alert className="!pl-10">
+            <ExclamationTriangleIcon className="h-6 w-6" />
+            <AlertTitle>This is a demo app.</AlertTitle>
+            <AlertDescription>
+              {APP_TITLE} app is a demo app using a Stripe test environment. You
+              can find a list of test card numbers on the{" "}
+              <a
+                href="https://stripe.com/docs/testing#cards"
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium underline underline-offset-4"
+              >
+                Stripe docs
+              </a>
+              .
+            </AlertDescription>
+          </Alert>
+        </section>
+      }
       <section>
         <Card className="space-y-2 p-6">
           <h3 className="text-lg font-semibold sm:text-xl">

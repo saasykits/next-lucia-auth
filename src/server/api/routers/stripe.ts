@@ -10,44 +10,49 @@ import { stripe } from "@/lib/stripe";
 
 export const stripeRouter = createTRPCRouter({
   getSubscriptionPlan: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.db.query.users.findFirst({
-      where: (table, { eq }) => eq(table.id, ctx.user.id),
-      columns: {
-        stripePriceId: true,
-        stripeCurrentPeriodEnd: true,
-        stripeSubscriptionId: true,
-        stripeCustomerId: true,
-      },
-    });
+    try {
+      const user = await ctx.db.query.users.findFirst({
+        where: (table, { eq }) => eq(table.id, ctx.user.id),
+        columns: {
+          stripePriceId: true,
+          stripeCurrentPeriodEnd: true,
+          stripeSubscriptionId: true,
+          stripeCustomerId: true,
+        },
+      });
 
-    if (!user) {
-      throw new Error("User not found.");
+      if (!user) {
+        throw new Error("User not found.");
+      }
+
+      // Check if user is on a pro plan
+      const isPro =
+        !!user.stripePriceId &&
+        (user.stripeCurrentPeriodEnd?.getTime() ?? 0) + 86_400_000 > Date.now();
+
+      const plan = isPro ? subscriptionPlans[1] : subscriptionPlans[0];
+
+      // Check if user has canceled subscription
+      let isCanceled = false;
+      if (isPro && !!user.stripeSubscriptionId) {
+        const stripePlan = await stripe.subscriptions.retrieve(
+          user.stripeSubscriptionId,
+        );
+        isCanceled = stripePlan.cancel_at_period_end;
+      }
+
+      return {
+        ...plan,
+        stripeSubscriptionId: user.stripeSubscriptionId,
+        stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd,
+        stripeCustomerId: user.stripeCustomerId,
+        isPro,
+        isCanceled,
+      };
+    } catch (err) {
+      console.error(err);
+      return null;
     }
-
-    // Check if user is on a pro plan
-    const isPro =
-      !!user.stripePriceId &&
-      (user.stripeCurrentPeriodEnd?.getTime() ?? 0) + 86_400_000 > Date.now();
-
-    const plan = isPro ? subscriptionPlans[1] : subscriptionPlans[0];
-
-    // Check if user has canceled subscription
-    let isCanceled = false;
-    if (isPro && !!user.stripeSubscriptionId) {
-      const stripePlan = await stripe.subscriptions.retrieve(
-        user.stripeSubscriptionId,
-      );
-      isCanceled = stripePlan.cancel_at_period_end;
-    }
-
-    return {
-      ...plan,
-      stripeSubscriptionId: user.stripeSubscriptionId,
-      stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd,
-      stripeCustomerId: user.stripeCustomerId,
-      isPro,
-      isCanceled,
-    };
   }),
   manageSubscription: protectedProcedure
     .input(manageSubscriptionSchema)

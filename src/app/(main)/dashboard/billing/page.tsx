@@ -69,7 +69,7 @@ export default async function BillingPage() {
       <section>
         <Card className="space-y-2 p-6">
           <h3 className="text-lg font-semibold sm:text-xl">
-            {subscriptionPlan.name ?? "Free"} plan
+            {subscriptionPlan?.name ?? "Free"} plan
           </h3>
           <p className="text-sm text-muted-foreground">
             {!subscriptionPlan?.isPro
@@ -114,7 +114,7 @@ export default async function BillingPage() {
                 </Button>
               ) : (
                 <ManageSubscriptionForm
-                  isPro={subscriptionPlan.isPro}
+                  isPro={subscriptionPlan?.isPro ?? false}
                   stripePriceId={plan.stripePriceId}
                   stripeCustomerId={subscriptionPlan?.stripeCustomerId}
                   stripeSubscriptionId={subscriptionPlan?.stripeSubscriptionId}

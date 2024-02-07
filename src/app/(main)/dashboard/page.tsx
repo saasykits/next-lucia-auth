@@ -35,7 +35,7 @@ export default async function DashboardPage({ searchParams }: Props) {
         <p className="text-sm text-muted-foreground">Manage your posts here</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <NewPost isEligible={subscriptionPlan.isPro || posts.length < 3} />
+        <NewPost isEligible={subscriptionPlan?.isPro ?? posts.length < 3} />
         {posts.map((post) => (
           <PostCard
             key={post.id}

@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { FilePlusIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
@@ -8,8 +9,6 @@ import { toast } from "sonner";
 interface NewPostProps {
   isEligible: boolean;
 }
-
-import * as React from "react";
 
 export const NewPost = ({ isEligible }: NewPostProps) => {
   const router = useRouter();
@@ -38,7 +37,7 @@ export const NewPost = ({ isEligible }: NewPostProps) => {
             // This is a workaround for a bug in navigation because of router.refresh()
             setTimeout(() => {
               router.push(`/editor/${id}`);
-            }, 100);
+            }, 160);
           },
           onError: () => {
             toast.error("Failed to create post");

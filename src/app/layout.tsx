@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: `%s | ${APP_TITLE}`,
   },
   description: "Acme - Simple auth with lucia and trpc",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/icon.png" }],
 };
 
 export const viewport: Viewport = {
@@ -28,6 +28,7 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
 };
+
 export default function RootLayout({
   children,
 }: {

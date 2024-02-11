@@ -1,16 +1,21 @@
 "use client";
 
-import * as React from "react";
 import { FilePlusIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
+import { type RouterOutputs } from "@/trpc/shared";
 import { useRouter } from "next/navigation";
+import * as React from "react";
 import { toast } from "sonner";
 interface NewPostProps {
   isEligible: boolean;
+  setOptimisticPosts: (action: {
+    action: "add" | "delete" | "update";
+    post: RouterOutputs["post"]["myPosts"][number];
+  }) => void;
 }
 
-export const NewPost = ({ isEligible }: NewPostProps) => {
+export const NewPost = ({ isEligible, setOptimisticPosts }: NewPostProps) => {
   const router = useRouter();
   const post = api.post.create.useMutation();
   const [isCreatePending, startCreateTransaction] = React.useTransition();
@@ -31,13 +36,25 @@ export const NewPost = ({ isEligible }: NewPostProps) => {
           excerpt: "untitled post",
         },
         {
+          onSettled: () => {
+            setOptimisticPosts({
+              action: "add",
+              post: {
+                id: crypto.randomUUID(),
+                title: "Untitled Post",
+                excerpt: "untitled post",
+                status: "draft",
+                createdAt: new Date(),
+              },
+            });
+          },
           onSuccess: ({ id }) => {
             toast.success("Post created");
             router.refresh();
             // This is a workaround for a bug in navigation because of router.refresh()
             setTimeout(() => {
               router.push(`/editor/${id}`);
-            }, 160);
+            }, 100);
           },
           onError: () => {
             toast.error("Failed to create post");

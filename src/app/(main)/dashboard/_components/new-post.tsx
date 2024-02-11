@@ -36,7 +36,7 @@ export const NewPost = ({ isEligible, setOptimisticPosts }: NewPostProps) => {
           excerpt: "untitled post",
         },
         {
-          onSuccess: ({ id }) => {
+          onSettled: () => {
             setOptimisticPosts({
               action: "add",
               post: {
@@ -47,7 +47,8 @@ export const NewPost = ({ isEligible, setOptimisticPosts }: NewPostProps) => {
                 createdAt: new Date(),
               },
             });
-
+          },
+          onSuccess: ({ id }) => {
             toast.success("Post created");
             router.refresh();
             // This is a workaround for a bug in navigation because of router.refresh()

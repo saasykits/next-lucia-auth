@@ -65,12 +65,13 @@ export const PostCard = ({
               await postMutation.mutateAsync(
                 { id: post.id },
                 {
-                  onSuccess: () => {
+                  onSettled: () => {
                     setOptimisticPosts({
                       action: "delete",
                       post,
                     });
-
+                  },
+                  onSuccess: () => {
                     toast.success("Post deleted");
                     router.refresh();
                   },

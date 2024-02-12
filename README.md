@@ -15,6 +15,7 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 - **Email Verification:** 📧 Verify user identities through email.
 - **Password Reset:** 🔑 Streamline password resets by sending email password reset links.
 - **Lucia + tRPC:** 🔄 Similar to NextAuth with tRPC, granting access to sessions and user information through tRPC procedures.
+- **Stripe Payment:** 💳 Setup user subscriptions seamlessly with stripe.
 - **Email template with react-email:** ✉️ Craft your email templates using React.
 - **MySQL Database:** 🛢️ Utilize a MySQL database (Planetscale) set up using Drizzle for enhanced performance and type safety.
 - **Database Migration:** 🚀 Included migration script to extend the database schema according to your project needs.
@@ -26,6 +27,7 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 - [tRPC](https://trpc.io)
 - [Drizzle ORM](https://orm.drizzle.team/)
 - [Planetscale](https://planetscale.com/)
+- [Stripe](https://stripe.com/)
 - [Tailwind CSS](https://tailwindcss.com)
 - [Shadcn UI](https://ui.shadcn.com/)
 - [React Hook Form](https://www.react-hook-form.com/)
@@ -43,7 +45,7 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 ## Roadmap
 
 - [ ] Update Password
-- [ ] Stripe Integration
+- [x] Stripe Integration
 - [ ] API Rate-Limiting
 - [ ] Admin Dashboard (under consideration)
 - [ ] Role-Based Access Policy (under consideration)

@@ -43,9 +43,9 @@ jobs:
 
       - name: merge to main
         run: |
-          git 
+          git fetch origin main
           git checkout main
-          git merge --no-ff dev
+          git merge --no-ff ${{ github.event.before }}
           git push origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

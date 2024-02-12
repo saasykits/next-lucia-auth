@@ -43,11 +43,6 @@ const features = [
     logo: ReactJs,
   },
   {
-    name: "TypeSafe Backend",
-    description: "Preserve type safety from backend to frontend with tRPC",
-    logo: TRPC,
-  },
-  {
     name: "Authentication",
     description:
       "Credential authentication with password reset and email validation",
@@ -57,6 +52,11 @@ const features = [
     name: "Database",
     description: "Drizzle with planetscale mysql database",
     logo: Drizzle,
+  },
+  {
+    name: "TypeSafe Backend",
+    description: "Preserve type safety from backend to frontend with tRPC",
+    logo: TRPC,
   },
   {
     name: "Subscription",

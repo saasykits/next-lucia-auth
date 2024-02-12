@@ -12,6 +12,9 @@ import {
   ReactJs,
   ShadcnUi,
   TRPC,
+  TailwindCss,
+  StripeLogo,
+  ReactEmail,
 } from "./_components/feature-icons";
 import {
   Card,
@@ -56,9 +59,24 @@ const features = [
     logo: Drizzle,
   },
   {
-    name: "Shadcn UI",
+    name: "Subscription",
+    description: "Subscription with stripe",
+    logo: StripeLogo,
+  },
+  {
+    name: "Tailwindcss",
     description: "Simple and elegant UI components built with Tailwind CSS",
+    logo: TailwindCss,
+  },
+  {
+    name: "Shadcn UI",
+    description: "A set of beautifully designed UI components for React",
     logo: ShadcnUi,
+  },
+  {
+    name: "React Email",
+    description: "Write emails in React with ease.",
+    logo: ReactEmail,
   },
 ];
 
@@ -76,8 +94,8 @@ const HomePage = () => {
             Next.js Lucia Auth Starter Template
           </h1>
           <p className="text-balance mb-10 mt-4 text-center text-muted-foreground md:text-lg lg:text-xl">
-            A Next.js starter template with Authentication (with password reset
-            and email validation). Includes Lucia auth, Drizzle, tRPC,
+            A Next.js Authentication starter template (password reset, email
+            validation and oAuth). Includes Lucia, Drizzle, tRPC, Stripe,
             tailwindcss, shadcn-ui and react-email.
           </p>
           <div className="mb-10">

@@ -27,7 +27,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Type check and lint
-        run: pnpm run lint && pnpm run lint
+        run: pnpm run typecheck && pnpm run lint
         env:
           # use dummy env variables to bypass t3-env check
           DATABASE_URL: mysql://test:xxxx@xxxxxxxxx:3306/test

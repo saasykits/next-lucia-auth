@@ -1,0 +1,25 @@
+name: Create PR from dev to main
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Type check and lint
+        run: pnpm run lint && pnpm run lint
+
+      - name: create pull request
+        run: gh pr create -B main -H dev --title 'Actions:\ Merge `dev` into `main`' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

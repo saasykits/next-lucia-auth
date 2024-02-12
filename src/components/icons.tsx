@@ -111,4 +111,5 @@ export {
   ChevronLeftIcon,
   ChevronRightIcon,
   DotsHorizontalIcon,
+  ArrowLeftIcon,
 } from "@radix-ui/react-icons";

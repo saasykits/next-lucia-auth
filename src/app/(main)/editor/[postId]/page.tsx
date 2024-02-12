@@ -2,9 +2,7 @@ import React from "react";
 import { api } from "@/trpc/server";
 import { notFound } from "next/navigation";
 import { PostEditor } from "./_components/post-editor";
-import { Button } from "@/components/ui/button";
-import { Pencil2Icon } from "@/components/icons";
-import { ArrowLeftIcon, ChevronLeftIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon } from "@/components/icons";
 import Link from "next/link";
 
 interface Props {
@@ -26,13 +24,7 @@ export default async function EditPostPage({ params }: Props) {
       >
         <ArrowLeftIcon className="h-5 w-5" /> back to dashboard
       </Link>
-      <div className="flex items-center gap-2">
-        <Pencil2Icon className="h-5 w-5" />
-        <h1 className="text-2xl font-bold">{post.title}</h1>
 
-        <Button className="ml-auto">Publish</Button>
-      </div>
-      <div className="h-6"></div>
       <PostEditor post={post} />
     </main>
   );

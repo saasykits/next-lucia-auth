@@ -309,7 +309,7 @@ const ReactEmail = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
       xmlns="http://www.w3.org/2000/svg"
       className={cn(className)}
     >
-      <g clip-path="url(#clip0_27_291)">
+      <g clipPath="url(#clip0_27_291)">
         <path
           fill-rule="evenodd"
           clip-rule="evenodd"

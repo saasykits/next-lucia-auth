@@ -42,7 +42,9 @@ export const Posts = ({ posts, subscriptionPlan }: PostsProps) => {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <NewPost
-        isEligible={subscriptionPlan?.isPro ?? optimisticPosts.length < 3}
+        isEligible={
+          (optimisticPosts.length < 3 || subscriptionPlan?.isPro) ?? false
+        }
         setOptimisticPosts={setOptimisticPosts}
       />
       {optimisticPosts.map((post) => (

@@ -108,4 +108,7 @@ export {
   PlusCircledIcon,
   FilePlusIcon,
   CheckIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DotsHorizontalIcon,
 } from "@radix-ui/react-icons";

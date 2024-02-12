@@ -1,15 +1,12 @@
-name: Merge dev to main
+name: Type check and lint
 
-on:
-  push:
-    branches:
-      - dev
+on: [push, pull_request]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  lint-and-merge:
+  typecheck-and-lint:
     runs-on: ubuntu-latest
 
     steps:
@@ -40,12 +37,3 @@ jobs:
           STRIPE_API_KEY: stripe_api_key
           STRIPE_WEBHOOK_SECRET: stripe_webhook_secret
           STRIPE_PRO_MONTHLY_PLAN_ID: stripe_pro_monthly_plan_id
-
-      - name: merge to main
-        run: |
-          git 
-          git checkout main
-          git merge --no-ff dev
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

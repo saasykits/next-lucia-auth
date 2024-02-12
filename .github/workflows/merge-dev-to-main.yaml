@@ -1,4 +1,4 @@
-name: Create PR from dev to main
+name: Merge dev to main
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  build-and-lint:
+  lint-and-merge:
     runs-on: ubuntu-latest
 
     steps:
@@ -42,7 +42,10 @@ jobs:
           STRIPE_WEBHOOK_SECRET: stripe_webhook_secret
           STRIPE_PRO_MONTHLY_PLAN_ID: stripe_pro_monthly_plan_id
 
-      - name: create pull request
-        run: gh pr create -B main -H dev --title 'Actions:\ Merge `dev` into `main`' --body 'Created by Github action'
+      - name: merge to main
+        run: |
+          git checkout main
+          git merge --no-ff dev
+          git push -u origin main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -43,6 +43,7 @@ jobs:
 
       - name: merge to main
         run: |
+          git 
           git checkout main
           git merge --no-ff ${{ github.event.before }}
           git push origin main

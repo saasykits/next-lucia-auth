@@ -1,11 +1,42 @@
-import { subscriptionPlans } from "@/config/subscriptions";
-import { absoluteUrl } from "@/lib/utils";
+import { freePlan, proPlan, subscriptionPlans } from "@/config/subscriptions";
+import { stripe } from "@/lib/stripe";
+import { absoluteUrl, formatPrice } from "@/lib/utils";
 import { manageSubscriptionSchema } from "@/lib/validators/stripe";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { stripe } from "@/lib/stripe";
 
 export const stripeRouter = createTRPCRouter({
-  getSubscriptionPlan: protectedProcedure.query(async ({ ctx }) => {
+  getPlans: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const user = await ctx.db.query.users.findFirst({
+        where: (table, { eq }) => eq(table.id, ctx.user.id),
+        columns: {
+          id: true,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User not found.");
+      }
+
+      const proPrice = await stripe.prices.retrieve(proPlan.stripePriceId);
+
+      return subscriptionPlans.map((plan) => {
+        return {
+          ...plan,
+          price:
+            plan.stripePriceId === proPlan.stripePriceId
+              ? formatPrice((proPrice.unit_amount ?? 0) / 100, {
+                  currency: proPrice.currency,
+                })
+              : formatPrice(0 / 100, { currency: proPrice.currency }),
+        };
+      });
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  }),
+  getPlan: protectedProcedure.query(async ({ ctx }) => {
     try {
       const user = await ctx.db.query.users.findFirst({
         where: (table, { eq }) => eq(table.id, ctx.user.id),
@@ -26,7 +57,7 @@ export const stripeRouter = createTRPCRouter({
         !!user.stripePriceId &&
         (user.stripeCurrentPeriodEnd?.getTime() ?? 0) + 86_400_000 > Date.now();
 
-      const plan = isPro ? subscriptionPlans[1] : subscriptionPlans[0];
+      const plan = isPro ? proPlan : freePlan;
 
       // Check if user has canceled subscription
       let isCanceled = false;
@@ -50,7 +81,7 @@ export const stripeRouter = createTRPCRouter({
       return null;
     }
   }),
-  manageSubscription: protectedProcedure
+  managePlan: protectedProcedure
     .input(manageSubscriptionSchema)
     .mutation(async ({ ctx, input }) => {
       const billingUrl = absoluteUrl("/dashboard/billing");

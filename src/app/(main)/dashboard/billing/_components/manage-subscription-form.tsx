@@ -17,15 +17,14 @@ export function ManageSubscriptionForm({
   stripePriceId,
 }: ManageSubscriptionFormProps) {
   const [isPending, startTransition] = React.useTransition();
-  const manageSubscriptionMutation =
-    api.stripe.manageSubscription.useMutation();
+  const managePlanMutation = api.stripe.managePlan.useMutation();
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     startTransition(async () => {
       try {
-        const session = await manageSubscriptionMutation.mutateAsync({
+        const session = await managePlanMutation.mutateAsync({
           isPro,
           stripeCustomerId,
           stripeSubscriptionId,

@@ -86,7 +86,7 @@
     "initVersion": "7.24.2"
   },
   "engines": {
-    "node": ">=20"
+    "node": "18.x.x"
   },
   "packageManager": "pnpm@8.11.0"
 }

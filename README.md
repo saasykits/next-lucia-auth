@@ -38,9 +38,10 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 1. Clone this repository to your local machine.
 2. Copy `.env.example` to `.env` and fill in the required environment variables.
 3. Run `pnpm install` to install dependencies.
-4. Update app title, database prefix, and other parameters in the `src/lib/constants.ts` file.
-5. Run `pnpm db:push` to push your schema to the database.
-6. Execute `pnpm dev` to start the development server and enjoy!
+4. `(for node v18 or lower):` Uncomment polyfills for `webCrypto` in `src/lib/auth/index.ts`
+5. Update app title, database prefix, and other parameters in the `src/lib/constants.ts` file.
+6. Run `pnpm db:push` to push your schema to the database.
+7. Execute `pnpm dev` to start the development server and enjoy!
 
 ## Roadmap
 

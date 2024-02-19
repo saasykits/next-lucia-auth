@@ -15,7 +15,7 @@ export const metadata = {
   description: "Verify Email Page",
 };
 
-export default async function ForgotPasswordPage() {
+export default async function VerifyEmailPage() {
   const { user } = await validateRequest();
 
   if (!user) redirect(redirects.toLogin);

@@ -1,6 +1,6 @@
 'use client';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import React, { type SVGProps, useRef, useState, FC, type ForwardRefExoticComponent, type RefAttributes } from 'react';
+import React, { useRef, useState } from 'react';
 
 
 

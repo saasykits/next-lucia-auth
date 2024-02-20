@@ -1,3 +1,5 @@
+import { mysqlTableCreator } from "drizzle-orm/mysql-core";
+import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 import {
   boolean,
   datetime,
@@ -8,7 +10,8 @@ import {
   varchar,
 } from "drizzle-orm/mysql-core";
 import { relations } from "drizzle-orm";
-import { mysqlTable } from "@/server/db/util";
+
+export const mysqlTable = mysqlTableCreator((name) => `${prefix}_${name}`);
 
 export const users = mysqlTable(
   "users",

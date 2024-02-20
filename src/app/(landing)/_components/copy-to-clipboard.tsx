@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { CopyIcon  , CheckIcon} from "@radix-ui/react-icons";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -28,7 +29,7 @@ export const CopyToClipboard = ({ text }: { text: string }) => {
         className="bg-secondary text-muted-foreground"
       />
       <Button size="icon" onClick={() => copyToClipboard()}>
-        {copied ? <CheckIcon className="h-5 w-5"/>: <CopyIcon className="h-5 w-5" />}
+        {copied ? <CheckIcon className={cn( copied ? "opacity-100": "opacity-0" , "h-5 w-5 transition-opacity duration-500" )}/>: <CopyIcon className="h-5 w-5" />}
       </Button>
     </div>
   );

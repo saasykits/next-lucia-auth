@@ -16,12 +16,7 @@ import {
   StripeLogo,
   ReactEmail,
 } from "./_components/feature-icons";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import CardSpotlight from "./_components/hover-card";
 
 export const metadata: Metadata = {
   title: "Next.js Lucia Auth Starter Template",
@@ -83,14 +78,14 @@ const features = [
 const HomePage = () => {
   return (
     <>
-      <section className="mx-auto grid min-h-[calc(100vh-80px)] items-center">
+      <section className="mx-auto grid min-h-[calc(100vh-300px)] max-w-5xl flex-col  justify-center gap-4 py-10 md:py-12 text-center  items-center">
         <div className="p-4">
           <div className="mb-10 flex items-center justify-center gap-3">
             <NextjsIcon className="h-[52px] w-[52px]" />
             <PlusIcon className="h-8 w-8" />
             <LuciaAuth className="h-14 w-14" />
           </div>
-          <h1 className="text-balance text-center text-3xl font-bold md:text-4xl lg:text-5xl">
+          <h1 className="text-balance text-center  bg-gradient-to-tr from-black/70 via-black to-black/60 dark:from-zinc-400/10 dark:via-white/90 dark:to-white/20 bg-clip-text text-transparent text-3xl font-bold  sm:text-5xl md:text-6xl lg:text-7xl">
             Next.js Lucia Auth Starter Template
           </h1>
           <p className="text-balance mb-10 mt-4 text-center text-muted-foreground md:text-lg lg:text-xl">
@@ -128,15 +123,7 @@ const HomePage = () => {
           </p>
           <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
             {features.map((feature) => (
-              <Card key={feature.name}>
-                <div className="pl-6 pt-6">
-                  <feature.logo className="h-12 w-12" />
-                </div>
-                <CardHeader className="pb-6">
-                  <CardTitle className="text-xl">{feature.name}</CardTitle>
-                  <CardDescription>{feature.description}</CardDescription>
-                </CardHeader>
-              </Card>
+              <CardSpotlight name={feature.name} description={feature.description} logo={<feature.logo className='w-12 h-12' />} />
             ))}
           </div>
         </div>

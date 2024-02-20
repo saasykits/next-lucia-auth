@@ -20,7 +20,6 @@ export const CopyToClipboard = ({ text }: { text: string }) => {
       icon: <CopyIcon className="h-4 w-4" />,
     });
   };
-
   return (
     <div className="flex justify-center gap-3">
       <Input

@@ -1,9 +1,11 @@
 import React from "react";
 import { api } from "@/trpc/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PostEditor } from "./_components/post-editor";
 import { ArrowLeftIcon } from "@/components/icons";
 import Link from "next/link";
+import { validateRequest } from "@/lib/auth/validate-request";
+import { redirects } from "@/lib/constants";
 
 interface Props {
   params: {
@@ -12,8 +14,10 @@ interface Props {
 }
 
 export default async function EditPostPage({ params }: Props) {
-  const post = await api.post.get.query(params.postId);
+  const { user } = await validateRequest();
+  if (!user) redirect(redirects.toLogin);
 
+  const post = await api.post.get.query(params.postId);
   if (!post) notFound();
 
   return (

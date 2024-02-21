@@ -104,7 +104,7 @@ const HomePage = () => {
               </a>
             </Button>
             <Button size="lg" asChild>
-              <Link href="/dashboard">Get Started</Link>
+              <Link href="/login">Get Started</Link>
             </Button>
           </div>
         </div>

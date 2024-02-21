@@ -18,12 +18,10 @@ export default async function BillingPage() {
   }
 
   return (
-    <div className="grid gap-8 py-10 md:py-8">
-      <div className="mb-4">
+    <div className="grid gap-8">
+      <div>
         <h1 className="text-3xl font-bold md:text-4xl">Settings</h1>
-        <p className="text-sm text-muted-foreground">
-          Manage your account settings
-        </p>
+        <p className="text-sm text-muted-foreground">Manage your account settings</p>
       </div>
       <p>Work in progress...</p>
     </div>

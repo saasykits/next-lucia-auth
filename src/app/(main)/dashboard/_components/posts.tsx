@@ -6,9 +6,7 @@ import { NewPost } from "./new-post";
 import { PostCard } from "./post-card";
 
 interface PostsProps {
-  promises: Promise<
-    [RouterOutputs["post"]["myPosts"], RouterOutputs["stripe"]["getPlan"]]
-  >;
+  promises: Promise<[RouterOutputs["post"]["myPosts"], RouterOutputs["stripe"]["getPlan"]]>;
 }
 
 export function Posts({ promises }: PostsProps) {
@@ -49,17 +47,11 @@ export function Posts({ promises }: PostsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <NewPost
-        isEligible={
-          (optimisticPosts.length < 3 || subscriptionPlan?.isPro) ?? false
-        }
+        isEligible={(optimisticPosts.length < 2 || subscriptionPlan?.isPro) ?? false}
         setOptimisticPosts={setOptimisticPosts}
       />
       {optimisticPosts.map((post) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          setOptimisticPosts={setOptimisticPosts}
-        />
+        <PostCard key={post.id} post={post} setOptimisticPosts={setOptimisticPosts} />
       ))}
     </div>
   );

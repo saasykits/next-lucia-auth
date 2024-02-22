@@ -37,3 +37,5 @@ jobs:
           STRIPE_API_KEY: stripe_api_key
           STRIPE_WEBHOOK_SECRET: stripe_webhook_secret
           STRIPE_PRO_MONTHLY_PLAN_ID: stripe_pro_monthly_plan_id
+          UPSTASH_REDIS_REST_URL: https://redis-rest-api.upstash.com
+          UPSTASH_REDIS_REST_TOKEN: upstash_redis_rest_token

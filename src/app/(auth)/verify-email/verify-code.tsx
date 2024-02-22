@@ -49,7 +49,7 @@ export const VerifyCode = () => {
         </SubmitButton>
       </form>
       <form action={logout}>
-        <SubmitButton variant="link" className="p-0 font-normal">
+        <SubmitButton variant="link" className="p-0 font-normal w-full">
           want to use another email? Log out now.
         </SubmitButton>
       </form>

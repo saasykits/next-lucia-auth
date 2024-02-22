@@ -4,6 +4,7 @@ import { z } from "zod";
 import { type RouterOutputs } from "@/trpc/shared";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import {
   Form,
   FormControl,
@@ -33,6 +34,8 @@ const schema = z.object({
     .min(3)
     .max(2048 * 2),
 });
+
+const markdownlink = "https://remarkjs.github.io/react-markdown/" // This can be changed out with something else like /markdown.
 
 export const PostEditor = ({ post }: Props) => {
   if (!post) return null;
@@ -116,7 +119,7 @@ export const PostEditor = ({ post }: Props) => {
                     <FormControl>
                       <Textarea {...field} className="min-h-[200px]" />
                     </FormControl>
-                    <FormDescription>Supports markdown</FormDescription>
+                    <FormDescription><Link href={`${markdownlink}`} className="mb-3 flex items-center gap-2 text-sm text-muted-foreground underline underline-offset-4">Supports markdown</Link></FormDescription>
                     <FormMessage />
                   </FormItem>
                 </TabsContent>
@@ -124,9 +127,14 @@ export const PostEditor = ({ post }: Props) => {
                   <div className="prose prose-sm min-h-[200px] max-w-[none] rounded-lg border px-3 py-2 dark:prose-invert">
                     <PostPreview text={form.watch("content") || post.content} />
                   </div>
-                  <p className="text-[0.8rem] text-muted-foreground">
-                    Supports markdown
-                  </p>
+                  <Link
+                    href={`${markdownlink}`}
+                    className="mb-3 flex items-center gap-2 text-sm text-muted-foreground underline underline-offset-4"
+                  >
+                    <span>
+                      Supports markdown
+                    </span>
+                  </Link>
                 </TabsContent>
               </Tabs>
             )}

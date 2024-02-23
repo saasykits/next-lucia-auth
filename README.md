@@ -47,10 +47,10 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 
 - [ ] Update Password
 - [x] Stripe Integration
-- [ ] API Rate-Limiting
+- [x] API Rate-Limiting see branch - [upstash-ratelimiting](https://github.com/iamtouha/next-lucia-auth/tree/upstash-ratelimiting)
 - [ ] Admin Dashboard (under consideration)
 - [ ] Role-Based Access Policy (under consideration)
 
 ## Contributing
 
-If you wish to contribute, fork the repository and use a feature branch. Pull requests are warmly welcome.
+To contribute, fork the repository and create a feature branch. Test your changes, and if possible, open an issue for discussion before submitting a pull request. Follow project guidelines, and welcome feedback to ensure a smooth integration of your contributions. Your pull requests are warmly welcome.

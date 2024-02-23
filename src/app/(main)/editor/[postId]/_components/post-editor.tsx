@@ -20,6 +20,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { api } from "@/trpc/react";
 import { Pencil2Icon } from "@/components/icons";
 import { LoadingButton } from "@/components/loading-button";
+import Link from "next/link";
+
+const markdownlink = "https://remarkjs.github.io/react-markdown/" // Can also be changed for something like /markdown
 
 interface Props {
   post: RouterOutputs["post"]["get"];
@@ -116,7 +119,6 @@ export const PostEditor = ({ post }: Props) => {
                     <FormControl>
                       <Textarea {...field} className="min-h-[200px]" />
                     </FormControl>
-                    <FormDescription>Supports markdown</FormDescription>
                     <FormMessage />
                   </FormItem>
                 </TabsContent>
@@ -124,10 +126,14 @@ export const PostEditor = ({ post }: Props) => {
                   <div className="prose prose-sm min-h-[200px] max-w-[none] rounded-lg border px-3 py-2 dark:prose-invert">
                     <PostPreview text={form.watch("content") || post.content} />
                   </div>
-                  <p className="text-[0.8rem] text-muted-foreground">
-                    Supports markdown
-                  </p>
                 </TabsContent>
+                <Link
+                    href={markdownlink}
+                    >
+                    <span className="text-[0.8rem] text-muted-foreground underline underline-offset-4">
+                        Supports markdown
+                    </span>
+                  </Link>
               </Tabs>
             )}
           />

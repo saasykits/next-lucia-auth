@@ -47,7 +47,7 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 
 - [ ] Update Password
 - [x] Stripe Integration
-- [ ] API Rate-Limiting
+- [x] API Rate-Limiting
 - [ ] Admin Dashboard (under consideration)
 - [ ] Role-Based Access Policy (under consideration)
 

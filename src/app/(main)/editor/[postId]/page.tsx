@@ -29,7 +29,7 @@ export default async function EditPostPage({ params }: Props) {
         <ArrowLeftIcon className="h-5 w-5" /> back to dashboard
       </Link>
 
-      <PostEditor post={post} />
+      <PostEditor post={post} user={user} />
     </main>
   );
 }

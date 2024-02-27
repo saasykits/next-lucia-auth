@@ -21,11 +21,13 @@ import { api } from "@/trpc/react";
 import { Pencil2Icon } from "@/components/icons";
 import { LoadingButton } from "@/components/loading-button";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const markdownlink = "https://remarkjs.github.io/react-markdown/" // Can also be changed for something like /markdown
 
 interface Props {
   post: RouterOutputs["post"]["get"];
+  user: any;
 }
 
 const schema = z.object({

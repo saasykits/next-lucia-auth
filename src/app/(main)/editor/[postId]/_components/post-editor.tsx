@@ -25,12 +25,13 @@ import { toast } from "sonner";
 
 const markdownlink = "https://remarkjs.github.io/react-markdown/" // Can also be changed for something like /markdown
 
-interface Props {
-  post: RouterOutputs["post"]["get"];
-}
-
 type usertype = {
   id: string;
+}
+
+interface Props {
+  post: RouterOutputs["post"]["get"];
+  user: usertype;
 }
 
 const schema = z.object({
@@ -42,7 +43,7 @@ const schema = z.object({
     .max(2048 * 2),
 });
 
-export const PostEditor = ({ post }: Props, user: usertype) => {
+export const PostEditor = ({ post, user }: Props) => {
   if (!post) return null;
   const formRef = useRef<HTMLFormElement>(null);
   const updatePost = api.post.update.useMutation();

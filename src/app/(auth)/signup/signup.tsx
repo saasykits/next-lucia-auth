@@ -76,9 +76,9 @@ export function Signup() {
           ) : null}
           <div>
             <Link href={"/login"}>
-              <Button variant={"link"} size={"sm"} className="p-0">
+              <span className="p-0 text-xs font-medium hover:underline underline-offset-4">
                 Already signed up? Login instead.
-              </Button>
+              </span>
             </Link>
           </div>
 

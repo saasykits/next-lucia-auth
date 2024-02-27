@@ -58,12 +58,10 @@ export const PostEditor = ({ post, user }: Props) => {
   const onSubmit = form.handleSubmit(async (values) => {
     if (user.id == post.userId) {
       updatePost.mutate({ id: post.id, ...values });
+      toast('Saved the post successfully.');
       return;
     }
-    if (!user) {
-      toast('You need to log in to edit this post.');
-      return;
-    }
+
     toast('You do not have permission to edit this post.');
     return;
   });

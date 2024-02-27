@@ -27,7 +27,10 @@ const markdownlink = "https://remarkjs.github.io/react-markdown/" // Can also be
 
 interface Props {
   post: RouterOutputs["post"]["get"];
-  user: any;
+}
+
+type usertype = {
+  id: string;
 }
 
 const schema = z.object({
@@ -39,7 +42,7 @@ const schema = z.object({
     .max(2048 * 2),
 });
 
-export const PostEditor = ({ post }: Props) => {
+export const PostEditor = ({ post }: Props, user: usertype) => {
   if (!post) return null;
   const formRef = useRef<HTMLFormElement>(null);
   const updatePost = api.post.update.useMutation();
@@ -52,13 +55,18 @@ export const PostEditor = ({ post }: Props) => {
     resolver: zodResolver(schema),
   });
   const onSubmit = form.handleSubmit(async (values) => {
-    if (user.id !== post.userId) {
-      toast('You do not have permission to edit this post.');
+    if (user.id == post.userId) {
+      updatePost.mutate({ id: post.id, ...values });
       return;
     }
-  
-    updatePost.mutate({ id: post.id, ...values });
+    if (!user) {
+      toast('You need to log in to edit this post.');
+      return;
+    }
+    toast('You do not have permission to edit this post.');
+    return;
   });
+  
 
   return (
     <>

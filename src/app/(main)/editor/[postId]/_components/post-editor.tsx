@@ -50,6 +50,11 @@ export const PostEditor = ({ post }: Props) => {
     resolver: zodResolver(schema),
   });
   const onSubmit = form.handleSubmit(async (values) => {
+    if (user.id !== post.userId) {
+      toast('You do not have permission to edit this post.');
+      return;
+    }
+  
     updatePost.mutate({ id: post.id, ...values });
   });
 

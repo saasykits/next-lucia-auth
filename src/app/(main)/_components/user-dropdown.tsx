@@ -110,7 +110,7 @@ const SignoutConfirmation = () => {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger
-        className="px-2 py-1.5 text-sm text-muted-foreground outline-none"
+        className="px-2 py-1.5 text-sm text-muted-foreground outline-none w-full text-left hover:bg-accent rounded-sm"
         asChild
       >
         <button>Sign out</button>

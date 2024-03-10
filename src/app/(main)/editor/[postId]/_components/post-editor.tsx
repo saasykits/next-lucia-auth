@@ -21,11 +21,17 @@ import { api } from "@/trpc/react";
 import { Pencil2Icon } from "@/components/icons";
 import { LoadingButton } from "@/components/loading-button";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const markdownlink = "https://remarkjs.github.io/react-markdown/" // Can also be changed for something like /markdown
 
+type usertype = {
+  id: string;
+}
+
 interface Props {
   post: RouterOutputs["post"]["get"];
+  user: usertype;
 }
 
 const schema = z.object({
@@ -37,7 +43,7 @@ const schema = z.object({
     .max(2048 * 2),
 });
 
-export const PostEditor = ({ post }: Props) => {
+export const PostEditor = ({ post, user }: Props) => {
   if (!post) return null;
   const formRef = useRef<HTMLFormElement>(null);
   const updatePost = api.post.update.useMutation();
@@ -50,8 +56,16 @@ export const PostEditor = ({ post }: Props) => {
     resolver: zodResolver(schema),
   });
   const onSubmit = form.handleSubmit(async (values) => {
-    updatePost.mutate({ id: post.id, ...values });
+    if (user.id == post.userId) {
+      updatePost.mutate({ id: post.id, ...values });
+      toast('Saved the post successfully.');
+      return;
+    }
+
+    toast('You do not have permission to edit this post.');
+    return;
   });
+  
 
   return (
     <>

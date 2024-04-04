@@ -1,6 +1,6 @@
 import { Lucia, TimeSpan } from "lucia";
 import { Discord } from "arctic";
-import { DrizzleMySQLAdapter } from "@lucia-auth/adapter-drizzle";
+import { DrizzlePostgreSQLAdapter } from "@lucia-auth/adapter-drizzle";
 import { env } from "@/env.js";
 import { db } from "@/server/db";
 import { sessions, users, type User as DbUser } from "@/server/db/schema";
@@ -9,7 +9,7 @@ import { sessions, users, type User as DbUser } from "@/server/db/schema";
 // import { webcrypto } from "node:crypto";
 // globalThis.crypto = webcrypto as Crypto;
 
-const adapter = new DrizzleMySQLAdapter(db, sessions, users);
+const adapter = new DrizzlePostgreSQLAdapter(db, sessions, users);
 
 export const lucia = new Lucia(adapter, {
   getSessionAttributes: (/* attributes */) => {

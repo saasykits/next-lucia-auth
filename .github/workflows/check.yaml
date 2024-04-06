@@ -26,7 +26,7 @@ jobs:
         run: pnpm run typecheck && pnpm run lint
         env:
           # use dummy env variables to bypass t3-env check
-          DATABASE_URL: mysql://test:xxxx@xxxxxxxxx:3306/test
+          DATABASE_URL: postgres://test:xxxx@xxxxxxxxx:3306/test
           SMTP_HOST: host
           SMTP_PORT: 587
           SMTP_USER: user

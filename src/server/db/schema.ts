@@ -1,19 +1,18 @@
-import { mysqlTableCreator } from "drizzle-orm/mysql-core";
-import { DATABASE_PREFIX as prefix } from "@/lib/constants";
+import { relations } from "drizzle-orm";
 import {
+  pgTableCreator,
+  serial,
   boolean,
-  datetime,
   index,
-  int,
   text,
   timestamp,
   varchar,
-} from "drizzle-orm/mysql-core";
-import { relations } from "drizzle-orm";
+} from "drizzle-orm/pg-core";
+import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 
-export const mysqlTable = mysqlTableCreator((name) => `${prefix}_${name}`);
+export const pgTable = pgTableCreator((name) => `${prefix}_${name}`);
 
-export const users = mysqlTable(
+export const users = pgTable(
   "users",
   {
     id: varchar("id", { length: 21 }).primaryKey(),
@@ -27,57 +26,57 @@ export const users = mysqlTable(
     stripeCustomerId: varchar("stripe_customer_id", { length: 191 }),
     stripeCurrentPeriodEnd: timestamp("stripe_current_period_end"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
   },
   (t) => ({
-    emailIdx: index("email_idx").on(t.email),
-    discordIdx: index("discord_idx").on(t.discordId),
+    emailIdx: index("user_email_idx").on(t.email),
+    discordIdx: index("user_discord_idx").on(t.discordId),
   }),
 );
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
-export const sessions = mysqlTable(
+export const sessions = pgTable(
   "sessions",
   {
     id: varchar("id", { length: 255 }).primaryKey(),
     userId: varchar("user_id", { length: 21 }).notNull(),
-    expiresAt: datetime("expires_at").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
   (t) => ({
-    userIdx: index("user_idx").on(t.userId),
+    userIdx: index("session_user_idx").on(t.userId),
   }),
 );
 
-export const emailVerificationCodes = mysqlTable(
+export const emailVerificationCodes = pgTable(
   "email_verification_codes",
   {
-    id: int("id").primaryKey().autoincrement(),
+    id: serial("id").primaryKey(),
     userId: varchar("user_id", { length: 21 }).unique().notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     code: varchar("code", { length: 8 }).notNull(),
-    expiresAt: datetime("expires_at").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
   (t) => ({
-    userIdx: index("user_idx").on(t.userId),
-    emailIdx: index("email_idx").on(t.email),
+    userIdx: index("verification_code_user_idx").on(t.userId),
+    emailIdx: index("verification_code_email_idx").on(t.email),
   }),
 );
 
-export const passwordResetTokens = mysqlTable(
+export const passwordResetTokens = pgTable(
   "password_reset_tokens",
   {
     id: varchar("id", { length: 40 }).primaryKey(),
     userId: varchar("user_id", { length: 21 }).notNull(),
-    expiresAt: datetime("expires_at").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
   (t) => ({
-    userIdx: index("user_idx").on(t.userId),
+    userIdx: index("password_token_user_idx").on(t.userId),
   }),
 );
 
-export const posts = mysqlTable(
+export const posts = pgTable(
   "posts",
   {
     id: varchar("id", { length: 15 }).primaryKey(),
@@ -90,10 +89,10 @@ export const posts = mysqlTable(
       .notNull(),
     tags: varchar("tags", { length: 255 }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
   },
   (t) => ({
-    userIdx: index("user_idx").on(t.userId),
+    userIdx: index("post_user_idx").on(t.userId),
     createdAtIdx: index("post_created_at_idx").on(t.createdAt),
   }),
 );

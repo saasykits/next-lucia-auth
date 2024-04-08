@@ -3,11 +3,11 @@ import { env } from "@/env";
 import { api } from "@/trpc/server";
 import { type Metadata } from "next";
 import * as React from "react";
-import { z } from "zod";
 import { Posts } from "./_components/posts";
 import { PostsSkeleton } from "./_components/posts-skeleton";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { redirects } from "@/lib/constants";
+import { myPostsSchema } from "@/server/api/routers/post/post.input";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -19,13 +19,8 @@ interface Props {
   searchParams: Record<string, string | string[] | undefined>;
 }
 
-const schmea = z.object({
-  page: z.coerce.number().default(1).optional(),
-  perPage: z.coerce.number().default(12).optional(),
-});
-
 export default async function DashboardPage({ searchParams }: Props) {
-  const { page } = schmea.parse(searchParams);
+  const { page, perPage } = myPostsSchema.parse(searchParams);
 
   const { user } = await validateRequest();
   if (!user) redirect(redirects.toLogin);
@@ -36,7 +31,10 @@ export default async function DashboardPage({ searchParams }: Props) {
    * @see https://www.youtube.com/shorts/A7GGjutZxrs
    * @see https://nextjs.org/docs/app/building-your-application/data-fetching/patterns#parallel-data-fetching
    */
-  const promises = Promise.all([api.post.myPosts.query({ page }), api.stripe.getPlan.query()]);
+  const promises = Promise.all([
+    api.post.myPosts.query({ page, perPage }),
+    api.stripe.getPlan.query(),
+  ]);
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import { postRouter } from "./routers/post";
+import { postRouter } from "./routers/post/post.procedure";
 import { stripeRouter } from "./routers/stripe";
 import { userRouter } from "./routers/user";
 import { createTRPCRouter } from "./trpc";

@@ -1,6 +1,5 @@
 "use client";
 import { useRef } from "react";
-import { z } from "zod";
 import { type RouterOutputs } from "@/trpc/shared";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,21 +20,13 @@ import { api } from "@/trpc/react";
 import { Pencil2Icon } from "@/components/icons";
 import { LoadingButton } from "@/components/loading-button";
 import Link from "next/link";
+import { createPostSchema } from "@/server/api/routers/post/post.input";
 
-const markdownlink = "https://remarkjs.github.io/react-markdown/" // Can also be changed for something like /markdown
+const markdownlink = "https://remarkjs.github.io/react-markdown/";
 
 interface Props {
   post: RouterOutputs["post"]["get"];
 }
-
-const schema = z.object({
-  title: z.string().min(3).max(255),
-  excerpt: z.string().min(3).max(255),
-  content: z
-    .string()
-    .min(3)
-    .max(2048 * 2),
-});
 
 export const PostEditor = ({ post }: Props) => {
   if (!post) return null;
@@ -47,7 +38,7 @@ export const PostEditor = ({ post }: Props) => {
       excerpt: post.excerpt,
       content: post.content,
     },
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createPostSchema),
   });
   const onSubmit = form.handleSubmit(async (values) => {
     updatePost.mutate({ id: post.id, ...values });
@@ -70,11 +61,7 @@ export const PostEditor = ({ post }: Props) => {
       </div>
       <div className="h-6"></div>
       <Form {...form}>
-        <form
-          ref={formRef}
-          onSubmit={onSubmit}
-          className="block max-w-screen-md space-y-4"
-        >
+        <form ref={formRef} onSubmit={onSubmit} className="block max-w-screen-md space-y-4">
           <FormField
             control={form.control}
             name="title"
@@ -98,9 +85,7 @@ export const PostEditor = ({ post }: Props) => {
                 <FormControl>
                   <Textarea {...field} rows={2} className="min-h-0" />
                 </FormControl>
-                <FormDescription>
-                  A short description of your post
-                </FormDescription>
+                <FormDescription>A short description of your post</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -127,13 +112,11 @@ export const PostEditor = ({ post }: Props) => {
                     <PostPreview text={form.watch("content") || post.content} />
                   </div>
                 </TabsContent>
-                <Link
-                    href={markdownlink}
-                    >
-                    <span className="text-[0.8rem] text-muted-foreground underline underline-offset-4">
-                        Supports markdown
-                    </span>
-                  </Link>
+                <Link href={markdownlink}>
+                  <span className="text-[0.8rem] text-muted-foreground underline underline-offset-4">
+                    Supports markdown
+                  </span>
+                </Link>
               </Tabs>
             )}
           />

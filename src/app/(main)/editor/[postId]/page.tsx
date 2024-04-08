@@ -17,7 +17,7 @@ export default async function EditPostPage({ params }: Props) {
   const { user } = await validateRequest();
   if (!user) redirect(redirects.toLogin);
 
-  const post = await api.post.get.query(params.postId);
+  const post = await api.post.get.query({ id: params.postId });
   if (!post) notFound();
 
   return (

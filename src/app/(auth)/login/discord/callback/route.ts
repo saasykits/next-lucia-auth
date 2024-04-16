@@ -4,7 +4,7 @@ import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
 import { discord, lucia } from "@/lib/auth";
 import { db } from "@/server/db";
-import { redirects } from "@/lib/constants";
+import { Paths } from "@/lib/constants";
 import { users } from "@/server/db/schema";
 
 export async function GET(request: Request): Promise<Response> {
@@ -16,7 +16,7 @@ export async function GET(request: Request): Promise<Response> {
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
       status: 400,
-      headers: { Location: redirects.toLogin },
+      headers: { Location: Paths.Login },
     });
   }
 
@@ -35,7 +35,7 @@ export async function GET(request: Request): Promise<Response> {
         JSON.stringify({
           error: "Your Discord account must have a verified email address.",
         }),
-        { status: 400, headers: { Location: redirects.toLogin } },
+        { status: 400, headers: { Location: Paths.Login } },
       );
     }
     const existingUser = await db.query.users.findFirst({
@@ -68,7 +68,7 @@ export async function GET(request: Request): Promise<Response> {
       );
       return new Response(null, {
         status: 302,
-        headers: { Location: redirects.afterLogin },
+        headers: { Location: Paths.Dashboard },
       });
     }
 
@@ -94,7 +94,7 @@ export async function GET(request: Request): Promise<Response> {
     );
     return new Response(null, {
       status: 302,
-      headers: { Location: redirects.afterLogin },
+      headers: { Location: Paths.Dashboard },
     });
   } catch (e) {
     // the specific error message depends on the provider

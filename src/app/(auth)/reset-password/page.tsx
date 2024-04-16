@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { SendResetEmail } from "./send-reset-email";
 import { validateRequest } from "@/lib/auth/validate-request";
-import { redirects } from "@/lib/constants";
+import { Paths } from "@/lib/constants";
 
 export const metadata = {
   title: "Forgot Password",
@@ -18,7 +18,7 @@ export const metadata = {
 export default async function ForgotPasswordPage() {
   const { user } = await validateRequest();
 
-  if (user) redirect(redirects.afterLogin);
+  if (user) redirect(Paths.Dashboard);
 
   return (
     <Card className="w-full max-w-md">

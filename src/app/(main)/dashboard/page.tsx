@@ -7,7 +7,7 @@ import { z } from "zod";
 import { Posts } from "./_components/posts";
 import { PostsSkeleton } from "./_components/posts-skeleton";
 import { validateRequest } from "@/lib/auth/validate-request";
-import { redirects } from "@/lib/constants";
+import { Paths } from "@/lib/constants";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -28,7 +28,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   const { page } = schmea.parse(searchParams);
 
   const { user } = await validateRequest();
-  if (!user) redirect(redirects.toLogin);
+  if (!user) redirect(Paths.Login);
 
   /**
    * Passing multiple promises to `Promise.all` to fetch data in parallel to prevent waterfall requests.

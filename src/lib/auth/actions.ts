@@ -27,7 +27,7 @@ import { sendMail } from "@/server/send-mail";
 import { renderVerificationCodeEmail } from "@/lib/email-templates/email-verification";
 import { renderResetPasswordEmail } from "@/lib/email-templates/reset-password";
 import { validateRequest } from "@/lib/auth/validate-request";
-import { redirects } from "../constants";
+import { Paths } from "../constants";
 import { env } from "@/env";
 
 export interface ActionResponse<T> {
@@ -87,7 +87,7 @@ export async function login(
     sessionCookie.value,
     sessionCookie.attributes,
   );
-  return redirect(redirects.afterLogin);
+  return redirect(Paths.Dashboard);
 }
 
 export async function signup(
@@ -142,7 +142,7 @@ export async function signup(
     sessionCookie.value,
     sessionCookie.attributes,
   );
-  return redirect(redirects.toVerify);
+  return redirect(Paths.VerifyEmail);
 }
 
 export async function logout(): Promise<{ error: string } | void> {
@@ -168,7 +168,7 @@ export async function resendVerificationEmail(): Promise<{
 }> {
   const { user } = await validateRequest();
   if (!user) {
-    return redirect(redirects.toLogin);
+    return redirect(Paths.Login);
   }
   const lastSent = await db.query.emailVerificationCodes.findFirst({
     where: (table, { eq }) => eq(table.userId, user.id),
@@ -203,7 +203,7 @@ export async function verifyEmail(
   }
   const { user } = await validateRequest();
   if (!user) {
-    return redirect(redirects.toLogin);
+    return redirect(Paths.Login);
   }
 
   const dbCode = await db.transaction(async (tx) => {
@@ -238,7 +238,7 @@ export async function verifyEmail(
     sessionCookie.value,
     sessionCookie.attributes,
   );
-  redirect(redirects.afterLogin);
+  redirect(Paths.Dashboard);
 }
 
 export async function sendPasswordResetLink(
@@ -320,7 +320,7 @@ export async function resetPassword(
     sessionCookie.value,
     sessionCookie.attributes,
   );
-  redirect(redirects.afterLogin);
+  redirect(Paths.Dashboard);
 }
 
 const timeFromNow = (time: Date) => {

@@ -11,11 +11,11 @@ import {
 } from "@react-email/components";
 import { APP_TITLE } from "@/lib/constants";
 
-interface Props {
+export interface ResetPasswordTemplateProps {
   link: string;
 }
 
-export const ResetPasswordEmail = ({ link }: Props) => {
+export const ResetPasswordTemplate = ({ link }: ResetPasswordTemplateProps) => {
   return (
     <Html>
       <Head />
@@ -26,19 +26,18 @@ export const ResetPasswordEmail = ({ link }: Props) => {
             <Text style={title}>{APP_TITLE}</Text>
             <Text style={text}>Hi,</Text>
             <Text style={text}>
-              Someone recently requested a password change for your {APP_TITLE}{" "}
-              account. If this was you, you can set a new password here:
+              Someone recently requested a password change for your {APP_TITLE} account. If this was
+              you, you can set a new password here:
             </Text>
             <Button style={button} href={link}>
               Reset password
             </Button>
             <Text style={text}>
-              If you don&apos;t want to change your password or didn&apos;t
-              request this, just ignore and delete this message.
+              If you don&apos;t want to change your password or didn&apos;t request this, just
+              ignore and delete this message.
             </Text>
             <Text style={text}>
-              To keep your account secure, please don&apos;t forward this email
-              to anyone.
+              To keep your account secure, please don&apos;t forward this email to anyone.
             </Text>
             <Text style={text}>Have a nice day!</Text>
           </Section>
@@ -47,9 +46,6 @@ export const ResetPasswordEmail = ({ link }: Props) => {
     </Html>
   );
 };
-
-export const renderResetPasswordEmail = ({ link }: Props) =>
-  render(<ResetPasswordEmail link={link} />);
 
 const main = {
   backgroundColor: "#f6f9fc",

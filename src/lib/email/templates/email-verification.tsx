@@ -1,35 +1,23 @@
-import {
-  Body,
-  Container,
-  Head,
-  Html,
-  Preview,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Body, Container, Head, Html, Preview, Section, Text } from "@react-email/components";
 import { APP_TITLE } from "@/lib/constants";
-import { render } from "@react-email/render";
 
-interface Props {
+export interface EmailVerificationTemplateProps {
   code: string;
 }
 
-export const VerificationCodeEmail = ({ code }: Props) => {
+export const EmailVerificationTemplate = ({ code }: EmailVerificationTemplateProps) => {
   return (
     <Html>
       <Head />
-      <Preview>
-        Verify your email address to complete your {APP_TITLE} registration
-      </Preview>
+      <Preview>Verify your email address to complete your {APP_TITLE} registration</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section>
             <Text style={title}>{APP_TITLE}</Text>
             <Text style={text}>Hi,</Text>
             <Text style={text}>
-              Thank you for registering for an account on {APP_TITLE}. To
-              complete your registration, please verify your your account by
-              using the following code:
+              Thank you for registering for an account on {APP_TITLE}. To complete your
+              registration, please verify your your account by using the following code:
             </Text>
             <Text style={codePlaceholder}>{code}</Text>
 
@@ -40,9 +28,6 @@ export const VerificationCodeEmail = ({ code }: Props) => {
     </Html>
   );
 };
-
-export const renderVerificationCodeEmail = ({ code }: Props) =>
-  render(<VerificationCodeEmail code={code} />);
 
 const main = {
   backgroundColor: "#f6f9fc",

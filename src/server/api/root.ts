@@ -1,6 +1,6 @@
-import { postRouter } from "./routers/post";
-import { stripeRouter } from "./routers/stripe";
-import { userRouter } from "./routers/user";
+import { postRouter } from "./routers/post/post.procedure";
+import { stripeRouter } from "./routers/stripe/stripe.procedure";
+import { userRouter } from "./routers/user/user.procedure";
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({

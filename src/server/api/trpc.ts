@@ -10,7 +10,7 @@
 import { uncachedValidateRequest } from "@/lib/auth/validate-request";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/server/db";
-import { initTRPC, TRPCError } from "@trpc/server";
+import { initTRPC, TRPCError, type inferAsyncReturnType } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
@@ -51,8 +51,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       ...shape,
       data: {
         ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
+        zodError: error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
     };
   },
@@ -101,3 +100,9 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
     },
   });
 });
+
+export type TRPCContext = inferAsyncReturnType<typeof createTRPCContext>;
+export type ProtectedTRPCContext = TRPCContext & {
+  user: NonNullable<TRPCContext["user"]>;
+  session: NonNullable<TRPCContext["session"]>;
+};

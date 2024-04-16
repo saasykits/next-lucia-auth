@@ -1,4 +1,4 @@
-import * as z from "zod";
+import { z } from "zod";
 
 export const manageSubscriptionSchema = z.object({
   stripePriceId: z.string(),
@@ -6,3 +6,5 @@ export const manageSubscriptionSchema = z.object({
   stripeSubscriptionId: z.string().optional().nullable(),
   isPro: z.boolean(),
 });
+
+export type ManageSubscriptionInput = z.infer<typeof manageSubscriptionSchema>;

@@ -29,7 +29,7 @@ const getEmailTemplate = <T extends EmailTemplate>(template: T, props: PropsMap[
       };
     case EmailTemplate.PasswordReset:
       return {
-        subject: "Verify your email address",
+        subject: "Reset your password",
         body: render(
           <ResetPasswordTemplate {...(props as PropsMap[EmailTemplate.PasswordReset])} />,
         ),

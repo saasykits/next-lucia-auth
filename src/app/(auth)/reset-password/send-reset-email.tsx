@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { SubmitButton } from "@/components/submit-button";
 import { sendPasswordResetLink } from "@/lib/auth/actions";
 import { ExclamationTriangleIcon } from "@/components/icons";
-import { redirects } from "@/lib/constants";
+import { Paths } from "@/lib/constants";
 
 export function SendResetEmail() {
   const [state, formAction] = useFormState(sendPasswordResetLink, null);
@@ -20,7 +20,7 @@ export function SendResetEmail() {
   useEffect(() => {
     if (state?.success) {
       toast("A password reset link has been sent to your email.");
-      router.push(redirects.toLogin);
+      router.push(Paths.Login);
     }
     if (state?.error) {
       toast(state.error, {
@@ -43,7 +43,7 @@ export function SendResetEmail() {
       </div>
 
       <div className="flex flex-wrap justify-between">
-        <Link href={redirects.toSignup}>
+        <Link href={Paths.Signup}>
           <Button variant={"link"} size={"sm"} className="p-0">
             Not signed up? Sign up now
           </Button>

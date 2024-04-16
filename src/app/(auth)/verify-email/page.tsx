@@ -8,7 +8,7 @@ import {
 import { redirect } from "next/navigation";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { VerifyCode } from "./verify-code";
-import { redirects } from "@/lib/constants";
+import { Paths } from "@/lib/constants";
 
 export const metadata = {
   title: "Verify Email",
@@ -18,8 +18,8 @@ export const metadata = {
 export default async function VerifyEmailPage() {
   const { user } = await validateRequest();
 
-  if (!user) redirect(redirects.toLogin);
-  if (user.emailVerified) redirect(redirects.afterVerify);
+  if (!user) redirect(Paths.Login);
+  if (user.emailVerified) redirect(Paths.Dashboard);
 
   return (
     <Card className="w-full max-w-md">

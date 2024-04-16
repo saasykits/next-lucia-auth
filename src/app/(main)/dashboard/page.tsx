@@ -6,7 +6,7 @@ import * as React from "react";
 import { Posts } from "./_components/posts";
 import { PostsSkeleton } from "./_components/posts-skeleton";
 import { validateRequest } from "@/lib/auth/validate-request";
-import { redirects } from "@/lib/constants";
+import { Paths } from "@/lib/constants";
 import { myPostsSchema } from "@/server/api/routers/post/post.input";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   const { page, perPage } = myPostsSchema.parse(searchParams);
 
   const { user } = await validateRequest();
-  if (!user) redirect(redirects.toLogin);
+  if (!user) redirect(Paths.Login);
 
   /**
    * Passing multiple promises to `Promise.all` to fetch data in parallel to prevent waterfall requests.

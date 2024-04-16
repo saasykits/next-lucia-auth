@@ -5,7 +5,7 @@ import { PostEditor } from "./_components/post-editor";
 import { ArrowLeftIcon } from "@/components/icons";
 import Link from "next/link";
 import { validateRequest } from "@/lib/auth/validate-request";
-import { redirects } from "@/lib/constants";
+import { Paths } from "@/lib/constants";
 
 interface Props {
   params: {
@@ -15,7 +15,7 @@ interface Props {
 
 export default async function EditPostPage({ params }: Props) {
   const { user } = await validateRequest();
-  if (!user) redirect(redirects.toLogin);
+  if (!user) redirect(Paths.Login);
 
   const post = await api.post.get.query({ id: params.postId });
   if (!post) notFound();

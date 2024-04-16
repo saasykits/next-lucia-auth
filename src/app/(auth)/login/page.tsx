@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { validateRequest } from "@/lib/auth/validate-request";
-import { redirects } from "@/lib/constants";
+import { Paths } from "@/lib/constants";
 import { Login } from "./login";
 
 export const metadata = {
@@ -11,7 +11,7 @@ export const metadata = {
 export default async function LoginPage() {
   const { user } = await validateRequest();
 
-  if (user) redirect(redirects.afterLogin);
+  if (user) redirect(Paths.Dashboard);
 
   return <Login />;
 }

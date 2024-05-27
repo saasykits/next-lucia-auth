@@ -1,0 +1,22 @@
+version: "3.8"
+
+name: database
+services:
+  database:
+    image: postgres:15
+    container_name: database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+
+volumes:
+  data:
+
+# q: what will be the connection string for the above config
+# a: postgresql://postgres:password@localhost:5432/db

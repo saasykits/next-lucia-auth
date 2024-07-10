@@ -49,12 +49,6 @@ export async function login(_: any, formData: FormData): Promise<ActionResponse<
     where: (table, { eq }) => eq(table.email, email),
   });
 
-  if (!existingUser) {
-    return {
-      formError: "Incorrect email or password",
-    };
-  }
-
   if (!existingUser || !existingUser?.hashedPassword) {
     return {
       formError: "Incorrect email or password",

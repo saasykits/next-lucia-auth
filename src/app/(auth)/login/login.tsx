@@ -4,13 +4,7 @@ import Link from "next/link";
 import { useFormState } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PasswordInput } from "@/components/password-input";
 import { DiscordLogoIcon } from "@/components/icons";
 import { APP_TITLE } from "@/lib/constants";
@@ -25,13 +19,11 @@ export function Login() {
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
         <CardTitle>{APP_TITLE} Log In</CardTitle>
-        <CardDescription>
-          Log in to your account to access your dashboard
-        </CardDescription>
+        <CardDescription>Log in to your account to access your dashboard</CardDescription>
       </CardHeader>
       <CardContent>
         <Button variant="outline" className="w-full" asChild>
-          <Link href="/login/discord">
+          <Link href="/login/discord" prefetch={false}>
             <DiscordLogoIcon className="mr-2 h-5 w-5" />
             Log in with Discord
           </Link>
@@ -43,9 +35,10 @@ export function Login() {
         </div>
         <form action={formAction} className="grid gap-4">
           <div className="space-y-2">
-            <Label>Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               required
+              id="email"
               placeholder="email@example.com"
               autoComplete="email"
               name="email"
@@ -54,8 +47,9 @@ export function Login() {
           </div>
 
           <div className="space-y-2">
-            <Label>Password</Label>
+            <Label htmlFor="password">Password</Label>
             <PasswordInput
+              id="password"
               name="password"
               required
               autoComplete="current-password"

@@ -1,6 +1,8 @@
 name: Type check and lint
 
-on: [pull_request]
+on:
+  pull_request:
+    branches: [main]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -30,3 +32,43 @@ jobs:
         run: pnpm run typecheck && pnpm run lint
         env:
           SKIP_ENV_VALIDATION: true
+
+  e2e-test:
+    needs: typecheck-and-lint
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{secrets.DATABASE_URL}}
+      SMTP_HOST: host
+      SMTP_PORT: 587
+      SMTP_USER: user
+      SMTP_PASSWORD: password
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      DISCORD_CLIENT_ID: client_id
+      DISCORD_CLIENT_SECRET: client_secret
+      STRIPE_API_KEY: stripe_api_key
+      STRIPE_WEBHOOK_SECRET: stripe_webhook_secret
+      STRIPE_PRO_MONTHLY_PLAN_ID: stripe_pro_monthly_plan_id
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+      - name: Run Playwright tests
+        run: pnpm exec playwright test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

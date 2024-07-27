@@ -4,13 +4,7 @@ import { useFormState } from "react-dom";
 import Link from "next/link";
 import { PasswordInput } from "@/components/password-input";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { DiscordLogoIcon } from "@/components/icons";
 import { APP_TITLE } from "@/lib/constants";
@@ -29,7 +23,7 @@ export function Signup() {
       </CardHeader>
       <CardContent>
         <Button variant="outline" className="w-full" asChild>
-          <Link href="/login/discord">
+          <Link href="/login/discord" prefetch={false}>
             <DiscordLogoIcon className="mr-2 h-5 w-5" />
             Sign up with Discord
           </Link>
@@ -42,8 +36,9 @@ export function Signup() {
 
         <form action={formAction} className="space-y-4">
           <div className="space-y-2">
-            <Label>Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
+              id="email"
               required
               placeholder="email@example.com"
               autoComplete="email"
@@ -52,8 +47,9 @@ export function Signup() {
             />
           </div>
           <div className="space-y-2">
-            <Label>Password</Label>
+            <Label htmlFor="password">Password</Label>
             <PasswordInput
+              id="password"
               name="password"
               required
               autoComplete="current-password"
@@ -76,13 +72,13 @@ export function Signup() {
           ) : null}
           <div>
             <Link href={"/login"}>
-              <span className="p-0 text-xs font-medium hover:underline underline-offset-4">
+              <span className="p-0 text-xs font-medium underline-offset-4 hover:underline">
                 Already signed up? Login instead.
               </span>
             </Link>
           </div>
 
-          <SubmitButton className="w-full"> Sign Up</SubmitButton>
+          <SubmitButton className="w-full">Sign Up</SubmitButton>
           <Button variant="outline" className="w-full" asChild>
             <Link href="/">Cancel</Link>
           </Button>

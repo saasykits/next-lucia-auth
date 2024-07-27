@@ -1,4 +1,4 @@
-name: Type check and lint
+name: Lint & Test
 
 on:
   pull_request:
@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Type check and lint
+      - name: Type Check and Lint
         run: pnpm run typecheck && pnpm run lint
         env:
           SKIP_ENV_VALIDATION: true
@@ -44,6 +44,7 @@ jobs:
       SMTP_PORT: 587
       SMTP_USER: user
       SMTP_PASSWORD: password
+      MOCK_SEND_EMAIL: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
       DISCORD_CLIENT_ID: client_id
       DISCORD_CLIENT_SECRET: client_secret

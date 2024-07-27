@@ -7,6 +7,7 @@ import { env } from "@/env";
 import { EMAIL_SENDER } from "@/lib/constants";
 import { createTransport, type TransportOptions } from "nodemailer";
 import type { ComponentProps } from "react";
+import { logger } from "../logger";
 
 export enum EmailTemplate {
   EmailVerification = "EmailVerification",
@@ -55,8 +56,8 @@ export const sendMail = async <T extends EmailTemplate>(
   template: T,
   props: PropsMap[NoInfer<T>],
 ) => {
-  if (env.NODE_ENV !== "production") {
-    console.log("📨 Email sent to:", to, "with template:", template, "and props:", props);
+  if (env.MOCK_SEND_EMAIL) {
+    logger.info("📨 Email sent to:", to, "with template:", template, "and props:", props);
     return;
   }
 

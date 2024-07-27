@@ -40,10 +40,7 @@ export async function GET(request: Request): Promise<Response> {
     }
     const existingUser = await db.query.users.findFirst({
       where: (table, { eq, or }) =>
-        or(
-          eq(table.discordId, discordUser.id),
-          eq(table.email, discordUser.email!),
-        ),
+        or(eq(table.discordId, discordUser.id), eq(table.email, discordUser.email!)),
     });
 
     const avatar = discordUser.avatar
@@ -61,21 +58,14 @@ export async function GET(request: Request): Promise<Response> {
       });
       const session = await lucia.createSession(userId, {});
       const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes,
-      );
+      cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
       return new Response(null, {
         status: 302,
         headers: { Location: Paths.Dashboard },
       });
     }
 
-    if (
-      existingUser.discordId !== discordUser.id ||
-      existingUser.avatar !== avatar
-    ) {
+    if (existingUser.discordId !== discordUser.id || existingUser.avatar !== avatar) {
       await db
         .update(users)
         .set({
@@ -87,11 +77,7 @@ export async function GET(request: Request): Promise<Response> {
     }
     const session = await lucia.createSession(existingUser.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(
-      sessionCookie.name,
-      sessionCookie.value,
-      sessionCookie.attributes,
-    );
+    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
     return new Response(null, {
       status: 302,
       headers: { Location: Paths.Dashboard },
@@ -104,6 +90,7 @@ export async function GET(request: Request): Promise<Response> {
         status: 400,
       });
     }
+    console.error(e);
 
     return new Response(JSON.stringify({ message: "internal server error" }), {
       status: 500,

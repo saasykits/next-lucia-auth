@@ -1,6 +1,10 @@
 name: Type check and lint
 
-on: [push, pull_request]
+on: [pull_request]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -13,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 9
       - uses: actions/setup-node@v3
         with:
           node-version: 20.x
@@ -25,15 +29,4 @@ jobs:
       - name: Type check and lint
         run: pnpm run typecheck && pnpm run lint
         env:
-          # use dummy env variables to bypass t3-env check
-          DATABASE_URL: postgres://test:xxxx@xxxxxxxxx:3306/test
-          SMTP_HOST: host
-          SMTP_PORT: 587
-          SMTP_USER: user
-          SMTP_PASSWORD: password
-          NEXT_PUBLIC_APP_URL: http://localhost:3000
-          DISCORD_CLIENT_ID: client_id
-          DISCORD_CLIENT_SECRET: client_secret
-          STRIPE_API_KEY: stripe_api_key
-          STRIPE_WEBHOOK_SECRET: stripe_webhook_secret
-          STRIPE_PRO_MONTHLY_PLAN_ID: stripe_pro_monthly_plan_id
+          SKIP_ENV_VALIDATION: true

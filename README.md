@@ -15,6 +15,7 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 - **Email Verification:** 📧 Verify user identities through email.
 - **Password Reset:** 🔑 Streamline password resets by sending email password reset links.
 - **Lucia + tRPC:** 🔄 Similar to NextAuth with tRPC, granting access to sessions and user information through tRPC procedures.
+- **E2E tests:** 🧪 Catch every issue before your users do with comprehensive E2E testing.
 - **Stripe Payment:** 💳 Setup user subscriptions seamlessly with stripe.
 - **Email template with react-email:** ✉️ Craft your email templates using React.
 - **PostgreSQL Database:** 🛢️ Utilize a PostgreSQL database set up using Drizzle for enhanced performance and type safety.
@@ -32,6 +33,7 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 - [Shadcn UI](https://ui.shadcn.com/)
 - [React Hook Form](https://www.react-hook-form.com/)
 - [React Email](https://react.email/)
+- [Playwright](https://playwright.dev/)
 
 ## Get Started
 
@@ -42,6 +44,17 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 5. Update app title, database prefix, and other parameters in the `src/lib/constants.ts` file.
 6. Run `pnpm db:push` to push your schema to the database.
 7. Execute `pnpm dev` to start the development server and enjoy!
+
+## Testing
+
+1. Install [Playwright](https://playwright.dev/) (use this command if you want to install chromium only `pnpm exec playwright install chromium --with-deps`)
+2. Build production files using `pnpm build`
+3. Run `pnpm test:e2e` (add --debug flag to open tests in browser in debug mode)
+
+## Using Github actions
+
+Add the following environment variables to your **github actions repository secrets** -
+`DATABASE_URL`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`
 
 ## Roadmap
 

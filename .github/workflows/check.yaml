@@ -40,14 +40,14 @@ jobs:
 
     env:
       DATABASE_URL: ${{secrets.DATABASE_URL}}
+      DISCORD_CLIENT_ID: ${{secrets.DISCORD_CLIENT_ID}}
+      DISCORD_CLIENT_SECRET: ${{secrets.DISCORD_CLIENT_SECRET}}
+      MOCK_SEND_EMAIL: "true"
       SMTP_HOST: host
       SMTP_PORT: 587
       SMTP_USER: user
       SMTP_PASSWORD: password
-      MOCK_SEND_EMAIL: "true"
       NEXT_PUBLIC_APP_URL: http://localhost:3000
-      DISCORD_CLIENT_ID: client_id
-      DISCORD_CLIENT_SECRET: client_secret
       STRIPE_API_KEY: stripe_api_key
       STRIPE_WEBHOOK_SECRET: stripe_webhook_secret
       STRIPE_PRO_MONTHLY_PLAN_ID: stripe_pro_monthly_plan_id

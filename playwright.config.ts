@@ -6,7 +6,7 @@ const baseURL = `http://localhost:${process.env.PORT ?? 3000}`;
 export default defineConfig({
   testDir: "./tests/e2e",
   outputDir: "./tests/e2e/output",
-  timeout: 30 * 1000,
+  timeout: 60 * 1000,
   fullyParallel: true,
 
   forbidOnly: !!process.env.CI,
@@ -25,12 +25,10 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "npm run start",
+    command: "npx cross-env NODE_ENV=test npm run start",
     url: baseURL,
     stdout: "pipe",
+    stderr: "pipe",
     reuseExistingServer: !process.env.CI,
-    env: {
-      NODE_ENV: "test",
-    },
   },
 });

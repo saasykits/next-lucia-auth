@@ -5,11 +5,7 @@ import { useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "sonner";
 import { ExclamationTriangleIcon } from "@/components/icons";
-import {
-  logout,
-  verifyEmail,
-  resendVerificationEmail as resendEmail,
-} from "@/lib/auth/actions";
+import { logout, verifyEmail, resendVerificationEmail as resendEmail } from "@/lib/auth/actions";
 import { SubmitButton } from "@/components/submit-button";
 
 export const VerifyCode = () => {
@@ -39,9 +35,11 @@ export const VerifyCode = () => {
   return (
     <div className="flex flex-col gap-2">
       <form ref={codeFormRef} action={verifyEmailAction}>
-        <Label htmlFor="code">Verification code</Label>
+        <Label htmlFor="code">Verification Code</Label>
         <Input className="mt-2" type="text" id="code" name="code" required />
-        <SubmitButton className="mt-4 w-full">Verify</SubmitButton>
+        <SubmitButton className="mt-4 w-full" aria-label="submit-btn">
+          Verify
+        </SubmitButton>
       </form>
       <form action={resendAction}>
         <SubmitButton className="w-full" variant="secondary">

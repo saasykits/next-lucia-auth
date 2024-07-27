@@ -26,6 +26,11 @@ class Logger {
     const message = args
       .map((arg) => (typeof arg === "object" ? JSON.stringify(arg) : arg))
       .join(" ");
+
+    if (env.NODE_ENV === "development") {
+      console.log(message);
+    }
+
     return `[${this.getTimestamp()}] [${level}] ${message}`;
   }
 

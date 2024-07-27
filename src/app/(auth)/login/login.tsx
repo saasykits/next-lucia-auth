@@ -79,7 +79,9 @@ export function Login() {
               {state?.formError}
             </p>
           ) : null}
-          <SubmitButton className="w-full">Log In</SubmitButton>
+          <SubmitButton className="w-full" aria-label="submit-btn">
+            Log In
+          </SubmitButton>
           <Button variant="outline" className="w-full" asChild>
             <Link href="/">Cancel</Link>
           </Button>

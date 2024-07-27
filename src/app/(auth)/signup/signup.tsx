@@ -78,7 +78,9 @@ export function Signup() {
             </Link>
           </div>
 
-          <SubmitButton className="w-full">Sign Up</SubmitButton>
+          <SubmitButton className="w-full" aria-label="submit-btn">
+            Sign Up
+          </SubmitButton>
           <Button variant="outline" className="w-full" asChild>
             <Link href="/">Cancel</Link>
           </Button>

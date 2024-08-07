@@ -38,7 +38,6 @@ export function Login() {
             <Label htmlFor="email">Email</Label>
             <Input
               required
-              id="email"
               placeholder="email@example.com"
               autoComplete="email"
               name="email"
@@ -79,7 +78,7 @@ export function Login() {
               {state?.formError}
             </p>
           ) : null}
-          <SubmitButton className="w-full" aria-label="submit-btn">
+          <SubmitButton className="w-full" id="submit-btn">
             Log In
           </SubmitButton>
           <Button variant="outline" className="w-full" asChild>

@@ -37,7 +37,7 @@ export const VerifyCode = () => {
       <form ref={codeFormRef} action={verifyEmailAction}>
         <Label htmlFor="code">Verification Code</Label>
         <Input className="mt-2" type="text" id="code" name="code" required />
-        <SubmitButton className="mt-4 w-full" aria-label="submit-btn">
+        <SubmitButton className="mt-4 w-full" id="submit-btn">
           Verify
         </SubmitButton>
       </form>

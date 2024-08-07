@@ -32,11 +32,12 @@ export function SendResetEmail() {
   return (
     <form className="space-y-4" action={formAction}>
       <div className="space-y-2">
-        <Label>Your Email</Label>
+        <Label htmlFor="email">Your Email</Label>
         <Input
           required
           placeholder="email@example.com"
           autoComplete="email"
+          id="email"
           name="email"
           type="email"
         />
@@ -50,7 +51,9 @@ export function SendResetEmail() {
         </Link>
       </div>
 
-      <SubmitButton className="w-full">Reset Password</SubmitButton>
+      <SubmitButton className="w-full" id="submit-btn">
+        Reset Password
+      </SubmitButton>
       <Button variant="outline" className="w-full" asChild>
         <Link href="/">Cancel</Link>
       </Button>

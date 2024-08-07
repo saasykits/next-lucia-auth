@@ -1,4 +1,3 @@
-import { render } from "@react-email/render";
 import {
   Body,
   Button,

@@ -1,6 +1,11 @@
-export const testUser = {
-  name: "Test User",
-  email: "test@saasykits.com",
+export const testSignupUser = {
+  name: "Test SignUp",
+  email: "test+signup@example.com",
+  password: "testPass123",
+};
+export const testLoginUser = {
+  name: "Test Login User",
+  email: "test+login@example.com",
   password: "testPass123",
 };
 

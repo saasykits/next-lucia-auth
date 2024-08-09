@@ -13,7 +13,7 @@ export class Auth {
     this.emailInput = page.locator('input[name="email"]');
     this.passwordInput = page.locator('input[name="password"]');
     this.codeInput = page.locator('input[name="code"]');
-    this.submitButton = page.getByTestId("submit-btn");
+    this.submitButton = page.locator("#submit-btn");
   }
 
   async goto(path: Paths.Login | Paths.Signup | Paths.VerifyEmail | Paths.ResetPassword) {

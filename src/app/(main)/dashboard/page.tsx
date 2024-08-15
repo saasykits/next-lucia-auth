@@ -8,6 +8,7 @@ import { PostsSkeleton } from "./_components/posts-skeleton";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { Paths } from "@/lib/constants";
 import { myPostsSchema } from "@/server/api/routers/post/post.input";
+import { checkAccess } from "@/lib/auth/actions";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
@@ -23,7 +24,19 @@ export default async function DashboardPage({ searchParams }: Props) {
   const { page, perPage } = myPostsSchema.parse(searchParams);
 
   const { user } = await validateRequest();
+
   if (!user) redirect(Paths.Login);
+
+  const hasAccess = await checkAccess("content-creator")
+
+  // check if user has access to this page
+  if (!hasAccess) {
+    return <div>
+      <h1>Unauthorized</h1>
+      <p>You do not have access to this page</p>
+    </div>;
+  }
+
 
   /**
    * Passing multiple promises to `Promise.all` to fetch data in parallel to prevent waterfall requests.

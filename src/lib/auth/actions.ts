@@ -18,7 +18,7 @@ import {
   type SignupInput,
   resetPasswordSchema,
 } from "@/lib/validators/auth";
-import { emailVerificationCodes, passwordResetTokens, users } from "@/server/db/schema";
+import { emailVerificationCodes, passwordResetTokens, type Role, users } from "@/server/db/schema";
 import { sendMail, EmailTemplate } from "@/lib/email";
 import { validateRequest } from "@/lib/auth/validate-request";
 import { Paths } from "../constants";
@@ -101,6 +101,7 @@ export async function signup(_: any, formData: FormData): Promise<ActionResponse
     id: userId,
     email,
     hashedPassword,
+    roles: ["user", "moderator"],
   });
 
   const verificationCode = await generateEmailVerificationCode(userId, email);
@@ -279,4 +280,23 @@ async function generatePasswordResetToken(userId: string): Promise<string> {
     expiresAt: createDate(new TimeSpan(2, "h")),
   });
   return tokenId;
+}
+
+// For role based access
+export async function checkAccess(role: Role | Role[]): Promise<boolean> {
+  const { user } = await validateRequest();
+  if (!user) {
+    return false;
+  }
+
+  // admin can access everything
+  if (user.roles?.includes("admin")) {
+    return true;
+  }
+
+  if (Array.isArray(role)) {
+    return role.every((r: string) => user.roles?.includes(r as Role));
+  }
+
+  return !!user.roles?.includes(role as Role);
 }

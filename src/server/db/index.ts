@@ -9,3 +9,4 @@ export const connection = postgres(env.DATABASE_URL, {
 });
 
 export const db = drizzle(connection, { schema });
+export type DB = typeof db;

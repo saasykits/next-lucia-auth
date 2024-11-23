@@ -34,9 +34,6 @@ export const users = pgTable(
   }),
 );
 
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
-
 export const sessions = pgTable(
   "sessions",
   {
@@ -97,12 +94,32 @@ export const posts = pgTable(
   }),
 );
 
+/**
+ * Table Relations
+ */
+
+export const sessionRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id],
+  }),
+}));
+
 export const postRelations = relations(posts, ({ one }) => ({
   user: one(users, {
     fields: [posts.userId],
     references: [users.id],
   }),
 }));
+
+/**
+ * Table type definitions
+ */
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type Session = typeof sessions.$inferSelect;
+export type NewSession = typeof sessions.$inferInsert;
 
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;

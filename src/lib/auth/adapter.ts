@@ -21,6 +21,10 @@ export const adapter = {
       where: (table, { eq }) => eq(table.id, sessionId),
       with: { user: { columns: { hashedPassword: false } } },
     }),
+  updateSessionExpiration: (sessionId: string, expiresAt: Date) =>
+    db.update(sessionTable).set({ expiresAt }).where(eq(sessionTable.id, sessionId)),
+  deleteUserSessions: (userId: string) =>
+    db.delete(sessionTable).where(eq(sessionTable.userId, userId)),
 };
 export type Adapter = typeof adapter;
 

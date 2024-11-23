@@ -1,15 +1,11 @@
 "use server";
 
-/* eslint @typescript-eslint/no-explicit-any:0, @typescript-eslint/prefer-optional-chain:0 */
-
 import { z } from "zod";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { generateId, Scrypt } from "lucia";
 import { isWithinExpirationDate, TimeSpan, createDate } from "oslo";
 import { generateRandomString, alphabet } from "oslo/crypto";
 import { eq } from "drizzle-orm";
-import { lucia } from "@/lib/auth";
 import { db } from "@/server/db";
 import {
   loginSchema,
@@ -20,9 +16,10 @@ import {
 } from "@/lib/validators/auth";
 import { emailVerificationCodes, passwordResetTokens, users } from "@/server/db/schema";
 import { sendMail, EmailTemplate } from "@/lib/email";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { utils } from "@/lib/auth/utils";
 import { Paths } from "../constants";
 import { env } from "@/env";
+import { adapter } from "./adapter";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -45,9 +42,7 @@ export async function login(_: any, formData: FormData): Promise<ActionResponse<
 
   const { email, password } = parsed.data;
 
-  const existingUser = await db.query.users.findFirst({
-    where: (table, { eq }) => eq(table.email, email),
-  });
+  const existingUser = await adapter.getUserWithEmail(email);
 
   if (!existingUser || !existingUser?.hashedPassword) {
     return {
@@ -62,9 +57,8 @@ export async function login(_: any, formData: FormData): Promise<ActionResponse<
     };
   }
 
-  const session = await lucia.createSession(existingUser.id, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  const session = await utils.createSession(existingUser.id);
+  utils.setCookie(session.id);
   return redirect(Paths.Dashboard);
 }
 
@@ -106,22 +100,20 @@ export async function signup(_: any, formData: FormData): Promise<ActionResponse
   const verificationCode = await generateEmailVerificationCode(userId, email);
   await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
 
-  const session = await lucia.createSession(userId, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  const session = await utils.createSession(userId);
+  const sessionCookie = utils.setCookie(session.id);
   return redirect(Paths.VerifyEmail);
 }
 
 export async function logout(): Promise<{ error: string } | void> {
-  const { session } = await validateRequest();
+  const { session } = await utils.validateRequest();
   if (!session) {
     return {
       error: "No session found",
     };
   }
-  await lucia.invalidateSession(session.id);
-  const sessionCookie = lucia.createBlankSessionCookie();
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  await utils.invalidateSession(session.id);
+  utils.clearCookie();
   return redirect("/");
 }
 
@@ -129,7 +121,7 @@ export async function resendVerificationEmail(): Promise<{
   error?: string;
   success?: boolean;
 }> {
-  const { user } = await validateRequest();
+  const { user } = await utils.validateRequest();
   if (!user) {
     return redirect(Paths.Login);
   }
@@ -154,7 +146,7 @@ export async function verifyEmail(_: any, formData: FormData): Promise<{ error: 
   if (typeof code !== "string" || code.length !== 8) {
     return { error: "Invalid code" };
   }
-  const { user } = await validateRequest();
+  const { user } = await utils.validateRequest();
   if (!user) {
     return redirect(Paths.Login);
   }
@@ -175,11 +167,10 @@ export async function verifyEmail(_: any, formData: FormData): Promise<{ error: 
 
   if (dbCode.email !== user.email) return { error: "Email does not match" };
 
-  await lucia.invalidateUserSessions(user.id);
+  await utils.invalidateUserSessions(user.id);
   await db.update(users).set({ emailVerified: true }).where(eq(users.id, user.id));
-  const session = await lucia.createSession(user.id, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  const session = await utils.createSession(user.id);
+  utils.setCookie(session.id);
   redirect(Paths.Dashboard);
 }
 
@@ -241,12 +232,11 @@ export async function resetPassword(
 
   if (!isWithinExpirationDate(dbToken.expiresAt)) return { error: "Password reset link expired." };
 
-  await lucia.invalidateUserSessions(dbToken.userId);
+  await utils.invalidateUserSessions(dbToken.userId);
   const hashedPassword = await new Scrypt().hash(password);
   await db.update(users).set({ hashedPassword }).where(eq(users.id, dbToken.userId));
-  const session = await lucia.createSession(dbToken.userId, {});
-  const sessionCookie = lucia.createSessionCookie(session.id);
-  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+  const session = await utils.createSession(dbToken.userId);
+  utils.setCookie(session.id);
   redirect(Paths.Dashboard);
 }
 

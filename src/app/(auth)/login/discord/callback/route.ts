@@ -1,11 +1,11 @@
-import { cookies } from "next/headers";
-import { generateId } from "lucia";
+import { discord } from "@/lib/auth";
+import utils from "@/lib/auth/utils";
+import { Paths } from "@/lib/constants";
+import { db } from "@/server/db";
+import { users } from "@/server/db/schema";
 import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
-import { discord, lucia } from "@/lib/auth";
-import { db } from "@/server/db";
-import { Paths } from "@/lib/constants";
-import { users } from "@/server/db/schema";
+import { cookies } from "next/headers";
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
@@ -48,7 +48,7 @@ export async function GET(request: Request): Promise<Response> {
       : null;
 
     if (!existingUser) {
-      const userId = generateId(21);
+      const userId = utils.generateId(21);
       await db.insert(users).values({
         id: userId,
         email: discordUser.email,
@@ -56,9 +56,8 @@ export async function GET(request: Request): Promise<Response> {
         discordId: discordUser.id,
         avatar,
       });
-      const session = await lucia.createSession(userId, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+      const session = await utils.createSession(userId);
+      utils.setCookie(session.id);
       return new Response(null, {
         status: 302,
         headers: { Location: Paths.Dashboard },
@@ -75,9 +74,9 @@ export async function GET(request: Request): Promise<Response> {
         })
         .where(eq(users.id, existingUser.id));
     }
-    const session = await lucia.createSession(existingUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    const session = await utils.createSession(existingUser.id);
+    utils.setCookie(session.id);
+
     return new Response(null, {
       status: 302,
       headers: { Location: Paths.Dashboard },

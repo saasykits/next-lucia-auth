@@ -2,7 +2,7 @@ import { ExclamationTriangleIcon } from "@/components/icons";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { validateRequest } from "@/lib/auth";
 import Link from "next/link";
 
 export async function VerificiationWarning() {

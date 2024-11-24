@@ -1,11 +1,10 @@
-import React from "react";
+import { ArrowLeftIcon } from "@/components/icons";
+import { validateRequest } from "@/lib/auth";
+import { Paths } from "@/lib/constants";
 import { api } from "@/trpc/server";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { PostEditor } from "./_components/post-editor";
-import { ArrowLeftIcon } from "@/components/icons";
-import Link from "next/link";
-import { validateRequest } from "@/lib/auth/validate-request";
-import { Paths } from "@/lib/constants";
 
 interface Props {
   params: {

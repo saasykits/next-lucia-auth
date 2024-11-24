@@ -1,4 +1,6 @@
-import { generateId } from "lucia";
+import utils from "@/lib/auth/utils";
+import { posts } from "@/server/db/schema";
+import { eq } from "drizzle-orm";
 import type { ProtectedTRPCContext } from "../../trpc";
 import type {
   CreatePostInput,
@@ -8,8 +10,6 @@ import type {
   MyPostsInput,
   UpdatePostInput,
 } from "./post.input";
-import { posts } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
 
 export const listPosts = async (ctx: ProtectedTRPCContext, input: ListPostsInput) => {
   return ctx.db.query.posts.findMany({
@@ -36,7 +36,7 @@ export const getPost = async (ctx: ProtectedTRPCContext, { id }: GetPostInput) =
 };
 
 export const createPost = async (ctx: ProtectedTRPCContext, input: CreatePostInput) => {
-  const id = generateId(15);
+  const id = utils.generateId(15);
 
   await ctx.db.insert(posts).values({
     id,

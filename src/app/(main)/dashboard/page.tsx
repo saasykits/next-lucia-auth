@@ -1,13 +1,13 @@
-import { redirect } from "next/navigation";
 import { env } from "@/env";
+import { validateRequest } from "@/lib/auth";
+import { Paths } from "@/lib/constants";
+import { myPostsSchema } from "@/server/api/routers/post/post.input";
 import { api } from "@/trpc/server";
 import { type Metadata } from "next";
+import { redirect } from "next/navigation";
 import * as React from "react";
 import { Posts } from "./_components/posts";
 import { PostsSkeleton } from "./_components/posts-skeleton";
-import { validateRequest } from "@/lib/auth/validate-request";
-import { Paths } from "@/lib/constants";
-import { myPostsSchema } from "@/server/api/routers/post/post.input";
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),

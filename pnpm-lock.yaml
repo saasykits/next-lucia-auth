@@ -11,9 +11,6 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.9.0(react-hook-form@7.52.1(react@18.2.0))
-      '@lucia-auth/adapter-drizzle':
-        specifier: 1.0.7
-        version: 1.0.7(lucia@3.2.0)
       '@oslojs/encoding':
         specifier: ^1.1.0
         version: 1.1.0
@@ -71,9 +68,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      lucia:
-        specifier: 3.2.0
-        version: 3.2.0
       next:
         specifier: ^14.2.5
         version: 14.2.5(@playwright/test@1.45.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -83,9 +77,6 @@ importers:
       nodemailer:
         specifier: ^6.9.14
         version: 6.9.14
-      oslo:
-        specifier: ^1.2.1
-        version: 1.2.1
       postgres:
         specifier: ^3.4.4
         version: 3.4.4
@@ -710,11 +701,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
-
-  '@lucia-auth/adapter-drizzle@1.0.7':
-    resolution: {integrity: sha512-X/V7fLBca8EC/gPXCntwbQpb0+F9oEuRoHElvsi9rCrdnGhCMNxHgwAvgiQ6pes+rIYpyvx4n3hvjqo/fPo03A==}
-    peerDependencies:
-      lucia: 3.x
 
   '@next/env@14.2.5':
     resolution: {integrity: sha512-/zZGkrTOsraVfYjGP8uM0p6r0BDT6xWpkjdVbcz66PJVSpwXX3yNiRycxAuDfBKGWBrZBXRuK/YVlkNgxHGwmA==}
@@ -2449,9 +2435,6 @@ packages:
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
 
-  lucia@3.2.0:
-    resolution: {integrity: sha512-eXMxXwk6hqtjRTj4W/x3EnTUtAztLPm0p2N2TEBMDEbakDLXiYnDQ9z/qahjPdPdhPguQc+vwO0/88zIWxlpuw==}
-
   markdown-table@3.0.3:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
 
@@ -2701,9 +2684,6 @@ packages:
 
   oslo@1.2.0:
     resolution: {integrity: sha512-OoFX6rDsNcOQVAD2gQD/z03u4vEjWZLzJtwkmgfRF+KpQUXwdgEXErD7zNhyowmHwHefP+PM9Pw13pgpHMRlzw==}
-
-  oslo@1.2.1:
-    resolution: {integrity: sha512-HfIhB5ruTdQv0XX2XlncWQiJ5SIHZ7NHZhVyHth0CSZ/xzge00etRyYy/3wp/Dsu+PkxMC+6+B2lS/GcKoewkA==}
 
   p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
@@ -3709,10 +3689,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.0
-
-  '@lucia-auth/adapter-drizzle@1.0.7(lucia@3.2.0)':
-    dependencies:
-      lucia: 3.2.0
 
   '@next/env@14.2.5': {}
 
@@ -5402,10 +5378,6 @@ snapshots:
 
   lru-cache@10.4.3: {}
 
-  lucia@3.2.0:
-    dependencies:
-      oslo: 1.2.0
-
   markdown-table@3.0.3: {}
 
   mdast-util-find-and-replace@3.0.1:
@@ -5865,11 +5837,6 @@ snapshots:
       word-wrap: 1.2.5
 
   oslo@1.2.0:
-    dependencies:
-      '@node-rs/argon2': 1.7.0
-      '@node-rs/bcrypt': 1.9.0
-
-  oslo@1.2.1:
     dependencies:
       '@node-rs/argon2': 1.7.0
       '@node-rs/bcrypt': 1.9.0

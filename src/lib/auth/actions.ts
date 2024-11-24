@@ -26,7 +26,7 @@ export interface ActionResponse<T> {
   formError?: string;
 }
 
-export async function login(_: any, formData: FormData): Promise<ActionResponse<LoginInput>> {
+export async function login(_: unknown, formData: FormData): Promise<ActionResponse<LoginInput>> {
   const obj = Object.fromEntries(formData.entries());
 
   const parsed = loginSchema.safeParse(obj);

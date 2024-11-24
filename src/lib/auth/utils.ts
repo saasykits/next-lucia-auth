@@ -1,5 +1,6 @@
 import "server-only";
-import { encodeBase32LowerCaseNoPadding } from "@oslojs/encoding";
+import crypto from "crypto";
+import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/encoding";
 import { adapter } from "./adapter";
 import type { AuthSession, AuthUser } from "./adapter";
 import { cookies } from "next/headers";
@@ -82,6 +83,13 @@ function isWithinExpirationDate(date: Date): boolean {
   return Date.now() < date.getTime();
 }
 
+async function hashPassword(password: string): Promise<string> {
+  return new Promise((resolve)=>{
+    const salt = encodeHexLowerCase(crypto.getRandomValues(new Uint8Array(16)));
+    const hashed = crypto.scrypt(password, )
+  })
+}
+
 async function validateRequest(): Promise<Omit<ReturnType<typeof validateSession>, "fresh">> {
   const sessionId = cookies().get(sessionCookieName)?.value ?? null;
   if (!sessionId) {
@@ -141,4 +149,31 @@ export class TimeSpan {
   public transform(x: number): TimeSpan {
     return new TimeSpan(Math.round(this.milliseconds() * x), "ms");
   }
+}
+export class Scrypt   {
+	async hash(password: string): Promise<string> {
+		const salt = encodeHexLowerCase(crypto.getRandomValues(new Uint8Array(16)));
+		const key = await generateScryptKey(password.normalize("NFKC"), salt);
+		return `${salt}:${encodeHexLowerCase(key)}`;
+	}
+	async verify(hash: string, password: string): Promise<boolean> {
+		const parts = hash.split(":");
+		if (parts.length !== 2) return false;
+
+		const [salt, key] = parts;
+		const targetKey = await generateScryptKey(password.normalize("NFKC"), salt);
+		return constantTimeEqual(targetKey, decodeHex(key));
+	}
+}
+
+async function generateScryptKey(data: string, salt: string, blockSize = 16): Promise<Uint8Array> {
+	const encodedData = new TextEncoder().encode(data);
+	const encodedSalt = new TextEncoder().encode(salt);
+	const keyUint8Array = await crypto.scrypt(encodedData, encodedSalt, {
+		N: 16384,
+		r: blockSize,
+		p: 1,
+		dkLen: 64
+	});
+	return new Uint8Array(keyUint8Array);
 }

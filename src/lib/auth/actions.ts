@@ -1,25 +1,19 @@
 "use server";
 
-import { z } from "zod";
-import { redirect } from "next/navigation";
-import { generateId, Scrypt } from "lucia";
-import { isWithinExpirationDate, TimeSpan, createDate } from "oslo";
-import { generateRandomString, alphabet } from "oslo/crypto";
-import { eq } from "drizzle-orm";
-import { db } from "@/server/db";
+import { env } from "@/env";
+import { EmailTemplate, sendMail } from "@/lib/email";
 import {
   loginSchema,
+  resetPasswordSchema,
   signupSchema,
   type LoginInput,
   type SignupInput,
-  resetPasswordSchema,
 } from "@/lib/validators/auth";
-import { emailVerificationCodes, passwordResetTokens, users } from "@/server/db/schema";
-import { sendMail, EmailTemplate } from "@/lib/email";
-import { utils } from "@/lib/auth/utils";
+import { redirect } from "next/navigation";
+import { z } from "zod";
 import { Paths } from "../constants";
-import { env } from "@/env";
-import { adapter } from "./adapter";
+import adapter from "./adapter";
+import utils, { TimeSpan } from "./utils";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -44,25 +38,23 @@ export async function login(_: unknown, formData: FormData): Promise<ActionRespo
 
   const existingUser = await adapter.getUserWithEmail(email);
 
-  if (!existingUser || !existingUser?.hashedPassword) {
+  if (!existingUser?.hashedPassword) {
     return {
       formError: "Incorrect email or password",
     };
   }
-
-  const validPassword = await new Scrypt().verify(existingUser.hashedPassword, password);
+  const validPassword = await utils.verifyPassword(password, existingUser.hashedPassword);
   if (!validPassword) {
     return {
       formError: "Incorrect email or password",
     };
   }
-
   const session = await utils.createSession(existingUser.id);
   utils.setCookie(session.id);
   return redirect(Paths.Dashboard);
 }
 
-export async function signup(_: any, formData: FormData): Promise<ActionResponse<SignupInput>> {
+export async function signup(_: unknown, formData: FormData): Promise<ActionResponse<SignupInput>> {
   const obj = Object.fromEntries(formData.entries());
 
   const parsed = signupSchema.safeParse(obj);
@@ -78,10 +70,7 @@ export async function signup(_: any, formData: FormData): Promise<ActionResponse
 
   const { email, password } = parsed.data;
 
-  const existingUser = await db.query.users.findFirst({
-    where: (table, { eq }) => eq(table.email, email),
-    columns: { email: true },
-  });
+  const existingUser = await adapter.getUserWithEmail(email);
 
   if (existingUser) {
     return {
@@ -89,19 +78,14 @@ export async function signup(_: any, formData: FormData): Promise<ActionResponse
     };
   }
 
-  const userId = generateId(21);
-  const hashedPassword = await new Scrypt().hash(password);
-  await db.insert(users).values({
-    id: userId,
-    email,
-    hashedPassword,
-  });
-
+  const userId = utils.generateId(21);
+  const hashedPassword = await utils.hashPassword(password);
+  await adapter.insertUser({ id: userId, email, hashedPassword });
   const verificationCode = await generateEmailVerificationCode(userId, email);
   await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
 
   const session = await utils.createSession(userId);
-  const sessionCookie = utils.setCookie(session.id);
+  utils.setCookie(session.id);
   return redirect(Paths.VerifyEmail);
 }
 
@@ -125,12 +109,9 @@ export async function resendVerificationEmail(): Promise<{
   if (!user) {
     return redirect(Paths.Login);
   }
-  const lastSent = await db.query.emailVerificationCodes.findFirst({
-    where: (table, { eq }) => eq(table.userId, user.id),
-    columns: { expiresAt: true },
-  });
 
-  if (lastSent && isWithinExpirationDate(lastSent.expiresAt)) {
+  const lastSent = await adapter.getEmailVerificationCodeWithUserId(user.id);
+  if (lastSent && utils.isWithinExpirationDate(lastSent.expiresAt)) {
     return {
       error: `Please wait ${timeFromNow(lastSent.expiresAt)} before resending`,
     };
@@ -141,7 +122,10 @@ export async function resendVerificationEmail(): Promise<{
   return { success: true };
 }
 
-export async function verifyEmail(_: any, formData: FormData): Promise<{ error: string } | void> {
+export async function verifyEmail(
+  _: unknown,
+  formData: FormData,
+): Promise<{ error: string } | void> {
   const code = formData.get("code");
   if (typeof code !== "string" || code.length !== 8) {
     return { error: "Invalid code" };
@@ -151,31 +135,24 @@ export async function verifyEmail(_: any, formData: FormData): Promise<{ error: 
     return redirect(Paths.Login);
   }
 
-  const dbCode = await db.transaction(async (tx) => {
-    const item = await tx.query.emailVerificationCodes.findFirst({
-      where: (table, { eq }) => eq(table.userId, user.id),
-    });
-    if (item) {
-      await tx.delete(emailVerificationCodes).where(eq(emailVerificationCodes.id, item.id));
-    }
-    return item;
-  });
+  const dbCode = await adapter.getAndDeleteEmailVerificationCodeWithUserId(user.id);
 
   if (!dbCode || dbCode.code !== code) return { error: "Invalid verification code" };
 
-  if (!isWithinExpirationDate(dbCode.expiresAt)) return { error: "Verification code expired" };
+  if (!utils.isWithinExpirationDate(dbCode.expiresAt))
+    return { error: "Verification code expired" };
 
   if (dbCode.email !== user.email) return { error: "Email does not match" };
 
   await utils.invalidateUserSessions(user.id);
-  await db.update(users).set({ emailVerified: true }).where(eq(users.id, user.id));
+  await adapter.updateUser(user.id, { emailVerified: true });
   const session = await utils.createSession(user.id);
   utils.setCookie(session.id);
   redirect(Paths.Dashboard);
 }
 
 export async function sendPasswordResetLink(
-  _: any,
+  _: unknown,
   formData: FormData,
 ): Promise<{ error?: string; success?: boolean }> {
   const email = formData.get("email");
@@ -184,9 +161,7 @@ export async function sendPasswordResetLink(
     return { error: "Provided email is invalid." };
   }
   try {
-    const user = await db.query.users.findFirst({
-      where: (table, { eq }) => eq(table.email, parsed.data),
-    });
+    const user = await adapter.getUserWithEmail(parsed.data);
 
     if (!user || !user.emailVerified) return { error: "Provided email is invalid." };
 
@@ -203,7 +178,7 @@ export async function sendPasswordResetLink(
 }
 
 export async function resetPassword(
-  _: any,
+  _: unknown,
   formData: FormData,
 ): Promise<{ error?: string; success?: boolean }> {
   const obj = Object.fromEntries(formData.entries());
@@ -218,23 +193,16 @@ export async function resetPassword(
   }
   const { token, password } = parsed.data;
 
-  const dbToken = await db.transaction(async (tx) => {
-    const item = await tx.query.passwordResetTokens.findFirst({
-      where: (table, { eq }) => eq(table.id, token),
-    });
-    if (item) {
-      await tx.delete(passwordResetTokens).where(eq(passwordResetTokens.id, item.id));
-    }
-    return item;
-  });
-
+  const dbToken = await adapter.getAndDeletePasswordResetToken(token);
   if (!dbToken) return { error: "Invalid password reset link" };
 
-  if (!isWithinExpirationDate(dbToken.expiresAt)) return { error: "Password reset link expired." };
+  if (!utils.isWithinExpirationDate(dbToken.expiresAt)) {
+    return { error: "Password reset link expired." };
+  }
 
   await utils.invalidateUserSessions(dbToken.userId);
-  const hashedPassword = await new Scrypt().hash(password);
-  await db.update(users).set({ hashedPassword }).where(eq(users.id, dbToken.userId));
+  const hashedPassword = await utils.hashPassword(password);
+  await adapter.updateUser(dbToken.userId, { hashedPassword });
   const session = await utils.createSession(dbToken.userId);
   utils.setCookie(session.id);
   redirect(Paths.Dashboard);
@@ -249,24 +217,24 @@ const timeFromNow = (time: Date) => {
 };
 
 async function generateEmailVerificationCode(userId: string, email: string): Promise<string> {
-  await db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, userId));
-  const code = generateRandomString(8, alphabet("0-9")); // 8 digit code
-  await db.insert(emailVerificationCodes).values({
+  await adapter.deleteUserEmailVerificationCodes(userId);
+  const code = utils.generateId(8);
+  await adapter.insertEmailVerificationCode({
     userId,
     email,
     code,
-    expiresAt: createDate(new TimeSpan(10, "m")), // 10 minutes
+    expiresAt: utils.createTimeSpanDate(new TimeSpan(10, "m")),
   });
   return code;
 }
 
 async function generatePasswordResetToken(userId: string): Promise<string> {
-  await db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId));
-  const tokenId = generateId(40);
-  await db.insert(passwordResetTokens).values({
+  await adapter.deleteUserPasswordResetTokens(userId);
+  const tokenId = utils.generateId(40);
+  await adapter.insertPasswordResetToken({
     id: tokenId,
     userId,
-    expiresAt: createDate(new TimeSpan(2, "h")),
+    expiresAt: utils.createTimeSpanDate(new TimeSpan(2, "h")),
   });
   return tokenId;
 }

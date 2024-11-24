@@ -1,14 +1,14 @@
+import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 import { relations } from "drizzle-orm";
 import {
-  pgTableCreator,
-  serial,
   boolean,
   index,
+  pgTableCreator,
+  serial,
   text,
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 
 export const pgTable = pgTableCreator((name) => `${prefix}_${name}`);
 
@@ -123,3 +123,9 @@ export type NewSession = typeof sessions.$inferInsert;
 
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
+
+export type EmailVerificationCode = typeof emailVerificationCodes.$inferSelect;
+export type NewEmailVerificationCode = typeof emailVerificationCodes.$inferInsert;
+
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type NewPasswordResetToken = typeof passwordResetTokens.$inferInsert;

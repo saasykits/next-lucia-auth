@@ -13,7 +13,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { Paths } from "../constants";
 import adapter from "./adapter";
-import utils, { TimeSpan } from "./utils";
+import utils from "./utils";
 
 export interface ActionResponse<T> {
   fieldError?: Partial<Record<keyof T, string | undefined>>;
@@ -223,7 +223,7 @@ async function generateEmailVerificationCode(userId: string, email: string): Pro
     userId,
     email,
     code,
-    expiresAt: utils.createTimeSpanDate(new TimeSpan(10, "m")),
+    expiresAt: new Date(Date.now() + 1000 * 60 * 10) /* 10 minutes */,
   });
   return code;
 }
@@ -234,7 +234,7 @@ async function generatePasswordResetToken(userId: string): Promise<string> {
   await adapter.insertPasswordResetToken({
     id: tokenId,
     userId,
-    expiresAt: utils.createTimeSpanDate(new TimeSpan(2, "h")),
+    expiresAt: new Date(Date.now() + 1000 * 60 * 120) /* 2 hours */,
   });
   return tokenId;
 }

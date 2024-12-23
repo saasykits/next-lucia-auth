@@ -1,12 +1,8 @@
-# Next.js Auth Starter Template
+# Next.js Session-based Auth Starter Template
 
 ## Motivation
 
-Implementing authentication in Next.js, especially Email+Password authentication, can be challenging. NextAuth intentionally limits email password functionality to discourage the use of passwords due to security risks and added complexity. However, in certain projects, clients may require user password authentication. Lucia offers a flexible alternative to NextAuth.js, providing more customization options without compromising on security. This template serves as a starting point for building a Next.js app with Lucia authentication.
-
-## Lucia vs. NextAuth.js
-
-Lucia is less opinionated than NextAuth, offering greater flexibility for customization. While Lucia involves more setup, it provides a higher degree of flexibility, making it a suitable choice for projects requiring unique authentication configurations.
+Implementing authentication in Next.js, especially Email+Password authentication, can be challenging. NextAuth intentionally limits email password functionality to discourage the use of passwords due to security risks and added complexity. However, in certain projects, clients may require user password authentication. Lucia offers a flexible alternative to NextAuth.js, providing more customization options without compromising on security. This template serves as a starting point for building a Next.js app with secure session based authentication.
 
 ## Key Features
 
@@ -14,7 +10,7 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 - **Authorization:** 🔒 Easily manage public and protected routes within the `app directory`.
 - **Email Verification:** 📧 Verify user identities through email.
 - **Password Reset:** 🔑 Streamline password resets by sending email password reset links.
-- **Lucia + tRPC:** 🔄 Similar to NextAuth with tRPC, granting access to sessions and user information through tRPC procedures.
+- **Auth + tRPC:** 🔄 Similar to NextAuth with tRPC, granting access to sessions and user information through tRPC procedures.
 - **E2E tests:** 🧪 Catch every issue before your users do with comprehensive E2E testing.
 - **Stripe Payment:** 💳 Setup user subscriptions seamlessly with stripe.
 - **Email template with react-email:** ✉️ Craft your email templates using React.
@@ -24,7 +20,6 @@ Lucia is less opinionated than NextAuth, offering greater flexibility for custom
 ## Tech Stack
 
 - [Next.js](https://nextjs.org)
-- [Lucia](https://lucia-auth.com/)
 - [tRPC](https://trpc.io)
 - [Drizzle ORM](https://orm.drizzle.team/)
 - [PostgreSQL](https://www.postgresql.org/)

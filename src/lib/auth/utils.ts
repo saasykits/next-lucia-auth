@@ -2,9 +2,11 @@ import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/enco
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import "server-only";
-import { sessionCookieName, sessionCookieOptions, sessionExpiration } from ".";
+import { sessionCookieName, sessionCookieOptions } from ".";
 import type { AuthSession, AuthUser } from "./adapter";
 import adapter from "./adapter";
+
+const sessionExpiration = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 const utils = {
   createSession,
@@ -18,7 +20,6 @@ const utils = {
   hashPassword,
   verifyPassword,
   isWithinExpirationDate,
-  createTimeSpanDate,
   verifyRequestOrigin,
 };
 export default utils;
@@ -59,10 +60,10 @@ async function validateSession(
   const { hashedPassword: _, ...user } = dbUser;
 
   const activePeriodExpirationDate = new Date(
-    dbSession.expiresAt.getTime() - sessionExpiration.milliseconds() / 2,
+    dbSession.expiresAt.getTime() - sessionExpiration / 2,
   );
   if (!isWithinExpirationDate(activePeriodExpirationDate)) {
-    const newExpirationDate = new Date(Date.now() + sessionExpiration.milliseconds());
+    const newExpirationDate = createExpiryDate(sessionExpiration);
     await adapter.updateSessionExpiration(sessionId, newExpirationDate);
     return { session, user, fresh: true };
   }
@@ -73,7 +74,7 @@ async function validateSession(
 function setCookie(sessionId: string) {
   cookies().set(sessionCookieName, sessionId, {
     ...sessionCookieOptions,
-    expires: Date.now() + sessionExpiration.milliseconds(),
+    expires: createExpiryDate(sessionExpiration),
   });
 }
 function clearCookie() {
@@ -118,42 +119,9 @@ function generateId(length: number): string {
     .join("");
 }
 
-function createTimeSpanDate(timeSpan: TimeSpan) {
-  return new Date(Date.now() + timeSpan.milliseconds());
-}
-
-export type TimeSpanUnit = "ms" | "s" | "m" | "h" | "d" | "w";
-export class TimeSpan {
-  constructor(value: number, unit: TimeSpanUnit) {
-    this.value = value;
-    this.unit = unit;
-  }
-  public value: number;
-  public unit: TimeSpanUnit;
-  public milliseconds(): number {
-    switch (this.unit) {
-      case "ms":
-        return this.value;
-      case "s":
-        return this.value * 1000;
-      case "m":
-        return this.value * 1000 * 60;
-      case "h":
-        return this.value * 1000 * 60 * 60;
-      case "d":
-        return this.value * 1000 * 60 * 60 * 24;
-      case "w":
-        return this.value * 1000 * 60 * 60 * 24 * 7;
-      default:
-        throw new Error("Invalid unit");
-    }
-  }
-  public seconds(): number {
-    return this.milliseconds() / 1000;
-  }
-  public transform(x: number): TimeSpan {
-    return new TimeSpan(Math.round(this.milliseconds() * x), "ms");
-  }
+/** @param timeSpan The time span in milliseconds */
+function createExpiryDate(timeSpan: number) {
+  return new Date(Date.now() + timeSpan);
 }
 
 async function hashPassword(str: string) {

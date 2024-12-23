@@ -2,7 +2,7 @@ import { env } from "@/env.js";
 import { absoluteUrl } from "@/lib/utils";
 import { Discord } from "arctic";
 import { cache } from "react";
-import utils, { TimeSpan } from "./utils";
+import utils from "./utils";
 
 export const discord = new Discord(
   env.DISCORD_CLIENT_ID,
@@ -10,7 +10,6 @@ export const discord = new Discord(
   absoluteUrl("/login/discord/callback"),
 );
 
-export const sessionExpiration = new TimeSpan(30, "d");
 export const sessionCookieName = "auth_session";
 export const sessionCookieOptions = {
   httpOnly: true,

@@ -9,12 +9,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
   const originHeader = request.headers.get("Origin");
   const hostHeader = request.headers.get("Host");
-  if (!originHeader || !hostHeader || !utils.verifyRequestOrigin(originHeader, [hostHeader])) {
-    return new NextResponse(null, {
-      status: 403,
-    });
-  }
-  return NextResponse.next();
+  console.log("originHeader", originHeader);
+  console.log("hostHeader", hostHeader);
 }
 
 export const config = {

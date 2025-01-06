@@ -50,7 +50,7 @@ export async function login(_: unknown, formData: FormData): Promise<ActionRespo
     };
   }
   const session = await utils.createSession(existingUser.id);
-  utils.setCookie(session.id);
+  await utils.setCookie(session.id);
   return redirect(Paths.Dashboard);
 }
 
@@ -85,7 +85,7 @@ export async function signup(_: unknown, formData: FormData): Promise<ActionResp
   await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
 
   const session = await utils.createSession(userId);
-  utils.setCookie(session.id);
+  await utils.setCookie(session.id);
   return redirect(Paths.VerifyEmail);
 }
 
@@ -97,7 +97,7 @@ export async function logout(): Promise<{ error: string } | void> {
     };
   }
   await utils.invalidateSession(session.id);
-  utils.clearCookie();
+  await utils.clearCookie();
   return redirect("/");
 }
 
@@ -147,7 +147,7 @@ export async function verifyEmail(
   await utils.invalidateUserSessions(user.id);
   await adapter.updateUser(user.id, { emailVerified: true });
   const session = await utils.createSession(user.id);
-  utils.setCookie(session.id);
+  await utils.setCookie(session.id);
   redirect(Paths.Dashboard);
 }
 
@@ -204,7 +204,7 @@ export async function resetPassword(
   const hashedPassword = await utils.hashPassword(password);
   await adapter.updateUser(dbToken.userId, { hashedPassword });
   const session = await utils.createSession(dbToken.userId);
-  utils.setCookie(session.id);
+  await utils.setCookie(session.id);
   redirect(Paths.Dashboard);
 }
 

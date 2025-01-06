@@ -2,9 +2,9 @@ import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/enco
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import "server-only";
-import { sessionCookieName, sessionCookieOptions } from ".";
 import type { AuthSession, AuthUser } from "./adapter";
 import adapter from "./adapter";
+import { sessionCookieName, sessionCookieOptions } from "./config";
 
 const sessionExpiration = 30 * 24 * 60 * 60 * 1000; // 30 days
 
@@ -71,14 +71,16 @@ async function validateSession(
   return { session, user, fresh: false };
 }
 
-function setCookie(sessionId: string) {
-  cookies().set(sessionCookieName, sessionId, {
+async function setCookie(sessionId: string) {
+  const cookieStore = await cookies();
+  cookieStore.set(sessionCookieName, sessionId, {
     ...sessionCookieOptions,
     expires: createExpiryDate(sessionExpiration),
   });
 }
-function clearCookie() {
-  cookies().set(sessionCookieName, "", {
+async function clearCookie() {
+  const cookieStore = await cookies();
+  cookieStore.set(sessionCookieName, "", {
     ...sessionCookieOptions,
     expires: new Date(0),
   });
@@ -93,7 +95,8 @@ function isWithinExpirationDate(date: Date): boolean {
 }
 
 async function validateRequest(): Promise<Omit<ReturnType<typeof validateSession>, "fresh">> {
-  const sessionId = cookies().get(sessionCookieName)?.value ?? null;
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get(sessionCookieName)?.value ?? null;
   if (!sessionId) {
     return { user: null, session: null };
   }
@@ -101,10 +104,10 @@ async function validateRequest(): Promise<Omit<ReturnType<typeof validateSession
   // next.js throws when you attempt to set cookie when rendering page
   try {
     if (result.session && result.fresh) {
-      setCookie(result.session.id);
+      await setCookie(result.session.id);
     }
     if (!result.session) {
-      clearCookie();
+      await clearCookie();
     }
   } catch {
     console.error("Failed to set session cookie");

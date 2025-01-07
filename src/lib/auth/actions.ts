@@ -9,66 +9,82 @@ import { Paths } from "../constants";
 import adapter from "./adapter";
 import utils from "./utils";
 
-export type FormSubmitActionOutput<T extends z.ZodRawShape> = {
+export type ActionOutput<T extends z.ZodRawShape> = {
   success: boolean;
   message?: string;
-  data: z.input<z.ZodObject<T>> | null | undefined;
+  input: z.input<z.ZodObject<T>> | null | undefined;
   errors?: z.typeToFlattenedError<T>;
 };
-export type FormSubmitActionFn<T extends z.ZodRawShape> = (
-  prevState: FormSubmitActionOutput<T> | null | undefined,
+export type ActionFn<T extends z.ZodRawShape> = (
+  prevState: ActionOutput<T> | null | undefined,
   formData: FormData,
-) => Promise<FormSubmitActionOutput<T>>;
+) => Promise<ActionOutput<T>>;
 
-export type FormSubmitActionCallback<T extends z.ZodRawShape> = (
-  prevState: FormSubmitActionOutput<T> | null | undefined,
+export type ActionCallback<T extends z.ZodRawShape> = (
+  prevState: ActionOutput<T> | null | undefined,
   data: z.infer<z.ZodObject<T>>,
-) => Promise<FormSubmitActionOutput<T>>;
+) => Promise<ActionOutput<T>>;
 
-function formSubmitAction<T extends z.ZodRawShape>(
+function action<T extends z.ZodRawShape>(
   schema: z.ZodObject<T>,
-  callback: FormSubmitActionCallback<T>,
-): FormSubmitActionFn<T> {
+  callback: ActionCallback<T>,
+): ActionFn<T> {
   return async (prevState, formData) => {
     const obj = Object.fromEntries(formData.entries());
     const parsed = schema.safeParse(obj);
     if (!parsed.success) {
       const errors = parsed.error.flatten();
-      return { success: false, data: obj, errors } as FormSubmitActionOutput<T>;
+      return {
+        success: false,
+        message: "Invalid form input",
+        input: obj,
+        errors,
+      } as ActionOutput<T>;
     }
     return callback(prevState, parsed.data);
   };
 }
 
-export const loginAction = formSubmitAction(loginSchema, async (_, data) => {
-  const { email, password } = data;
-  const existingUser = await adapter.getUserWithEmail(email);
-  if (!existingUser?.hashedPassword) {
+export const loginAction = action(loginSchema, async (_, input) => {
+  const { email, password } = input;
+  try {
+    const existingUser = await adapter.getUserWithEmail(email);
+
+    if (!existingUser?.hashedPassword) {
+      return {
+        success: false,
+        input,
+        message: "Incorrect email or password",
+      };
+    }
+    const validPassword = await utils.verifyPassword(password, existingUser.hashedPassword);
+    if (!validPassword) {
+      return {
+        success: false,
+        input,
+        message: "Incorrect email or password",
+      };
+    }
+    const session = await utils.createSession(existingUser.id);
+    await utils.setCookie(session.id);
+  } catch (error) {
+    console.error(error);
     return {
       success: false,
-      data,
-      message: "Incorrect email or password",
+      input,
+      message: "An error occurred",
     };
   }
-  const validPassword = await utils.verifyPassword(password, existingUser.hashedPassword);
-  if (!validPassword) {
-    return {
-      success: false,
-      data,
-      message: "Incorrect email or password",
-    };
-  }
-  const session = await utils.createSession(existingUser.id);
-  await utils.setCookie(session.id);
+
   redirect(Paths.Dashboard);
 });
 
-export const signupAction = formSubmitAction(signupSchema, async (_, data) => {
-  const { email, password } = data;
+export const signupAction = action(signupSchema, async (_, input) => {
+  const { email, password } = input;
   const existingUser = await adapter.getUserWithEmail(email);
   if (existingUser) {
     return {
-      data,
+      input,
       success: false,
       message: "Cannot create account with that email",
     };

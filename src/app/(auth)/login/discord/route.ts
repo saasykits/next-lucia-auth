@@ -1,15 +1,16 @@
-import { cookies } from "next/headers";
-import { generateState } from "arctic";
-import { discord } from "@/lib/auth";
 import { env } from "@/env";
+import { discord } from "@/lib/auth";
+import { generateState } from "arctic";
+import { cookies } from "next/headers";
 
 export async function GET(): Promise<Response> {
   const state = generateState();
   const url = await discord.createAuthorizationURL(state, {
     scopes: ["identify", "email"],
   });
+  const cookieStore = await cookies();
 
-  cookies().set("discord_oauth_state", state, {
+  cookieStore.set("discord_oauth_state", state, {
     path: "/",
     secure: env.NODE_ENV === "production",
     httpOnly: true,

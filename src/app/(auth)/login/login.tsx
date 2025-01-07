@@ -33,43 +33,29 @@ export function Login() {
           <div className="flex-grow border-t border-muted" />
         </div>
         <form action={formAction} className="grid gap-4">
-          <div className="space-y-2">
-            <TextInput
-              label="Email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              defaultValue={state?.data?.email}
-              placeholder="email@example.com"
-              error={!!state?.errors?.fieldErrors.email}
-              helperText={state?.errors?.fieldErrors.email?.[0]}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <TextInput
-              label="Password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              defaultValue={state?.data?.password}
-              placeholder="********"
-              error={!!state?.errors?.fieldErrors.password}
-              helperText={state?.errors?.fieldErrors.password?.[0]}
-            />
-          </div>
-
-          <div className="flex flex-wrap justify-between">
-            <Button variant={"link"} size={"sm"} className="p-0" asChild>
-              <Link href={"/signup"}>Not signed up? Sign up now.</Link>
-            </Button>
-            <Button variant={"link"} size={"sm"} className="p-0" asChild>
-              <Link href={"/reset-password"}>Forgot password?</Link>
-            </Button>
-          </div>
-
+          <TextInput
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            defaultValue={state?.input?.email}
+            placeholder="email@example.com"
+            error={!!state?.errors?.fieldErrors.email}
+            helperText={state?.errors?.fieldErrors.email?.[0]}
+          />
+          <TextInput
+            label="Password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            defaultValue={state?.input?.password}
+            placeholder="********"
+            minLength={8}
+            error={!!state?.errors?.fieldErrors.password}
+            helperText={state?.errors?.fieldErrors.password?.[0]}
+          />
           {state?.message ? (
             <p
               className={cn(
@@ -82,6 +68,15 @@ export function Login() {
               {state?.message}
             </p>
           ) : null}
+          <div className="flex flex-wrap justify-between">
+            <Button variant={"link"} size={"sm"} className="p-0" asChild>
+              <Link href={"/signup"}>Not signed up? Sign up now.</Link>
+            </Button>
+            <Button variant={"link"} size={"sm"} className="p-0" asChild>
+              <Link href={"/reset-password"}>Forgot password?</Link>
+            </Button>
+          </div>
+
           <SubmitButton className="w-full" aria-label="submit-btn">
             Log In
           </SubmitButton>

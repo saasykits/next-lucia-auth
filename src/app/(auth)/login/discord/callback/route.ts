@@ -11,7 +11,8 @@ export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  const storedState = cookies().get("discord_oauth_state")?.value ?? null;
+  const cookieStore = await cookies();
+  const storedState = cookieStore.get("discord_oauth_state")?.value ?? null;
 
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
@@ -57,7 +58,7 @@ export async function GET(request: Request): Promise<Response> {
         avatar,
       });
       const session = await utils.createSession(userId);
-      utils.setCookie(session.id);
+      await utils.setCookie(session.id);
       return new Response(null, {
         status: 302,
         headers: { Location: Paths.Dashboard },
@@ -75,7 +76,7 @@ export async function GET(request: Request): Promise<Response> {
         .where(eq(users.id, existingUser.id));
     }
     const session = await utils.createSession(existingUser.id);
-    utils.setCookie(session.id);
+    await utils.setCookie(session.id);
 
     return new Response(null, {
       status: 302,

@@ -2,92 +2,86 @@
 
 import { env } from "@/env";
 import { EmailTemplate, sendMail } from "@/lib/email";
-import {
-  loginSchema,
-  resetPasswordSchema,
-  signupSchema,
-  type LoginInput,
-  type SignupInput,
-} from "@/lib/validators/auth";
+import { loginSchema, resetPasswordSchema, signupSchema } from "@/lib/validators/auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { Paths } from "../constants";
 import adapter from "./adapter";
 import utils from "./utils";
 
-export interface ActionResponse<T> {
-  fieldError?: Partial<Record<keyof T, string | undefined>>;
-  formError?: string;
+export type FormSubmitActionOutput<T extends z.ZodRawShape> = {
+  success: boolean;
+  message?: string;
+  data: z.input<z.ZodObject<T>> | null | undefined;
+  errors?: z.typeToFlattenedError<T>;
+};
+export type FormSubmitActionFn<T extends z.ZodRawShape> = (
+  prevState: FormSubmitActionOutput<T> | null | undefined,
+  formData: FormData,
+) => Promise<FormSubmitActionOutput<T>>;
+
+export type FormSubmitActionCallback<T extends z.ZodRawShape> = (
+  prevState: FormSubmitActionOutput<T> | null | undefined,
+  data: z.infer<z.ZodObject<T>>,
+) => Promise<FormSubmitActionOutput<T>>;
+
+function formSubmitAction<T extends z.ZodRawShape>(
+  schema: z.ZodObject<T>,
+  callback: FormSubmitActionCallback<T>,
+): FormSubmitActionFn<T> {
+  return async (prevState, formData) => {
+    const obj = Object.fromEntries(formData.entries());
+    const parsed = schema.safeParse(obj);
+    if (!parsed.success) {
+      const errors = parsed.error.flatten();
+      return { success: false, data: obj, errors } as FormSubmitActionOutput<T>;
+    }
+    return callback(prevState, parsed.data);
+  };
 }
 
-export async function login(_: unknown, formData: FormData): Promise<ActionResponse<LoginInput>> {
-  const obj = Object.fromEntries(formData.entries());
-
-  const parsed = loginSchema.safeParse(obj);
-  if (!parsed.success) {
-    const err = parsed.error.flatten();
-    return {
-      fieldError: {
-        email: err.fieldErrors.email?.[0],
-        password: err.fieldErrors.password?.[0],
-      },
-    };
-  }
-
-  const { email, password } = parsed.data;
-
+export const loginAction = formSubmitAction(loginSchema, async (_, data) => {
+  const { email, password } = data;
   const existingUser = await adapter.getUserWithEmail(email);
-
   if (!existingUser?.hashedPassword) {
     return {
-      formError: "Incorrect email or password",
+      success: false,
+      data,
+      message: "Incorrect email or password",
     };
   }
   const validPassword = await utils.verifyPassword(password, existingUser.hashedPassword);
   if (!validPassword) {
     return {
-      formError: "Incorrect email or password",
+      success: false,
+      data,
+      message: "Incorrect email or password",
     };
   }
   const session = await utils.createSession(existingUser.id);
   await utils.setCookie(session.id);
-  return redirect(Paths.Dashboard);
-}
+  redirect(Paths.Dashboard);
+});
 
-export async function signup(_: unknown, formData: FormData): Promise<ActionResponse<SignupInput>> {
-  const obj = Object.fromEntries(formData.entries());
-
-  const parsed = signupSchema.safeParse(obj);
-  if (!parsed.success) {
-    const err = parsed.error.flatten();
-    return {
-      fieldError: {
-        email: err.fieldErrors.email?.[0],
-        password: err.fieldErrors.password?.[0],
-      },
-    };
-  }
-
-  const { email, password } = parsed.data;
-
+export const signupAction = formSubmitAction(signupSchema, async (_, data) => {
+  const { email, password } = data;
   const existingUser = await adapter.getUserWithEmail(email);
-
   if (existingUser) {
     return {
-      formError: "Cannot create account with that email",
+      data,
+      success: false,
+      message: "Cannot create account with that email",
     };
   }
-
   const userId = utils.generateId(21);
   const hashedPassword = await utils.hashPassword(password);
   await adapter.insertUser({ id: userId, email, hashedPassword });
   const verificationCode = await generateEmailVerificationCode(userId, email);
   await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
-
   const session = await utils.createSession(userId);
   await utils.setCookie(session.id);
   return redirect(Paths.VerifyEmail);
-}
+});
 
 export async function logout(): Promise<{ error: string } | void> {
   const { session } = await utils.validateRequest();

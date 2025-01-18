@@ -63,7 +63,7 @@ export const signupAction = validatedAction(signupSchema, async (_, input) => {
   return redirect(Paths.VerifyEmail);
 });
 
-export const logoutAction = async () => {
+export const logoutAction = action(async () => {
   const { session } = await utils.validateRequest();
   if (!session) {
     return {
@@ -74,7 +74,7 @@ export const logoutAction = async () => {
   await utils.invalidateSession(session.id);
   await utils.clearCookie();
   redirect("/");
-};
+});
 
 export const resendVerificationEmail = action(async () => {
   const { user } = await utils.validateRequest();

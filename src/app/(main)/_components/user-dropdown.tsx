@@ -20,11 +20,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout } from "@/lib/auth/actions";
+import { logoutAction } from "@/lib/auth/actions";
 import { APP_TITLE } from "@/lib/constants";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
+
+const logout = async () => {
+  await logoutAction(null);
+};
 
 export const UserDropdown = ({
   email,

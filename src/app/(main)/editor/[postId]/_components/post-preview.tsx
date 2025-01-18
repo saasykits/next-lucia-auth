@@ -1,8 +1,12 @@
+import React from "react";
 import Markdown, { type Components } from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { Prism } from "react-syntax-highlighter";
 import { materialOceanic } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SyntaxHighlighter = Prism as unknown as React.FC<any>;
 
 const options: Components = {
   code: (props) => (
@@ -19,11 +23,7 @@ const options: Components = {
 
 export const PostPreview = ({ text }: { text: string }) => {
   return (
-    <Markdown
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw]}
-      components={options}
-    >
+    <Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={options}>
       {text}
     </Markdown>
   );

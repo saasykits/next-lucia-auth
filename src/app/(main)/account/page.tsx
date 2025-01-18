@@ -8,9 +8,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { validateRequest } from "@/lib/auth";
-import { logout } from "@/lib/auth/actions";
+import { logoutAction } from "@/lib/auth/actions";
 import { Paths } from "@/lib/constants";
 import { redirect } from "next/navigation";
+
+const logout = async () => {
+  await logoutAction(null);
+};
 
 export default async function AccountPage() {
   const { user } = await validateRequest();

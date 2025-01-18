@@ -1,18 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import {
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { ExclamationTriangleIcon } from "@/components/icons";
+import { LoadingButton } from "@/components/loading-button";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -22,10 +11,19 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { LoadingButton } from "@/components/loading-button";
-import { ExclamationTriangleIcon } from "@/components/icons";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { logout } from "@/lib/auth/actions";
 import { APP_TITLE } from "@/lib/constants";
+import Link from "next/link";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export const UserDropdown = ({
@@ -50,27 +48,16 @@ export const UserDropdown = ({
         ></img>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel className="text-muted-foreground">
-          {email}
-        </DropdownMenuLabel>
+        <DropdownMenuLabel className="text-muted-foreground">{email}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem
-            className="cursor-pointer text-muted-foreground"
-            asChild
-          >
+          <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
             <Link href="/dashboard">Dashboard</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer text-muted-foreground"
-            asChild
-          >
+          <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
             <Link href="/dashboard/billing">Billing</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer text-muted-foreground"
-            asChild
-          >
+          <DropdownMenuItem className="cursor-pointer text-muted-foreground" asChild>
             <Link href="/dashboard/settings">Settings</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -96,9 +83,7 @@ const SignoutConfirmation = () => {
     } catch (error) {
       if (error instanceof Error) {
         toast(error.message, {
-          icon: (
-            <ExclamationTriangleIcon className="h-4 w-4 text-destructive" />
-          ),
+          icon: <ExclamationTriangleIcon className="h-4 w-4 text-destructive" />,
         });
       }
     } finally {
@@ -117,12 +102,8 @@ const SignoutConfirmation = () => {
       </AlertDialogTrigger>
       <AlertDialogContent className="max-w-xs">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-center">
-            Sign out from {APP_TITLE}?
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            You will be redirected to the home page.
-          </AlertDialogDescription>
+          <AlertDialogTitle className="text-center">Sign out from {APP_TITLE}?</AlertDialogTitle>
+          <AlertDialogDescription>You will be redirected to the home page.</AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
           <Button variant="outline" onClick={() => setOpen(false)}>

@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { RocketIcon } from "@/components/icons";
-import { APP_TITLE } from "@/lib/constants";
 import { UserDropdown } from "@/app/(main)/_components/user-dropdown";
+import { RocketIcon } from "@/components/icons";
 import { validateRequest } from "@/lib/auth/validate-request";
+import { APP_TITLE } from "@/lib/constants";
+import Link from "next/link";
 
 export const Header = async () => {
   const { user } = await validateRequest();

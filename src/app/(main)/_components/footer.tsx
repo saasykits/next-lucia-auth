@@ -1,5 +1,5 @@
-import { CodeIcon } from "@radix-ui/react-icons";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { CodeIcon } from "@radix-ui/react-icons";
 
 const githubUrl = "https://github.com/iamtouha/next-lucia-auth";
 const twitterUrl = "https://twitter.com/iamtouha";

@@ -1,8 +1,8 @@
 {
   "name": "Next.js Auth Template",
   "build": {
-    "dockerfile": "Dockerfile",
-  }, 
+    "dockerfile": "Dockerfile"
+  },
   "postCreateCommand": "pnpm config set store-dir $PNPM_HOME",
   "postStartCommand": "pnpm install",
   "forwardPorts": [3000],

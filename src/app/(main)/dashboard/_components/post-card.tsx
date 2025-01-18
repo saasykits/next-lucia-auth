@@ -27,11 +27,7 @@ interface PostCardProps {
   }) => void;
 }
 
-export const PostCard = ({
-  post,
-  userName,
-  setOptimisticPosts,
-}: PostCardProps) => {
+export const PostCard = ({ post, userName, setOptimisticPosts }: PostCardProps) => {
   const router = useRouter();
   const postMutation = api.post.delete.useMutation();
   const [isDeletePending, startDeleteTransition] = React.useTransition();

@@ -4,5 +4,7 @@
     "source.organizeImports": "explicit",
     "source.removeUnusedImports": "explicit"
   },
-  "editor.rulers": [100]
+  "editor.guides.bracketPairs": "active",
+  "editor.rulers": [100],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

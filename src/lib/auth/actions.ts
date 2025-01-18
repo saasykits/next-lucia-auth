@@ -5,6 +5,7 @@ import { EmailTemplate, sendMail } from "@/lib/email";
 import { loginSchema, resetPasswordSchema, signupSchema } from "@/lib/validators/auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { validateRequest } from ".";
 import { action, validatedAction } from "../action-utils";
 import { Paths } from "../constants";
 import adapter from "./adapter";
@@ -64,7 +65,7 @@ export const signupAction = validatedAction(signupSchema, async (_, input) => {
 });
 
 export const logoutAction = action(async () => {
-  const { session } = await utils.validateRequest();
+  const { session } = await validateRequest();
   if (!session) {
     return {
       success: false,
@@ -77,7 +78,7 @@ export const logoutAction = action(async () => {
 });
 
 export const resendVerificationEmail = action(async () => {
-  const { user } = await utils.validateRequest();
+  const { user } = await validateRequest();
   if (!user) {
     return redirect(Paths.Login);
   }
@@ -96,7 +97,7 @@ export const resendVerificationEmail = action(async () => {
 export const verifyEmailAction = validatedAction(
   z.object({ code: z.string().length(8) }),
   async (_, { code }) => {
-    const { user } = await utils.validateRequest();
+    const { user } = await validateRequest();
     if (!user) {
       redirect(Paths.Login);
     }

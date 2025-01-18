@@ -9,10 +9,10 @@ import { signupAction } from "@/lib/auth/actions";
 import { APP_TITLE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 export function Signup() {
-  const [state, formAction] = useFormState(signupAction, null);
+  const [state, formAction] = useActionState(signupAction, null);
 
   return (
     <Card className="w-full max-w-md">

@@ -13,7 +13,6 @@ const utils = {
   invalidateSession,
   invalidateUserSessions,
   validateSession,
-  validateRequest,
   setCookie,
   clearCookie,
   generateId,
@@ -92,27 +91,6 @@ function generateIdFromEntropySize(size: number): string {
 }
 function isWithinExpirationDate(date: Date): boolean {
   return Date.now() < date.getTime();
-}
-
-async function validateRequest(): Promise<Omit<ReturnType<typeof validateSession>, "fresh">> {
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get(sessionCookieName)?.value ?? null;
-  if (!sessionId) {
-    return { user: null, session: null };
-  }
-  const result = await validateSession(sessionId);
-  // next.js throws when you attempt to set cookie when rendering page
-  try {
-    if (result.session && result.fresh) {
-      await setCookie(result.session.id);
-    }
-    if (!result.session) {
-      await clearCookie();
-    }
-  } catch {
-    console.error("Failed to set session cookie");
-  }
-  return result;
 }
 
 function generateId(length: number): string {

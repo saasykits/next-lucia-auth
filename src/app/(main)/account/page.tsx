@@ -13,6 +13,7 @@ import { Paths } from "@/lib/constants";
 import { redirect } from "next/navigation";
 
 const logout = async () => {
+  "use server";
   await logoutAction(null);
 };
 

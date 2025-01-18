@@ -16,11 +16,11 @@ export const metadata: Metadata = {
 };
 
 interface Props {
-  searchParams: Record<string, string | string[] | undefined>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default async function DashboardPage({ searchParams }: Props) {
-  const { page, perPage } = myPostsSchema.parse(searchParams);
+export default async function DashboardPage(props: Props) {
+  const { page, perPage } = myPostsSchema.parse(await props.searchParams);
 
   const { user } = await validateRequest();
   if (!user) redirect(Paths.Login);

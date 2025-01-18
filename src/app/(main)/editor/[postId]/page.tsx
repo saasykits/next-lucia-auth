@@ -7,16 +7,17 @@ import { notFound, redirect } from "next/navigation";
 import { PostEditor } from "./_components/post-editor";
 
 interface Props {
-  params: {
+  params: Promise<{
     postId: string;
-  };
+  }>;
 }
 
 export default async function EditPostPage({ params }: Props) {
   const { user } = await validateRequest();
+  const { postId } = await params;
   if (!user) redirect(Paths.Login);
 
-  const post = await api.post.get.query({ id: params.postId });
+  const post = await api.post.get.query({ id: postId });
   if (!post) notFound();
 
   return (

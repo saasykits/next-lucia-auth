@@ -28,7 +28,7 @@ async function createSession(userId: string) {
   const session: AuthSession = {
     userId,
     id: generateIdFromEntropySize(25),
-    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+    expiresAt: createExpiryDate(sessionExpiration),
   };
   await adapter.createSession(session);
   return session;
@@ -129,27 +129,27 @@ function createExpiryDate(timeSpan: number) {
 
 async function hashPassword(str: string) {
   const salt = encodeHexLowerCase(crypto.getRandomValues(new Uint8Array(16)));
-  const blockSize = 16;
-  const key = await generateScryptKey(str, salt, blockSize);
+  const key = await generateScryptKey(str, salt);
   return `${salt}:${key}`;
 }
+
 async function verifyPassword(str: string, hash: string): Promise<boolean> {
   const [salt, key] = hash.split(":");
   if (!salt || !key) return false;
   const keyToVerify = await generateScryptKey(str, salt);
   return key === keyToVerify;
 }
-function generateScryptKey(str: string, salt: string, blockSize = 16) {
+
+function generateScryptKey(str: string, salt: string) {
   const encodedData = new TextEncoder().encode(str.normalize("NFKC"));
   const encodedSalt = new TextEncoder().encode(salt);
   const keyLength = 64;
-
   return new Promise<string>((resolve, reject) => {
     crypto.scrypt(
       encodedData,
       encodedSalt,
       keyLength,
-      { N: 16384, r: blockSize, p: 1 },
+      { N: 16384, r: 16, p: 1, maxmem: 64 * 1024 * 1024 },
       (err, derivedKey) => {
         if (err) reject(err);
         resolve(derivedKey.toString("hex"));
@@ -157,6 +157,7 @@ function generateScryptKey(str: string, salt: string, blockSize = 16) {
     );
   });
 }
+
 function verifyRequestOrigin(origin: string, allowedDomains: string[]): boolean {
   if (!origin || allowedDomains.length === 0) {
     return false;

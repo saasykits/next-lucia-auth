@@ -28,13 +28,7 @@ const NextjsLight = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
           d="M149.508 157.52L69.142 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.165 149.508 157.52Z"
           fill="url(#paint0_linear_408_134)"
         />
-        <rect
-          x="115"
-          y="54"
-          width="12"
-          height="72"
-          fill="url(#paint1_linear_408_134)"
-        />
+        <rect x="115" y="54" width="12" height="72" fill="url(#paint1_linear_408_134)" />
       </g>
       <defs>
         <linearGradient
@@ -86,25 +80,12 @@ const NextjsDark = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
         <circle cx="90" cy="90" r="90" fill="black" />
       </mask>
       <g mask="url(#mask0_408_139)">
-        <circle
-          cx="90"
-          cy="90"
-          r="87"
-          fill="black"
-          stroke="white"
-          strokeWidth="6"
-        />
+        <circle cx="90" cy="90" r="87" fill="black" stroke="white" strokeWidth="6" />
         <path
           d="M149.508 157.52L69.142 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.165 149.508 157.52Z"
           fill="url(#paint0_linear_408_139)"
         />
-        <rect
-          x="115"
-          y="54"
-          width="12"
-          height="72"
-          fill="url(#paint1_linear_408_139)"
-        />
+        <rect x="115" y="54" width="12" height="72" fill="url(#paint1_linear_408_139)" />
       </g>
       <defs>
         <linearGradient
@@ -226,40 +207,38 @@ const Drizzle = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
 );
 Drizzle.displayName = "Drizzle";
 
-const TRPC = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
-  ({ className, ...props }, ref) => (
-    <svg
-      ref={ref}
-      {...props}
-      viewBox="0 0 512 512"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="currentColor"
-      className={cn(className)}
-    >
-      <g>
-        <polygon points="246.2,162.3 202.9,137.3 202.9,187.4 246.2,212.4" />
-        <polygon points="96.5,357.9 139.9,382.9 139.9,332.9 96.5,307.8" />
-        <polygon points="149.1,266.8 105.7,291.9 149.1,316.9 192.4,291.9" />
-        <polygon points="264.7,212.4 308,187.4 308,137.3 264.7,162.3" />
-        <polygon points="298.8,121.3 255.4,96.3 212.2,121.3 255.4,146.4" />
-        <polygon points="201.7,307.8 158.3,332.9 158.3,382.9 201.7,357.9" />
-        <path
-          d="M362,0H150C67.2,0,0,67.2,0,150v212c0,82.8,67.2,150,150,150h212c82.8,0,150-67.2,150-150V150
+const TRPC = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(({ className, ...props }, ref) => (
+  <svg
+    ref={ref}
+    {...props}
+    viewBox="0 0 512 512"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="currentColor"
+    className={cn(className)}
+  >
+    <g>
+      <polygon points="246.2,162.3 202.9,137.3 202.9,187.4 246.2,212.4" />
+      <polygon points="96.5,357.9 139.9,382.9 139.9,332.9 96.5,307.8" />
+      <polygon points="149.1,266.8 105.7,291.9 149.1,316.9 192.4,291.9" />
+      <polygon points="264.7,212.4 308,187.4 308,137.3 264.7,162.3" />
+      <polygon points="298.8,121.3 255.4,96.3 212.2,121.3 255.4,146.4" />
+      <polygon points="201.7,307.8 158.3,332.9 158.3,382.9 201.7,357.9" />
+      <path
+        d="M362,0H150C67.2,0,0,67.2,0,150v212c0,82.8,67.2,150,150,150h212c82.8,0,150-67.2,150-150V150
 		C512,67.2,444.8,0,362,0z M435.6,368.6l-71,41l-31.5-18.2l-76.7,44.3l-76.2-44l-31.1,18l-71-41.1v-82l22.2-12.8v-85.5l84.2-48.6
 		l0,0V116l71-41l71.1,41v22.5l86,49.7v85l23.1,13.3V368.6z"
-        />
-        <polygon points="373.8,383 417.2,357.9 417.2,307.8 373.8,332.9" />
-        <polygon points="364.6,266.9 321.3,291.9 364.6,317 407.9,291.9" />
-        <polygon
-          points="293.6,286.5 364.6,245.5 394.1,262.6 394.1,198.9 326.5,159.9 326.5,198 255.5,239 184.5,198 
+      />
+      <polygon points="373.8,383 417.2,357.9 417.2,307.8 373.8,332.9" />
+      <polygon points="364.6,266.9 321.3,291.9 364.6,317 407.9,291.9" />
+      <polygon
+        points="293.6,286.5 364.6,245.5 394.1,262.6 394.1,198.9 326.5,159.9 326.5,198 255.5,239 184.5,198 
 		184.5,160.9 184.4,160.9 118.7,198.9 118.7,263.1 149.1,245.5 220.1,286.5 220.1,368.5 198.6,381 256.4,414.3 314.6,380.7 
 		293.6,368.5"
-        />
-        <polygon points="312,358 355.4,383 355.4,332.9 312,307.9" />
-      </g>
-    </svg>
-  ),
-);
+      />
+      <polygon points="312,358 355.4,383 355.4,332.9 312,307.9" />
+    </g>
+  </svg>
+));
 TRPC.displayName = "TRPC";
 
 const ShadcnUi = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
@@ -355,10 +334,7 @@ const ReactEmail = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
         d="M112.616 22.176V13.744H114.584V22.176H112.616ZM113.576 11.952C113.181 11.952 112.872 11.856 112.648 11.664C112.435 11.4613 112.328 11.1787 112.328 10.816C112.328 10.4747 112.44 10.1973 112.664 9.984C112.888 9.77067 113.192 9.664 113.576 9.664C113.981 9.664 114.291 9.76534 114.504 9.968C114.728 10.16 114.84 10.4427 114.84 10.816C114.84 11.1467 114.728 11.4187 114.504 11.632C114.28 11.8453 113.971 11.952 113.576 11.952Z"
         fill="currentColor"
       ></path>
-      <path
-        d="M116.675 22.176V10.336H118.659V22.176H116.675Z"
-        fill="currentColor"
-      ></path>
+      <path d="M116.675 22.176V10.336H118.659V22.176H116.675Z" fill="currentColor"></path>
       <defs>
         <clipPath id="clip0_27_291">
           <rect width="32" height="32" rx="8" fill="currentColor"></rect>
@@ -386,14 +362,14 @@ const StripeLogo = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
 StripeLogo.displayName = "StripeLogo";
 
 export {
-  NextjsLight,
-  NextjsDark,
-  ReactJs,
-  TailwindCss,
-  LuciaAuth,
   Drizzle,
-  TRPC,
-  ShadcnUi,
+  LuciaAuth,
+  NextjsDark,
+  NextjsLight,
   ReactEmail,
+  ReactJs,
+  ShadcnUi,
   StripeLogo,
+  TailwindCss,
+  TRPC,
 };

@@ -1,3 +1,10 @@
 {
-  "editor.rulers": [100]
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit",
+    "source.removeUnusedImports": "explicit"
+  },
+  "editor.guides.bracketPairs": "active",
+  "editor.rulers": [100],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

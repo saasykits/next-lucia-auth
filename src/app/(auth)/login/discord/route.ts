@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { discord } from "@/lib/auth";
+import { discord } from "@/lib/auth/config";
 import { generateState } from "arctic";
 import { cookies } from "next/headers";
 

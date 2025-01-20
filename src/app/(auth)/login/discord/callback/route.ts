@@ -1,10 +1,11 @@
-import { discord } from "@/lib/auth";
-import utils from "@/lib/auth/utils";
+import { discord } from "@/lib/auth/config";
+import { createSession, setCookie } from "@/lib/auth/utils";
 import { Paths } from "@/lib/constants";
 import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import { cookies } from "next/headers";
 
 export async function GET(request: Request): Promise<Response> {
@@ -49,7 +50,7 @@ export async function GET(request: Request): Promise<Response> {
       : null;
 
     if (!existingUser) {
-      const userId = utils.generateId(21);
+      const userId = nanoid(21);
       await db.insert(users).values({
         id: userId,
         email: discordUser.email,
@@ -57,8 +58,8 @@ export async function GET(request: Request): Promise<Response> {
         discordId: discordUser.id,
         avatar,
       });
-      const session = await utils.createSession(userId);
-      await utils.setCookie(session.id);
+      const session = await createSession(userId);
+      await setCookie(session.id);
       return new Response(null, {
         status: 302,
         headers: { Location: Paths.Dashboard },
@@ -75,8 +76,8 @@ export async function GET(request: Request): Promise<Response> {
         })
         .where(eq(users.id, existingUser.id));
     }
-    const session = await utils.createSession(existingUser.id);
-    await utils.setCookie(session.id);
+    const session = await createSession(existingUser.id);
+    await setCookie(session.id);
 
     return new Response(null, {
       status: 302,

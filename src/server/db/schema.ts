@@ -19,7 +19,7 @@ export const users = pgTable(
     discordId: varchar("discord_id", { length: 255 }).unique(),
     email: varchar("email", { length: 255 }).unique().notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
-    hashedPassword: varchar("hashed_password", { length: 255 }),
+    hashedPassword: varchar("hashed_password", { length: 63 }),
     avatar: varchar("avatar", { length: 255 }),
     stripeSubscriptionId: varchar("stripe_subscription_id", { length: 191 }),
     stripePriceId: varchar("stripe_price_id", { length: 191 }),

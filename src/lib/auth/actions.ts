@@ -2,7 +2,6 @@
 
 import { env } from "@/env";
 import { EmailTemplate, sendMail } from "@/lib/email";
-import { loginSchema, resetPasswordSchema, signupSchema } from "@/lib/validators/auth";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { validateRequest } from ".";
@@ -10,6 +9,19 @@ import { action, validatedAction } from "../action-utils";
 import { Paths } from "../constants";
 import adapter from "./adapter";
 import utils from "./utils";
+
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(1, "Please provide your password.").max(255),
+});
+const signupSchema = z.object({
+  email: z.string().email("Please enter a valid email."),
+  password: z.string().min(8, "Password is too short. Minimum 8 characters required.").max(255),
+});
+const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Invalid token"),
+  password: z.string().min(8, "Password is too short").max(255),
+});
 
 export const loginAction = validatedAction(loginSchema, async (_, input) => {
   const { email, password } = input;

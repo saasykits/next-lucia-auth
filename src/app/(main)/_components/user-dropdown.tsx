@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { logoutAction } from "@/lib/auth/actions";
 import { APP_TITLE } from "@/lib/constants";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -42,14 +43,32 @@ export const UserDropdown = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className={className}>
-        {/* eslint @next/next/no-img-element:off */}
-        <img
-          src={avatar ?? "https://source.boringavatars.com/marble/60/" + email}
-          alt="Avatar"
-          className="block h-8 w-8 rounded-full leading-none"
-          width={64}
-          height={64}
-        ></img>
+        {avatar ? (
+          <Image
+            src={avatar}
+            alt="Avatar"
+            className="block h-8 w-8 rounded-full leading-none"
+            width={64}
+            height={64}
+          />
+        ) : (
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-muted-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel className="text-muted-foreground">{email}</DropdownMenuLabel>

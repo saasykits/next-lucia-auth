@@ -9,60 +9,42 @@ enum LogLevel {
   ERROR = "ERROR",
 }
 
-class Logger {
-  private level: LogLevel;
-  private logFilePath: string;
+type LoggerParams = [string, Record<string, unknown>];
 
-  constructor(level: LogLevel = LogLevel.INFO, logFilePath = "application.log") {
-    this.level = level;
+class Logger {
+  private logFilePath: string;
+  constructor(logFilePath = "application.log") {
     this.logFilePath = path.resolve(logFilePath);
   }
-
   private getTimestamp(): string {
     return new Date().toISOString();
   }
-
-  private formatMessage(level: LogLevel, args: unknown[]): string {
-    const message = args
-      .map((arg) => (typeof arg === "object" ? JSON.stringify(arg) : arg))
-      .join(" ");
-
+  private formatMessage(level: LogLevel, msg: string, args: Record<string, unknown>): string {
+    const message = { timestamp: this.getTimestamp(), level, msg, ...args };
     if (env.NODE_ENV === "development") {
       console.log(message);
     }
-
-    return `[${this.getTimestamp()}] [${level}] ${message}`;
+    return JSON.stringify(message);
   }
 
-  private log(level: LogLevel, ...args: unknown[]): void {
-    if (this.shouldLog(level)) {
-      const logMessage = this.formatMessage(level, args) + "\n";
-      fs.appendFile(this.logFilePath, logMessage, (err) => {
-        if (err) throw err;
-      });
-    }
+  private log(level: LogLevel, msg: string, args: Record<string, unknown>): void {
+    const logMessage = this.formatMessage(level, msg, args) + "\n";
+    fs.appendFile(this.logFilePath, logMessage, (err) => {
+      if (err) throw err;
+    });
   }
-
-  private shouldLog(level: LogLevel): boolean {
-    const levels = [LogLevel.DEBUG, LogLevel.INFO, LogLevel.WARN, LogLevel.ERROR];
-    return levels.indexOf(level) >= levels.indexOf(this.level);
+  debug(...args: LoggerParams) {
+    if (env.NODE_ENV !== "production") this.log(LogLevel.DEBUG, ...args);
   }
-
-  debug(...args: unknown[]): void {
-    this.log(LogLevel.DEBUG, ...args);
-  }
-
-  info(...args: unknown[]): void {
+  info(...args: LoggerParams) {
     this.log(LogLevel.INFO, ...args);
   }
-
-  warn(...args: unknown[]): void {
+  warn(...args: LoggerParams) {
     this.log(LogLevel.WARN, ...args);
   }
-
-  error(...args: unknown[]): void {
+  error(...args: LoggerParams) {
     this.log(LogLevel.ERROR, ...args);
   }
 }
 
-export const logger = new Logger(env.NODE_ENV === "development" ? LogLevel.DEBUG : LogLevel.INFO);
+export const logger = new Logger();

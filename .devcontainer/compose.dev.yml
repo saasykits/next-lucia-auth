@@ -1,0 +1,17 @@
+services:
+  workspace:
+    build: 
+      dockerfile: Dockerfile
+    volumes:
+      - ../:/workspace:cached
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+    depends_on:
+      - database
+      
+  database:
+    image: postgres:17.2-alpine
+    environment:
+      POSTGRES_DB: acme
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+ 

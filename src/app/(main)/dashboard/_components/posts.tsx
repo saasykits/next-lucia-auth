@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import { PostCard } from "./post-card";
+import { PostCardSkeleton } from "./post-card-skeleton";
 
 interface PostsProps {
   page?: number;
@@ -78,6 +79,10 @@ export function Posts({ page, perPage }: PostsProps) {
           <p className="text-sm">New Post</p>
         </div>
       </Button>
+
+      {postsQuery.isLoading
+        ? Array.from({ length: 2 }).map((_, i) => <PostCardSkeleton key={i} />)
+        : null}
       {postsQuery.data?.map((post) => <PostCard key={post.id} post={post} onDelete={deletePost} />)}
     </div>
   );

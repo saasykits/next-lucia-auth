@@ -29,6 +29,7 @@ async function validateSession(
   { session: AuthSession; user: AuthUser; fresh: boolean } | { session: null; user: null }
 > {
   const dbSession = await adapter.getSessionAndUser(sessionId);
+
   if (!dbSession) {
     return { session: null, user: null };
   }

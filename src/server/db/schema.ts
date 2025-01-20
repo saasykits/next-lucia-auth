@@ -9,18 +9,21 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 
 export const pgTable = pgTableCreator((name) => `${prefix}_${name}`);
 
 export const users = pgTable(
   "users",
   {
-    id: varchar("id", { length: 21 }).primaryKey(),
+    id: varchar({ length: 21 })
+      .primaryKey()
+      .$defaultFn(() => nanoid(21)),
     discordId: varchar("discord_id", { length: 255 }).unique(),
-    email: varchar("email", { length: 255 }).unique().notNull(),
+    email: varchar({ length: 255 }).unique().notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     hashedPassword: varchar("hashed_password", { length: 63 }),
-    avatar: varchar("avatar", { length: 255 }),
+    avatar: varchar({ length: 255 }),
     stripeSubscriptionId: varchar("stripe_subscription_id", { length: 191 }),
     stripePriceId: varchar("stripe_price_id", { length: 191 }),
     stripeCustomerId: varchar("stripe_customer_id", { length: 191 }),
@@ -28,10 +31,7 @@ export const users = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
   },
-  (t) => ({
-    emailIdx: index("user_email_idx").on(t.email),
-    discordIdx: index("user_discord_idx").on(t.discordId),
-  }),
+  (t) => [index("user_email_idx").on(t.email), index("user_discord_id_idx").on(t.discordId)],
 );
 
 export const sessions = pgTable(
@@ -41,9 +41,7 @@ export const sessions = pgTable(
     userId: varchar("user_id", { length: 21 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
-  (t) => ({
-    userIdx: index("session_user_idx").on(t.userId),
-  }),
+  (t) => [index("session_user_idx").on(t.userId)],
 );
 
 export const emailVerificationCodes = pgTable(
@@ -55,28 +53,30 @@ export const emailVerificationCodes = pgTable(
     code: varchar("code", { length: 8 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
-  (t) => ({
-    userIdx: index("verification_code_user_idx").on(t.userId),
-    emailIdx: index("verification_code_email_idx").on(t.email),
-  }),
+  (t) => [
+    index("verification_code_user_idx").on(t.userId),
+    index("verification_code_email_idx").on(t.email),
+  ],
 );
 
 export const passwordResetTokens = pgTable(
   "password_reset_tokens",
   {
-    id: varchar("id", { length: 40 }).primaryKey(),
+    id: varchar({ length: 40 })
+      .primaryKey()
+      .$defaultFn(() => nanoid(40)),
     userId: varchar("user_id", { length: 21 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
-  (t) => ({
-    userIdx: index("password_token_user_idx").on(t.userId),
-  }),
+  (t) => [index("password_token_user_idx").on(t.userId)],
 );
 
 export const posts = pgTable(
   "posts",
   {
-    id: varchar("id", { length: 15 }).primaryKey(),
+    id: varchar("id", { length: 15 })
+      .primaryKey()
+      .$defaultFn(() => nanoid(15)),
     userId: varchar("user_id", { length: 255 }).notNull(),
     title: varchar("title", { length: 255 }).notNull(),
     excerpt: varchar("excerpt", { length: 255 }).notNull(),
@@ -88,10 +88,7 @@ export const posts = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
   },
-  (t) => ({
-    userIdx: index("post_user_idx").on(t.userId),
-    createdAtIdx: index("post_created_at_idx").on(t.createdAt),
-  }),
+  (t) => [index("post_status_idx").on(t.status), index("post_tags_idx").on(t.tags)],
 );
 
 /**

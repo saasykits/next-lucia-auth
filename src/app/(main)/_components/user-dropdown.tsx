@@ -83,14 +83,14 @@ const SignoutConfirmation = () => {
           <AlertDialogTitle className="text-center">Sign out from {APP_TITLE}?</AlertDialogTitle>
           <AlertDialogDescription>You will be redirected to the home page.</AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
-          <Button variant="outline" onClick={() => setOpen(false)}>
+        <form className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-center" action={logout}>
+          <Button variant="outline" onClick={() => setOpen(false)} type="button">
             Cancel
           </Button>
-          <LoadingButton loading={isLoading} formAction={logout}>
+          <LoadingButton loading={isLoading} type="submit">
             Continue
           </LoadingButton>
-        </div>
+        </form>
       </AlertDialogContent>
     </AlertDialog>
   );

@@ -1,10 +1,33 @@
 {
   "name": "Next.js Auth Template",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "postCreateCommand": "pnpm config set store-dir $PNPM_HOME",
+  "dockerComposeFile": ["compose.dev.yml"],
+  "service": "workspace",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "pnpm config set store-dir $HOME/.pnpm-store",
   "postStartCommand": "pnpm install",
   "forwardPorts": [3000],
-  "remoteUser": "node"
+  "features": {
+    "ghcr.io/devcontainers-extra/features/pnpm": "latest"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit",
+          "source.organizeImports": "explicit",
+          "source.removeUnusedImports": "explicit"
+        },
+        "editor.guides.bracketPairs": "active",
+        "editor.rulers": [100],
+        "typescript.tsdk": "node_modules/typescript/lib"
+      },
+      "extensions": [
+        "dsznajder.es7-react-js-snippets",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "YoavBls.pretty-ts-errors",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  }
 }

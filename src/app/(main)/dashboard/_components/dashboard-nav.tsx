@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, FileTextIcon, GearIcon } from "@/components/icons";
+import { CreditCardIcon, FileTextIcon, GearIcon } from "@/components/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -16,7 +16,7 @@ const items = [
   {
     title: "Billing",
     href: "/dashboard/billing",
-    icon: CreditCard,
+    icon: CreditCardIcon,
   },
   {
     title: "Settings",

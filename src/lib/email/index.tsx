@@ -60,7 +60,7 @@ export const sendMail = async <T extends EmailTemplate>(
   props: PropsMap[NoInfer<T>],
 ) => {
   if (env.MOCK_SEND_EMAIL) {
-    logger.info("📨 Email sent to:", to, "with template:", template, "and props:", props);
+    logger.info(`📨 Email sent to: "${to}"`, { ...props, to, template } as Record<string, unknown>);
     return;
   }
   const { subject, body } = await getEmailTemplate(template, props);

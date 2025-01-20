@@ -1,6 +1,6 @@
 "use client";
 
-import { ExclamationTriangleIcon } from "@/components/icons";
+import { ExclamationTriangleIcon, PersonIcon } from "@/components/icons";
 import { LoadingButton } from "@/components/loading-button";
 import {
   AlertDialog,
@@ -42,7 +42,7 @@ export const UserDropdown = ({
 }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={className}>
+      <DropdownMenuTrigger className={className} aria-label="user dropdown menu">
         {avatar ? (
           <Image
             src={avatar}
@@ -52,22 +52,7 @@ export const UserDropdown = ({
             height={64}
           />
         ) : (
-          <div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-muted-foreground"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </div>
+          <PersonIcon className="block h-8 leading-none" />
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

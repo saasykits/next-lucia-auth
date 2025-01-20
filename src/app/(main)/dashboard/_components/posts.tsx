@@ -1,58 +1,84 @@
 "use client";
 
-import { type RouterOutputs } from "@/trpc/shared";
-import * as React from "react";
-import { NewPost } from "./new-post";
+import { FilePlusIcon } from "@/components/icons";
+import { Button } from "@/components/ui/button";
+import { api } from "@/trpc/react";
+import { toast } from "sonner";
 import { PostCard } from "./post-card";
 
 interface PostsProps {
-  promises: Promise<[RouterOutputs["post"]["myPosts"], RouterOutputs["stripe"]["getPlan"]]>;
+  page?: number;
+  perPage?: number;
 }
 
-export function Posts({ promises }: PostsProps) {
-  /**
-   * use is a React Hook that lets you read the value of a resource like a Promise or context.
-   * @see https://react.dev/reference/react/use
-   */
-  const [posts, subscriptionPlan] = React.use(promises);
-
-  /**
-   * useOptimistic is a React Hook that lets you show a different state while an async action is underway.
-   * It accepts some state as an argument and returns a copy of that state that can be different during the duration of an async action such as a network request.
-   * @see https://react.dev/reference/react/useOptimistic
-   */
-  const [optimisticPosts, setOptimisticPosts] = React.useOptimistic(
-    posts,
-    (
-      state,
-      {
-        action,
-        post,
-      }: {
-        action: "add" | "delete" | "update";
-        post: RouterOutputs["post"]["myPosts"][number];
-      },
-    ) => {
-      switch (action) {
-        case "delete":
-          return state.filter((p) => p.id !== post.id);
-        case "update":
-          return state.map((p) => (p.id === post.id ? post : p));
-        default:
-          return [...state, post];
-      }
+export function Posts({ page, perPage }: PostsProps) {
+  const utils = api.useUtils();
+  const postsQuery = api.post.myPosts.useQuery({ page, perPage });
+  const postCreateMutation = api.post.create.useMutation({
+    onMutate: async (newPost) => {
+      await utils.post.myPosts.cancel();
+      const prevData = utils.post.myPosts.getData();
+      utils.post.myPosts.setData({ page, perPage }, (old) => [
+        ...(old ?? []),
+        {
+          id: "optimistic-" + Math.random(),
+          status: "draft",
+          ...newPost,
+          createdAt: new Date(),
+        },
+      ]);
+      return { prevData };
     },
-  );
-
+    onSettled: () => void utils.post.myPosts.invalidate(),
+    onSuccess: (post) => toast.success("Post created", post),
+    onError: (_err, _newPost, ctx) => {
+      toast.error("Failed to create post");
+      utils.post.myPosts.setData({ page, perPage }, ctx?.prevData);
+    },
+  });
+  const postDeleteMutation = api.post.delete.useMutation({
+    onMutate: async ({ id }) => {
+      await utils.post.myPosts.cancel();
+      const prevData = utils.post.myPosts.getData();
+      utils.post.myPosts.setData({ page, perPage }, (old) =>
+        (old ?? []).filter((post) => post.id !== id),
+      );
+      return { prevData };
+    },
+    onSettled: () => void utils.post.myPosts.invalidate(),
+    onSuccess: () => toast.success("Post deleted"),
+    onError: (_err, _input, ctx) => {
+      toast.error("Failed to delete post");
+      utils.post.myPosts.setData({ page, perPage }, ctx?.prevData);
+    },
+  });
+  const createPost = () => {
+    if (postCreateMutation.isLoading) {
+      toast.info("Already creating a post");
+      return;
+    }
+    postCreateMutation.mutate({
+      title: "Untitled Post",
+      content: "Write your content here",
+      excerpt: "untitled post",
+    });
+  };
+  const deletePost = (id: string) => {
+    postDeleteMutation.mutate({ id });
+  };
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <NewPost
-        isEligible={(optimisticPosts.length < 2 || subscriptionPlan?.isPro) ?? false}
-        setOptimisticPosts={setOptimisticPosts}
-      />
-      {optimisticPosts.map((post) => (
-        <PostCard key={post.id} post={post} setOptimisticPosts={setOptimisticPosts} />
-      ))}
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <Button
+        onClick={createPost}
+        className="flex h-full min-h-[200px] cursor-pointer items-center justify-center bg-card p-6 text-muted-foreground transition-colors hover:bg-secondary/10 dark:border-none dark:bg-secondary/30 dark:hover:bg-secondary/50"
+        disabled={postCreateMutation.isLoading}
+      >
+        <div className="flex flex-col items-center gap-4">
+          <FilePlusIcon className="h-10 w-10" />
+          <p className="text-sm">New Post</p>
+        </div>
+      </Button>
+      {postsQuery.data?.map((post) => <PostCard key={post.id} post={post} onDelete={deletePost} />)}
     </div>
   );
 }

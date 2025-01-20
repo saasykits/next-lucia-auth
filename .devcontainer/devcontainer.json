@@ -5,14 +5,18 @@
   "workspaceFolder": "/workspace",
   "postCreateCommand": "bash ./.devcontainer/postCreateCommand.sh",
   "postStartCommand": "pnpm install",
-  "forwardPorts": [3000, 9323],
+  "forwardPorts": [3000, 9323, 4983],
   "portsAttributes": {
     "3000": {
       "label": "Next.js Server",
       "onAutoForward": "silent"
     },
     "9323": {
-      "label": "Playwright reports",
+      "label": "Playwright Reports",
+      "onAutoForward": "silent"
+    },
+    "4983": {
+      "label": "Drizzle-kit Studio",
       "onAutoForward": "silent"
     }
   },

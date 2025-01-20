@@ -1,6 +1,6 @@
 "use client";
 
-import { ExclamationTriangleIcon, PersonIcon } from "@/components/icons";
+import { PersonIcon } from "@/components/icons";
 import { LoadingButton } from "@/components/loading-button";
 import {
   AlertDialog,
@@ -21,39 +21,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logoutAction } from "@/lib/auth/actions";
+import type { AuthUser } from "@/lib/auth/adapter";
 import { APP_TITLE } from "@/lib/constants";
-import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const logout = async () => {
-  await logoutAction(null);
-};
-
-export const UserDropdown = ({
-  email,
-  avatar,
-  className,
-}: {
-  email: string;
-  avatar?: string | null;
-  className?: string;
-}) => {
+export const UserDropdown = ({ user: { email } }: { user: AuthUser }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={className} aria-label="user dropdown menu">
-        {avatar ? (
-          <Image
-            src={avatar}
-            alt="Avatar"
-            className="block h-8 w-8 rounded-full leading-none"
-            width={64}
-            height={64}
-          />
-        ) : (
-          <PersonIcon className="block h-8 leading-none" />
-        )}
+      <DropdownMenuTrigger aria-label="user dropdown menu" asChild>
+        <Button variant="secondary" className="gap-1">
+          <PersonIcon className="size-4 leading-none" />
+          account
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel className="text-muted-foreground">{email}</DropdownMenuLabel>
@@ -81,24 +62,13 @@ export const UserDropdown = ({
 
 const SignoutConfirmation = () => {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, logout, isLoading] = useActionState(logoutAction, null);
 
-  const handleSignout = async () => {
-    setIsLoading(true);
-    try {
-      await logout();
-      toast("Signed out successfully");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast(error.message, {
-          icon: <ExclamationTriangleIcon className="h-4 w-4 text-destructive" />,
-        });
-      }
-    } finally {
-      setOpen(false);
-      setIsLoading(false);
+  useEffect(() => {
+    if (!state?.success && state?.message) {
+      toast.error(state.message);
     }
-  };
+  }, [state?.success, state?.message]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -117,7 +87,7 @@ const SignoutConfirmation = () => {
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <LoadingButton loading={isLoading} onClick={handleSignout}>
+          <LoadingButton loading={isLoading} formAction={logout}>
             Continue
           </LoadingButton>
         </div>

@@ -2,13 +2,24 @@
 
 import { env } from "@/env";
 import { EmailTemplate, sendMail } from "@/lib/email";
+import bcrypt from "bcryptjs";
+import { nanoid } from "nanoid";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { validateRequest } from ".";
 import { action, validatedAction } from "../action-utils";
 import { Paths } from "../constants";
 import adapter from "./adapter";
-import utils from "./utils";
+import {
+  clearCookie,
+  createSession,
+  invalidateSession,
+  invalidateUserSessions,
+  isWithinExpirationDate,
+  setCookie,
+  validateRequest,
+} from "./utils";
+
+const SALT_ROUNDS = 10;
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -35,7 +46,7 @@ export const loginAction = validatedAction(loginSchema, async (_, input) => {
         message: "Incorrect email or password",
       };
     }
-    const validPassword = await utils.verifyPassword(password, existingUser.hashedPassword);
+    const validPassword = await bcrypt.compare(password, existingUser.hashedPassword);
     if (!validPassword) {
       return {
         success: false,
@@ -43,8 +54,8 @@ export const loginAction = validatedAction(loginSchema, async (_, input) => {
         message: "Incorrect email or password",
       };
     }
-    const session = await utils.createSession(existingUser.id);
-    await utils.setCookie(session.id);
+    const session = await createSession(existingUser.id);
+    await setCookie(session.id);
   } catch (error) {
     console.error(error);
     return {
@@ -66,13 +77,13 @@ export const signupAction = validatedAction(signupSchema, async (_, input) => {
       message: "Cannot create account with that email",
     };
   }
-  const userId = utils.generateId(21);
-  const hashedPassword = await utils.hashPassword(password);
+  const userId = nanoid(21);
+  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
   await adapter.insertUser({ id: userId, email, hashedPassword });
   const verificationCode = await generateEmailVerificationCode(userId, email);
   await sendMail(email, EmailTemplate.EmailVerification, { code: verificationCode });
-  const session = await utils.createSession(userId);
-  await utils.setCookie(session.id);
+  const session = await createSession(userId);
+  await setCookie(session.id);
   return redirect(Paths.VerifyEmail);
 });
 
@@ -84,8 +95,8 @@ export const logoutAction = action(async () => {
       message: "No session found",
     };
   }
-  await utils.invalidateSession(session.id);
-  await utils.clearCookie();
+  await invalidateSession(session.id);
+  await clearCookie();
   redirect("/");
 });
 
@@ -95,7 +106,7 @@ export const resendVerificationEmail = action(async () => {
     return redirect(Paths.Login);
   }
   const lastSent = await adapter.getEmailVerificationCodeWithUserId(user.id);
-  if (lastSent && utils.isWithinExpirationDate(lastSent.expiresAt)) {
+  if (lastSent && isWithinExpirationDate(lastSent.expiresAt)) {
     return {
       success: false,
       message: `Please wait ${timeFromNow(lastSent.expiresAt)} before resending`,
@@ -113,14 +124,14 @@ export const verifyEmailAction = validatedAction(
     if (!user) {
       redirect(Paths.Login);
     }
-    const dbCode = await adapter.getAndDeleteEmailVerificationCodeWithUserId(user.id);
+    const dbCode = await adapter.retriveAndDeleteEmailVerificationCode(user.id);
     if (!dbCode || dbCode.code !== code) {
       return {
         success: false,
         message: "Invalid verification code",
       };
     }
-    if (!utils.isWithinExpirationDate(dbCode.expiresAt)) {
+    if (!isWithinExpirationDate(dbCode.expiresAt)) {
       return {
         success: false,
         message: "Verification code expired",
@@ -132,10 +143,10 @@ export const verifyEmailAction = validatedAction(
         message: "Email does not match",
       };
     }
-    await utils.invalidateUserSessions(user.id);
+    await invalidateUserSessions(user.id);
     await adapter.updateUser(user.id, { emailVerified: true });
-    const session = await utils.createSession(user.id);
-    await utils.setCookie(session.id);
+    const session = await createSession(user.id);
+    await setCookie(session.id);
     redirect(Paths.Dashboard);
   },
 );
@@ -143,7 +154,7 @@ export const verifyEmailAction = validatedAction(
 export const resetPasswordAction = validatedAction(resetPasswordSchema, async (data, input) => {
   const { token, password } = input;
 
-  const dbToken = await adapter.getAndDeletePasswordResetToken(token);
+  const dbToken = await adapter.retriveAndDeletePasswordResetToken(token);
   if (!dbToken) {
     return {
       input,
@@ -151,18 +162,18 @@ export const resetPasswordAction = validatedAction(resetPasswordSchema, async (d
       message: "Invalid password reset link",
     };
   }
-  if (!utils.isWithinExpirationDate(dbToken.expiresAt)) {
+  if (!isWithinExpirationDate(dbToken.expiresAt)) {
     return {
       input,
       success: false,
       message: "Password reset link expired.",
     };
   }
-  await utils.invalidateUserSessions(dbToken.userId);
-  const hashedPassword = await utils.hashPassword(password);
+  await invalidateUserSessions(dbToken.userId);
+  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
   await adapter.updateUser(dbToken.userId, { hashedPassword });
-  const session = await utils.createSession(dbToken.userId);
-  await utils.setCookie(session.id);
+  const session = await createSession(dbToken.userId);
+  await setCookie(session.id);
   redirect(Paths.Dashboard);
 });
 
@@ -192,7 +203,7 @@ const timeFromNow = (time: Date) => {
 
 async function generateEmailVerificationCode(userId: string, email: string): Promise<string> {
   await adapter.deleteUserEmailVerificationCodes(userId);
-  const code = utils.generateId(8);
+  const code = nanoid(8);
   await adapter.insertEmailVerificationCode({
     userId,
     email,
@@ -204,7 +215,7 @@ async function generateEmailVerificationCode(userId: string, email: string): Pro
 
 async function generatePasswordResetToken(userId: string): Promise<string> {
   await adapter.deleteUserPasswordResetTokens(userId);
-  const tokenId = utils.generateId(40);
+  const tokenId = nanoid(40);
   await adapter.insertPasswordResetToken({
     id: tokenId,
     userId,

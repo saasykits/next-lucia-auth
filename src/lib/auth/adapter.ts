@@ -40,7 +40,7 @@ const adapter = {
     }),
   deleteUserEmailVerificationCodes: (id: string) =>
     db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, id)),
-  getAndDeleteEmailVerificationCodeWithUserId: (userId: string) =>
+  retriveAndDeleteEmailVerificationCode: (userId: string) =>
     db.transaction(async (tx) => {
       const item = await tx.query.emailVerificationCodes.findFirst({
         where: (table, { eq }) => eq(table.userId, userId),
@@ -50,12 +50,11 @@ const adapter = {
       }
       return item;
     }),
-
   insertPasswordResetToken: (data: NewPasswordResetToken) =>
     db.insert(passwordResetTokens).values(data),
   deleteUserPasswordResetTokens: (userId: string) =>
     db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId)),
-  getAndDeletePasswordResetToken: (token: string) =>
+  retriveAndDeletePasswordResetToken: (token: string) =>
     db.transaction(async (tx) => {
       const item = await tx.query.passwordResetTokens.findFirst({
         where: (table, { eq }) => eq(table.id, token),

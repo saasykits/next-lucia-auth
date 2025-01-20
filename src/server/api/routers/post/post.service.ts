@@ -1,6 +1,6 @@
-import utils from "@/lib/auth/utils";
 import { posts } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import type { ProtectedTRPCContext } from "../../trpc";
 import type {
   CreatePostInput,
@@ -36,7 +36,7 @@ export const getPost = async (ctx: ProtectedTRPCContext, { id }: GetPostInput) =
 };
 
 export const createPost = async (ctx: ProtectedTRPCContext, input: CreatePostInput) => {
-  const id = utils.generateId(15);
+  const id = nanoid(15);
 
   await ctx.db.insert(posts).values({
     id,

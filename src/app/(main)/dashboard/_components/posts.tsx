@@ -58,11 +58,16 @@ export function Posts({ page, perPage }: PostsProps) {
       toast.info("Already creating a post");
       return;
     }
-    postCreateMutation.mutate({
-      title: "Untitled Post",
-      content: "Write your content here",
-      excerpt: "untitled post",
-    });
+    if (!postsQuery.data) return;
+    if (postsQuery.data.length < 5) {
+      postCreateMutation.mutate({
+        title: "Untitled Post",
+        content: "Write your content here",
+        excerpt: "untitled post",
+      });
+    } else {
+      toast.error("You can't have more than 5 posts");
+    }
   };
   const deletePost = (id: string) => {
     postDeleteMutation.mutate({ id });

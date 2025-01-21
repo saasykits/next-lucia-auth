@@ -95,8 +95,8 @@ export const logoutAction = action(async () => {
       message: "No session found",
     };
   }
-  // await invalidateSession(session.id);
-  // await clearCookie();
+  await invalidateSession(session.id);
+  await clearCookie();
   redirect("/");
 });
 

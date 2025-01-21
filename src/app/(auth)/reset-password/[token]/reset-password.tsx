@@ -13,7 +13,7 @@ export function ResetPassword({ token }: { token: string }) {
   const [state, formAction] = useFormState(resetPasswordAction, null);
 
   useEffect(() => {
-    if (!state?.success) {
+    if (state?.success === false) {
       toast(state?.message, {
         icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
       });

@@ -18,21 +18,22 @@ export const VerifyCode = () => {
   const codeFormRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (!resendState?.success) {
+    if (resendState?.success === false) {
       toast(resendState?.message ?? "An error occured", {
         icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
       });
+    } else if (resendState?.success) {
+      toast("Email sent!");
     }
-    toast("Email sent!");
   }, [resendState?.message, resendState?.success]);
 
   useEffect(() => {
-    if (!verifyEmailState?.success) {
+    if (verifyEmailState?.success === false) {
       toast(verifyEmailState?.message ?? "An error occured", {
         icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
       });
     }
-  }, [verifyEmailState?.success]);
+  }, [verifyEmailState?.success, verifyEmailState?.message]);
 
   return (
     <div className="flex flex-col gap-2">

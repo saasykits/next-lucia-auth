@@ -19,14 +19,13 @@ export function SendResetEmail() {
 
   useEffect(() => {
     if (state?.success) {
-      console.log(state.data);
       toast("A password reset link has been sent to your email.");
       router.push(Paths.Login);
-      return;
+    } else if (state?.success === false) {
+      toast(state?.message ?? "An error occured", {
+        icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
+      });
     }
-    toast(state?.message ?? "An error occured", {
-      icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
-    });
   }, [state?.message, state?.success]);
 
   return (

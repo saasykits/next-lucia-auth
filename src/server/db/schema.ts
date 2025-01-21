@@ -3,6 +3,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  pgEnum,
   pgTableCreator,
   serial,
   text,
@@ -13,12 +14,31 @@ import { nanoid } from "nanoid";
 
 export const pgTable = pgTableCreator((name) => `${prefix}_${name}`);
 
+/***********************
+ * Enums
+ ***********************/
+export const postStatusEnum = pgEnum(prefix + "_post_status", ["draft", "published", "archived"]);
+export const authProviderEnum = pgEnum(prefix + "_auth_provider", [
+  "discord",
+  "email",
+  "credentials",
+]);
+
+/***********************
+ * Table definitions
+ ***********************/
+const timestampColumns = {
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
+};
+const idKey = varchar({ length: 21 })
+  .primaryKey()
+  .$defaultFn(() => nanoid(21));
+
 export const users = pgTable(
   "users",
   {
-    id: varchar({ length: 21 })
-      .primaryKey()
-      .$defaultFn(() => nanoid(21)),
+    id: idKey,
     discordId: varchar("discord_id", { length: 255 }).unique(),
     email: varchar({ length: 255 }).unique().notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
@@ -28,17 +48,26 @@ export const users = pgTable(
     stripePriceId: varchar("stripe_price_id", { length: 191 }),
     stripeCustomerId: varchar("stripe_customer_id", { length: 191 }),
     stripeCurrentPeriodEnd: timestamp("stripe_current_period_end"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
+    ...timestampColumns,
   },
   (t) => [index("user_email_idx").on(t.email), index("user_discord_id_idx").on(t.discordId)],
 );
 
+const userIdFk = varchar("user_id", { length: 21 }).references(() => users.id, {
+  onDelete: "cascade",
+});
+
+export const accounts = pgTable("accounts", {
+  id: idKey,
+  userId: userIdFk.notNull(),
+  providerType: varchar("provider_type", { length: 63 }).notNull(),
+});
+
 export const sessions = pgTable(
   "sessions",
   {
-    id: varchar("id", { length: 255 }).primaryKey(),
-    userId: varchar("user_id", { length: 21 }).notNull(),
+    id: varchar({ length: 255 }).primaryKey(),
+    userId: userIdFk.notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
   (t) => [index("session_user_idx").on(t.userId)],
@@ -47,8 +76,8 @@ export const sessions = pgTable(
 export const emailVerificationCodes = pgTable(
   "email_verification_codes",
   {
-    id: serial("id").primaryKey(),
-    userId: varchar("user_id", { length: 21 }).unique().notNull(),
+    id: serial().primaryKey(),
+    userId: userIdFk.unique().notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     code: varchar("code", { length: 8 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
@@ -62,10 +91,8 @@ export const emailVerificationCodes = pgTable(
 export const passwordResetTokens = pgTable(
   "password_reset_tokens",
   {
-    id: varchar({ length: 40 })
-      .primaryKey()
-      .$defaultFn(() => nanoid(40)),
-    userId: varchar("user_id", { length: 21 }).notNull(),
+    id: idKey,
+    userId: userIdFk.notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
   (t) => [index("password_token_user_idx").on(t.userId)],
@@ -74,27 +101,21 @@ export const passwordResetTokens = pgTable(
 export const posts = pgTable(
   "posts",
   {
-    id: varchar("id", { length: 15 })
-      .primaryKey()
-      .$defaultFn(() => nanoid(15)),
-    userId: varchar("user_id", { length: 255 }).notNull(),
-    title: varchar("title", { length: 255 }).notNull(),
-    excerpt: varchar("excerpt", { length: 255 }).notNull(),
-    content: text("content").notNull(),
-    status: varchar("status", { length: 10, enum: ["draft", "published"] })
-      .default("draft")
-      .notNull(),
-    tags: varchar("tags", { length: 255 }),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
+    id: idKey,
+    userId: userIdFk.notNull(),
+    title: varchar({ length: 255 }).notNull(),
+    excerpt: varchar({ length: 255 }).notNull(),
+    content: text().notNull(),
+    status: postStatusEnum().default("draft").notNull(),
+    tags: varchar({ length: 255 }),
+    ...timestampColumns,
   },
   (t) => [index("post_status_idx").on(t.status), index("post_tags_idx").on(t.tags)],
 );
 
-/**
- * Table Relations
- */
-
+/***********************
+ * Table relations
+ ***********************/
 export const sessionRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
@@ -109,9 +130,9 @@ export const postRelations = relations(posts, ({ one }) => ({
   }),
 }));
 
-/**
- * Table type definitions
- */
+/***********************
+ * Table data types
+ ***********************/
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 
@@ -126,3 +147,6 @@ export type NewEmailVerificationCode = typeof emailVerificationCodes.$inferInser
 
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type NewPasswordResetToken = typeof passwordResetTokens.$inferInsert;
+
+export type PostStatus = (typeof postStatusEnum.enumValues)[number];
+export type AuthProvider = (typeof authProviderEnum.enumValues)[number];

@@ -89,7 +89,7 @@ export const posts = pgTable(
     title: varchar({ length: 255 }).notNull(),
     excerpt: varchar({ length: 255 }).notNull(),
     content: text().notNull(),
-    status: varchar({ length: 31, enum: ["draft", "published"] }).notNull(),
+    status: varchar({ length: 31, enum: ["draft", "published"] }).default("draft"),
     tags: varchar({ length: 255 }),
     ...timestampColumns,
   },

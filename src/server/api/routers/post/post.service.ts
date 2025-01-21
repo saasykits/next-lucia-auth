@@ -31,6 +31,13 @@ export const getPost = async (ctx: ProtectedTRPCContext, { id }: GetPostInput) =
 
 export const createPost = async (ctx: ProtectedTRPCContext, input: CreatePostInput) => {
   const data = { id: nanoid(15), userId: ctx.user.id, ...input };
+  const userPosts = await ctx.db.query.posts.findMany({
+    where: (table, { eq }) => eq(table.userId, ctx.user.id),
+    columns: { id: true },
+  });
+  if (userPosts.length >= 5) {
+    throw new Error("You can't have more than 5 posts");
+  }
   await ctx.db.insert(posts).values(data);
   return data;
 };
@@ -51,6 +58,6 @@ export const myPosts = async (ctx: ProtectedTRPCContext, input: MyPostsInput) =>
     offset: (input.page - 1) * input.perPage,
     limit: input.perPage,
     orderBy: (table, { desc }) => desc(table.createdAt),
-    columns: { content: false },
+    columns: { id: true, title: true, status: true, excerpt: true, createdAt: true },
   });
 };

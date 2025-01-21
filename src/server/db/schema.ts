@@ -20,14 +20,13 @@ const timestampColumns = {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
 };
-const idKey = varchar({ length: 21 })
-  .primaryKey()
-  .$defaultFn(() => nanoid(21));
 
 export const users = pgTable(
   "users",
   {
-    id: idKey,
+    id: varchar({ length: 21 })
+      .primaryKey()
+      .$defaultFn(() => nanoid(21)),
     discordId: varchar("discord_id", { length: 255 }).unique(),
     email: varchar({ length: 255 }).unique().notNull(),
     emailVerified: boolean("email_verified").default(false).notNull(),
@@ -42,58 +41,55 @@ export const users = pgTable(
   (t) => [index("user_email_idx").on(t.email), index("user_discord_id_idx").on(t.discordId)],
 );
 
-const userIdFk = varchar("user_id", { length: 21 }).references(() => users.id, {
-  onDelete: "cascade",
+export const sessions = pgTable("sessions", {
+  id: varchar({ length: 255 }).primaryKey(),
+  userId: varchar("user_id", { length: 21 })
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
 });
-
-export const sessions = pgTable(
-  "sessions",
-  {
-    id: varchar({ length: 255 }).primaryKey(),
-    userId: userIdFk.notNull(),
-    expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
-  },
-  (t) => [index("session_user_idx").on(t.userId)],
-);
 
 export const emailVerificationCodes = pgTable(
   "email_verification_codes",
   {
     id: serial().primaryKey(),
-    userId: userIdFk.unique().notNull(),
+    userId: varchar("user_id", { length: 21 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .unique()
+      .notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     code: varchar("code", { length: 8 }).notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
-  (t) => [
-    index("verification_code_user_idx").on(t.userId),
-    index("verification_code_email_idx").on(t.email),
-  ],
+  (t) => [index("verification_code_email_idx").on(t.email)],
 );
 
-export const passwordResetTokens = pgTable(
-  "password_reset_tokens",
-  {
-    id: idKey,
-    userId: userIdFk.notNull(),
-    expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
-  },
-  (t) => [index("password_token_user_idx").on(t.userId)],
-);
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: varchar({ length: 21 })
+    .primaryKey()
+    .$defaultFn(() => nanoid(21)),
+  userId: varchar("user_id", { length: 21 })
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
+});
 
 export const posts = pgTable(
   "posts",
   {
-    id: idKey,
-    userId: userIdFk.notNull(),
+    id: varchar({ length: 21 })
+      .primaryKey()
+      .$defaultFn(() => nanoid(21)),
+    userId: varchar("user_id", { length: 21 })
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
     title: varchar({ length: 255 }).notNull(),
     excerpt: varchar({ length: 255 }).notNull(),
     content: text().notNull(),
     status: varchar({ length: 31, enum: ["draft", "published"] }).default("draft"),
-    tags: varchar({ length: 255 }),
     ...timestampColumns,
   },
-  (t) => [index("post_status_idx").on(t.status), index("post_tags_idx").on(t.tags)],
+  (t) => [index("post_status_idx").on(t.status)],
 );
 
 /***********************

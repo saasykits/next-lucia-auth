@@ -3,7 +3,6 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
-  pgEnum,
   pgTableCreator,
   serial,
   text,
@@ -13,16 +12,6 @@ import {
 import { nanoid } from "nanoid";
 
 export const pgTable = pgTableCreator((name) => `${prefix}_${name}`);
-
-/***********************
- * Enums
- ***********************/
-export const postStatusEnum = pgEnum(prefix + "_post_status", ["draft", "published", "archived"]);
-export const authProviderEnum = pgEnum(prefix + "_auth_provider", [
-  "discord",
-  "email",
-  "credentials",
-]);
 
 /***********************
  * Table definitions
@@ -55,12 +44,6 @@ export const users = pgTable(
 
 const userIdFk = varchar("user_id", { length: 21 }).references(() => users.id, {
   onDelete: "cascade",
-});
-
-export const accounts = pgTable("accounts", {
-  id: idKey,
-  userId: userIdFk.notNull(),
-  providerType: varchar("provider_type", { length: 63 }).notNull(),
 });
 
 export const sessions = pgTable(
@@ -106,7 +89,7 @@ export const posts = pgTable(
     title: varchar({ length: 255 }).notNull(),
     excerpt: varchar({ length: 255 }).notNull(),
     content: text().notNull(),
-    status: postStatusEnum().default("draft").notNull(),
+    status: varchar({ length: 31, enum: ["draft", "published"] }).notNull(),
     tags: varchar({ length: 255 }),
     ...timestampColumns,
   },
@@ -147,6 +130,3 @@ export type NewEmailVerificationCode = typeof emailVerificationCodes.$inferInser
 
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type NewPasswordResetToken = typeof passwordResetTokens.$inferInsert;
-
-export type PostStatus = (typeof postStatusEnum.enumValues)[number];
-export type AuthProvider = (typeof authProviderEnum.enumValues)[number];

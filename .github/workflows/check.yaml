@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DATABASE_URL: ${{secrets.DATABASE_URL}}
+  DATABASE_URL: postgres://postgres:root@localhost:5432/acme
   DISCORD_CLIENT_ID: ${{secrets.DISCORD_CLIENT_ID}}
   DISCORD_CLIENT_SECRET: ${{secrets.DISCORD_CLIENT_SECRET}}
   MOCK_SEND_EMAIL: "true"
@@ -60,9 +60,6 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
-    env:
-      DATABASE_URL: postgres://postgres:root@localhost:5432/acme
 
     steps:
       - uses: actions/checkout@v2

@@ -1,7 +1,7 @@
 import { ThemeToggle } from "@/components/theme-toggle";
 import { CodeIcon } from "@radix-ui/react-icons";
 
-const repoUrl = "https://github.com/saasykits/nextjs-session-auth";
+const repoUrl = "https://github.com/saasykits/nextjs-sessionauth-template";
 const orgUrl = "https://github.com/saasykits";
 
 export const Footer = () => {

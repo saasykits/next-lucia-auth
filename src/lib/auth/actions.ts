@@ -47,6 +47,24 @@ interface Config {
   sessionExpiration: number;
 }
 
+type ErrorCause =
+  | "USER_NOT_FOUND"
+  | "INVALID_PASSWORD"
+  | "EMAIL_NOT_VERIFIED"
+  | "EMAIL_ALREADY_EXISTS"
+  | "INVALID_EMAIL"
+  | "INVALID_PASSWORD_RESET_TOKEN"
+  | "INVALID_EMAIL_VERIFICATION_CODE"
+  | "EMAIL_VERIFICATION_CODE_EXPIRED"
+  | "PASSWORD_RESET_TOKEN_EXPIRED";
+export class AuthError extends Error {
+  constructor(
+    message: string,
+    public cause: ErrorCause,
+  ) {
+    super(message);
+  }
+}
 class Auth {
   private adapter: Adapter;
   private discord: Discord;
@@ -58,10 +76,19 @@ class Auth {
     this.cookieOptions = config.cookieOptions;
     this.sessionExpiration = config.sessionExpiration;
   }
+
   async login({ email, password }: { email: string; password: string }) {
-    try {
-      const existingUser = this.adapter.getUser("email", email);
-    } catch (error) {}
+    const existingUser = await this.adapter.getUser("email", email);
+    if (!existingUser) {
+      throw new AuthError("Incorrect email or password", "USER_NOT_FOUND");
+    }
+    if (!existingUser.hashedPassword) {
+      throw new AuthError("Incorrect email or password", "INVALID_PASSWORD");
+    }
+    const validPassword = await bcrypt.compare(password, existingUser.hashedPassword);
+    if (!validPassword) {
+      throw new AuthError("Incorrect email or password", "INVALID_PASSWORD");
+    }
   }
 }
 

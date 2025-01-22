@@ -2,13 +2,14 @@
 
 import { env } from "@/env";
 import { EmailTemplate, sendMail } from "@/lib/email";
+import type { Discord } from "arctic";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { action, validatedAction } from "../action-utils";
 import { Paths } from "../constants";
-import adapter from "./adapter";
+import type { Adapter } from "./adapter";
 import {
   clearCookie,
   createSession,
@@ -33,6 +34,36 @@ const resetPasswordSchema = z.object({
   token: z.string().min(1, "Invalid token"),
   password: z.string().min(8, "Password is too short").max(255),
 });
+
+interface Config {
+  adapter: Adapter;
+  discord: Discord;
+  cookieOptions: {
+    httpOnly: boolean;
+    sameSite: "lax" | "strict" | "none";
+    secure: boolean;
+    path: string;
+  };
+  sessionExpiration: number;
+}
+
+class Auth {
+  private adapter: Adapter;
+  private discord: Discord;
+  private cookieOptions: Config["cookieOptions"];
+  private sessionExpiration: number;
+  constructor(config: Config) {
+    this.adapter = config.adapter;
+    this.discord = config.discord;
+    this.cookieOptions = config.cookieOptions;
+    this.sessionExpiration = config.sessionExpiration;
+  }
+  async login({ email, password }: { email: string; password: string }) {
+    try {
+      const existingUser = this.adapter.getUser("email", email);
+    } catch (error) {}
+  }
+}
 
 export const loginAction = validatedAction(loginSchema, async (_, input) => {
   const { email, password } = input;
@@ -181,7 +212,7 @@ export const sendPasswordResetEmailAction = validatedAction(
   z.object({ email: z.string().trim().email() }),
   async (_, { email }) => {
     const user = await adapter.getUserWithEmail(email);
-    if (!user || !user.emailVerified)
+    if (!user?.emailVerified)
       return {
         success: false,
         message: "User not found",

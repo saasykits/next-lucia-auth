@@ -1,73 +1,93 @@
-import { db } from "@/server/db";
-import {
-  emailVerificationCodes,
-  passwordResetTokens,
-  sessions as sessionTable,
-  users as userTable,
-  type NewEmailVerificationCode,
-  type NewPasswordResetToken,
-  type NewUser,
-  type Session,
-  type User,
-} from "@/server/db/schema";
+import type { db, schema } from "@/server/db";
 import { eq } from "drizzle-orm";
 
-const adapter = {
-  getUserWithEmail: (email: string) =>
-    db.query.users.findFirst({ where: (table, { eq }) => eq(table.email, email) }),
-  insertUser: (data: NewUser) => db.insert(userTable).values(data),
-  updateUser: (userId: string, data: Omit<Partial<NewUser>, "id">) =>
-    db.update(userTable).set(data).where(eq(userTable.id, userId)),
+type DBSchema = typeof schema;
+type DBConnection = typeof db;
 
-  createSession: (session: Session) => db.insert(sessionTable).values(session),
-  deleteSession: (sessionId: string) =>
-    db.delete(sessionTable).where(eq(sessionTable.id, sessionId)),
-  getSessionAndUser: (sessionId: string) =>
-    db.query.sessions.findFirst({
+// eslint-disable-next-line @typescript-eslint/no-namespace
+namespace Adapter {
+  export type DBSchema = typeof schema;
+  export type DBConnection = typeof db;
+  export type NewUser = DBSchema["users"]["$inferInsert"];
+  export type NewSession = DBSchema["sessions"]["$inferInsert"];
+  export type NewVerificationCode = DBSchema["verificationCodes"]["$inferInsert"];
+  export type NewPasswordResetToken = DBSchema["passwordResetTokens"]["$inferInsert"];
+}
+export class Adapter {
+  constructor(
+    private db: DBConnection,
+    private schema: DBSchema,
+  ) {}
+  async getUser(field: "email" | "id" = "id", value: string) {
+    return this.db.query.users.findFirst({
+      where: (table, { eq }) => eq(field === "id" ? table.id : table.email, value),
+    });
+  }
+  async insertUser(data: Adapter.NewUser) {
+    return this.db.insert(this.schema.users).values(data);
+  }
+  async updateUser(userId: string, data: typeof this.schema.users.$inferInsert) {
+    return this.db.update(this.schema.users).set(data).where(eq(this.schema.users.id, userId));
+  }
+  async getSession(sessionId: string) {
+    return this.db.query.sessions.findFirst({
       where: (table, { eq }) => eq(table.id, sessionId),
       with: { user: true },
-    }),
-  updateSessionExpiration: (sessionId: string, expiresAt: Date) =>
-    db.update(sessionTable).set({ expiresAt }).where(eq(sessionTable.id, sessionId)),
-  deleteUserSessions: (userId: string) =>
-    db.delete(sessionTable).where(eq(sessionTable.userId, userId)),
-
-  insertEmailVerificationCode: (data: NewEmailVerificationCode) =>
-    db.insert(emailVerificationCodes).values(data),
-  getEmailVerificationCodeWithUserId: (userId: string) =>
-    db.query.emailVerificationCodes.findFirst({
+    });
+  }
+  async createSession(session: Adapter.NewSession, deleteAllPrevSessions = true) {
+    if (deleteAllPrevSessions) {
+      await this.db
+        .delete(this.schema.sessions)
+        .where(eq(this.schema.sessions.userId, session.userId));
+    }
+    return this.db.insert(this.schema.sessions).values(session);
+  }
+  async deleteSession(sessionId: string) {
+    return this.db.delete(this.schema.sessions).where(eq(this.schema.sessions.id, sessionId));
+  }
+  async updateSession(sessionId: string, data: Omit<Adapter.NewSession, "id">) {
+    return this.db
+      .update(this.schema.sessions)
+      .set(data)
+      .where(eq(this.schema.sessions.id, sessionId));
+  }
+  async insertVerificationCode(data: Adapter.NewVerificationCode, deleteAllPrevCodes = true) {
+    if (deleteAllPrevCodes) {
+      await this.db
+        .delete(this.schema.verificationCodes)
+        .where(eq(this.schema.verificationCodes.userId, data.userId));
+    }
+    return this.db.insert(this.schema.verificationCodes).values(data);
+  }
+  async getVerificationCode(userId: string, deleteAfter = false) {
+    const item = await this.db.query.verificationCodes.findFirst({
       where: (table, { eq }) => eq(table.userId, userId),
-    }),
-  deleteUserEmailVerificationCodes: (id: string) =>
-    db.delete(emailVerificationCodes).where(eq(emailVerificationCodes.userId, id)),
-  retriveAndDeleteEmailVerificationCode: (userId: string) =>
-    db.transaction(async (tx) => {
-      const item = await tx.query.emailVerificationCodes.findFirst({
-        where: (table, { eq }) => eq(table.userId, userId),
-      });
-      if (item) {
-        await tx.delete(emailVerificationCodes).where(eq(emailVerificationCodes.id, item.id));
-      }
-      return item;
-    }),
-  insertPasswordResetToken: (data: NewPasswordResetToken) =>
-    db.insert(passwordResetTokens).values(data),
-  deleteUserPasswordResetTokens: (userId: string) =>
-    db.delete(passwordResetTokens).where(eq(passwordResetTokens.userId, userId)),
-  retriveAndDeletePasswordResetToken: (token: string) =>
-    db.transaction(async (tx) => {
-      const item = await tx.query.passwordResetTokens.findFirst({
-        where: (table, { eq }) => eq(table.id, token),
-      });
-      if (item) {
-        await tx.delete(passwordResetTokens).where(eq(passwordResetTokens.id, item.id));
-      }
-      return item;
-    }),
-};
-export type Adapter = typeof adapter;
-
-export type AuthSession = Session;
-export type AuthUser = Omit<User, "hashedPassword">;
-
-export default adapter;
+    });
+    if (deleteAfter && item) {
+      await this.db
+        .delete(this.schema.verificationCodes)
+        .where(eq(this.schema.verificationCodes.id, item.id));
+    }
+    return item ?? null;
+  }
+  async insertPasswordResetToken(data: Adapter.NewPasswordResetToken, deleteAllPrevTokens = true) {
+    if (deleteAllPrevTokens) {
+      await this.db
+        .delete(this.schema.passwordResetTokens)
+        .where(eq(this.schema.passwordResetTokens.userId, data.userId));
+    }
+    return this.db.insert(this.schema.passwordResetTokens).values(data);
+  }
+  async getPasswordResetToken(token: string, deleteAfter = false) {
+    const item = await this.db.query.passwordResetTokens.findFirst({
+      where: (table, { eq }) => eq(table.id, token),
+    });
+    if (deleteAfter && item) {
+      await this.db
+        .delete(this.schema.passwordResetTokens)
+        .where(eq(this.schema.passwordResetTokens.id, item.id));
+    }
+    return item ?? null;
+  }
+}

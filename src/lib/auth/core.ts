@@ -5,6 +5,7 @@ import { EmailTemplate, sendMail } from "@/lib/email";
 import type { Discord } from "arctic";
 import bcrypt from "bcryptjs";
 import { nanoid } from "nanoid";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { action, validatedAction } from "../action-utils";
@@ -15,12 +16,12 @@ import {
   createSession,
   invalidateSession,
   invalidateUserSessions,
-  isWithinExpirationDate,
   setCookie,
   validateRequest,
 } from "./utils";
 
 const SALT_ROUNDS = 10;
+const SESSION_COOKIE_NAME = "auth_session";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -44,12 +45,40 @@ interface Config {
     secure: boolean;
     path: string;
   };
+  paths: {
+    login: string;
+    loginRedirect: string;
+    signup: string;
+    verifyEmail: string;
+  };
+  callbacks?: {
+    onLogin?: (user: Auth["$User"]) => Promise<void> | void;
+    onSignup?: (user: Auth["$User"], verificationCode?: string) => Promise<void> | void;
+    onLogout?: () => Promise<void> | void;
+  };
   sessionExpiration: number;
+  verificationCodeExpiration: number;
+  passwordResetTokenExpiration: number;
+}
+interface Auth {
+  $User: Pick<
+    NonNullable<Awaited<ReturnType<Adapter["getUser"]>>>,
+    "id" | "email" | "emailVerified"
+  >;
+  $Session: NonNullable<Awaited<ReturnType<Adapter["getSession"]>>>;
+  login: (input: { email: string; password: string }) => Promise<void>;
+  signup: (input: { email: string; password: string }) => Promise<void>;
+  logout: () => Promise<void>;
+  verifyEmail: (input: { code: string }) => Promise<void>;
+  resetPassword: (input: { token: string; password: string }) => Promise<void>;
+  sendPasswordResetEmail: (input: { email: string }) => Promise<void>;
+  resendVerificationEmail: () => Promise<void>;
 }
 
-type ErrorCause =
+type AuthErrorCode =
   | "USER_NOT_FOUND"
   | "INVALID_PASSWORD"
+  | "INVALID_SESSION"
   | "EMAIL_NOT_VERIFIED"
   | "EMAIL_ALREADY_EXISTS"
   | "INVALID_EMAIL"
@@ -59,13 +88,142 @@ type ErrorCause =
   | "PASSWORD_RESET_TOKEN_EXPIRED";
 export class AuthError extends Error {
   constructor(
-    message: string,
-    public cause: ErrorCause,
+    public code: AuthErrorCode,
+    public message = "An error occurred",
   ) {
     super(message);
   }
 }
-class Auth {
+const getExpiryDate = (timeSpan: number) => new Date(Date.now() + timeSpan);
+const isWithinExpirationDate = (date: Date) => Date.now() < date.getTime();
+
+function initAuth(config: Config): Auth {
+  const {
+    adapter,
+    discord,
+    cookieOptions,
+    sessionExpiration,
+    verificationCodeExpiration,
+    passwordResetTokenExpiration,
+    callbacks,
+    paths,
+  } = config;
+  const setCookie = async (sessionId: string) =>
+    (await cookies()).set(SESSION_COOKIE_NAME, sessionId, {
+      ...cookieOptions,
+      expires: getExpiryDate(sessionExpiration),
+    });
+  const clearCookie = async () =>
+    (await cookies()).set(SESSION_COOKIE_NAME, "", { ...cookieOptions, expires: getExpiryDate(0) });
+  const createSession = async (userId: string) =>
+    adapter.createSession({ id: nanoid(25), userId, expiresAt: getExpiryDate(sessionExpiration) });
+  const validateSession = async (sessionId: string) => {
+    const session = await adapter.getSession(sessionId);
+    if (!session) return { session: null, user: null };
+    const { user, ...data } = session;
+    if (!isWithinExpirationDate(data.expiresAt)) {
+      await adapter.deleteSession(sessionId);
+      return { session: null, user: null };
+    }
+    const activePeriodExpiration = new Date(data.expiresAt.getTime() - sessionExpiration / 2);
+    let fresh = false;
+    if (!isWithinExpirationDate(activePeriodExpiration)) {
+      const newExpiration = getExpiryDate(sessionExpiration);
+      await adapter.updateSession(sessionId, { expiresAt: newExpiration });
+      fresh = true;
+    }
+    const { email, emailVerified, id } = user;
+    return { session: data, user: { email, emailVerified, id } as Auth["$User"], fresh };
+  };
+  const validateRequest = async () => {
+    const cookieStore = await cookies();
+    const sessionId = cookieStore.get(SESSION_COOKIE_NAME)?.value ?? null;
+    if (!sessionId) {
+      return { user: null, session: null };
+    }
+    const result = await validateSession(sessionId);
+    // next.js throws when you attempt to set cookie when rendering page
+    try {
+      if (result.session && result.fresh) {
+        await setCookie(result.session.id);
+      }
+      if (!result.session) {
+        await clearCookie();
+      }
+    } catch {
+      console.warn("Failed to set session cookie");
+    }
+    return result;
+  };
+  const createdVerificationCode = async (userId: string, email: string) => {
+    const data = {
+      email,
+      userId,
+      code: nanoid(8),
+      expiresAt: getExpiryDate(verificationCodeExpiration),
+    };
+    await adapter.insertVerificationCode(data);
+    return data;
+  };
+
+  return {
+    $User: null as never,
+    $Session: null as never,
+    async login({ email, password }) {
+      const existingUser = await adapter.getUser("email", email);
+      if (!existingUser) throw new AuthError("USER_NOT_FOUND");
+      if (!existingUser.hashedPassword) throw new AuthError("INVALID_PASSWORD");
+      const validPassword = await bcrypt.compare(password, existingUser.hashedPassword);
+      if (!validPassword) throw new AuthError("INVALID_PASSWORD");
+
+      await callbacks?.onLogin?.({ id: userId, email, emailVerified: false }, code);
+
+      const session = await createSession(existingUser.id);
+      await setCookie(session.id);
+      redirect(paths.loginRedirect);
+    },
+    async signup({ email, password }) {
+      const existingUser = await adapter.getUser("email", email);
+      if (existingUser) throw new AuthError("EMAIL_ALREADY_EXISTS");
+      const userId = nanoid(21);
+      const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+      await adapter.insertUser({ id: userId, email, hashedPassword });
+      const { code } = await createdVerificationCode(userId, email);
+      try {
+        await callbacks?.onSignup?.({ id: userId, email, emailVerified: false }, code);
+      } catch (err) {
+        console.error(err);
+      }
+      const session = await createSession(userId);
+      await setCookie(session.id);
+      redirect(paths.verifyEmail);
+    },
+    async logout() {
+      const { session } = await validateRequest();
+      if (!session) throw new AuthError("INVALID_SESSION");
+      await adapter.deleteSession(session.id);
+      await clearCookie();
+      redirect(paths.login);
+    },
+    async getNewVerificationCode() {
+      const { user } = await validateRequest();
+      if (!user) {
+        return redirect(Paths.Login);
+      }
+      const [lastSent] = await adapter.getVerificationCodes(user.id);
+      if (lastSent && isWithinExpirationDate(lastSent.expiresAt)) {
+        return {
+          success: false,
+          message: `Please wait ${timeFromNow(lastSent.expiresAt)} before resending`,
+        };
+      }
+      const verificationCode = await generateEmailVerificationCode(user.id, user.email);
+      await sendMail(user.email, EmailTemplate.EmailVerification, { code: verificationCode });
+      return { success: true, data: null };
+    },
+  };
+}
+class Auth2 {
   private adapter: Adapter;
   private discord: Discord;
   private cookieOptions: Config["cookieOptions"];
@@ -75,20 +233,6 @@ class Auth {
     this.discord = config.discord;
     this.cookieOptions = config.cookieOptions;
     this.sessionExpiration = config.sessionExpiration;
-  }
-
-  async login({ email, password }: { email: string; password: string }) {
-    const existingUser = await this.adapter.getUser("email", email);
-    if (!existingUser) {
-      throw new AuthError("Incorrect email or password", "USER_NOT_FOUND");
-    }
-    if (!existingUser.hashedPassword) {
-      throw new AuthError("Incorrect email or password", "INVALID_PASSWORD");
-    }
-    const validPassword = await bcrypt.compare(password, existingUser.hashedPassword);
-    if (!validPassword) {
-      throw new AuthError("Incorrect email or password", "INVALID_PASSWORD");
-    }
   }
 }
 

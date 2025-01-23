@@ -38,6 +38,7 @@ export const verificationCodes = pgTable(
       .notNull(),
     email: varchar("email", { length: 255 }).notNull(),
     code: varchar("code", { length: 8 }).notNull(),
+    createdAt: timestampColumns.createdAt,
     expiresAt: timestamp("expires_at", { withTimezone: true, mode: "date" }).notNull(),
   },
   (t) => [index("verification_code_email_idx").on(t.email)],

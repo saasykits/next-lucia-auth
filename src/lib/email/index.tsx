@@ -1,13 +1,13 @@
 import "server-only";
 
-import { EmailVerificationTemplate } from "./templates/email-verification";
-import { ResetPasswordTemplate } from "./templates/reset-password";
-import { render } from "@react-email/render";
 import { env } from "@/env";
 import { EMAIL_SENDER } from "@/lib/constants";
+import { render } from "@react-email/render";
 import { createTransport, type TransportOptions } from "nodemailer";
 import type { ComponentProps } from "react";
 import { logger } from "../logger";
+import { EmailVerificationTemplate } from "./templates/email-verification";
+import { ResetPasswordTemplate } from "./templates/reset-password";
 
 export enum EmailTemplate {
   EmailVerification = "EmailVerification",
@@ -19,19 +19,22 @@ export type PropsMap = {
   [EmailTemplate.PasswordReset]: ComponentProps<typeof ResetPasswordTemplate>;
 };
 
-const getEmailTemplate = <T extends EmailTemplate>(template: T, props: PropsMap[NoInfer<T>]) => {
+const getEmailTemplate = async <T extends EmailTemplate>(
+  template: T,
+  props: PropsMap[NoInfer<T>],
+) => {
   switch (template) {
     case EmailTemplate.EmailVerification:
       return {
         subject: "Verify your email address",
-        body: render(
+        body: await render(
           <EmailVerificationTemplate {...(props as PropsMap[EmailTemplate.EmailVerification])} />,
         ),
       };
     case EmailTemplate.PasswordReset:
       return {
         subject: "Reset your password",
-        body: render(
+        body: await render(
           <ResetPasswordTemplate {...(props as PropsMap[EmailTemplate.PasswordReset])} />,
         ),
       };
@@ -57,11 +60,9 @@ export const sendMail = async <T extends EmailTemplate>(
   props: PropsMap[NoInfer<T>],
 ) => {
   if (env.MOCK_SEND_EMAIL) {
-    logger.info("📨 Email sent to:", to, "with template:", template, "and props:", props);
+    logger.info(`📨 Email sent to: "${to}"`, { ...props, to, template } as Record<string, unknown>);
     return;
   }
-
-  const { subject, body } = getEmailTemplate(template, props);
-
+  const { subject, body } = await getEmailTemplate(template, props);
   return transporter.sendMail({ from: EMAIL_SENDER, to, subject, html: body });
 };

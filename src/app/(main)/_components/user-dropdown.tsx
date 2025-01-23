@@ -1,6 +1,6 @@
 "use client";
 
-import { ExclamationTriangleIcon } from "@/components/icons";
+import { PersonIcon } from "@/components/icons";
 import { LoadingButton } from "@/components/loading-button";
 import {
   AlertDialog,
@@ -20,32 +20,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { logout } from "@/lib/auth/actions";
+import { logoutAction } from "@/lib/auth/actions";
+import type { AuthUser } from "@/lib/auth/adapter";
 import { APP_TITLE } from "@/lib/constants";
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export const UserDropdown = ({
-  email,
-  avatar,
-  className,
-}: {
-  email: string;
-  avatar?: string | null;
-  className?: string;
-}) => {
+export const UserDropdown = ({ user: { email } }: { user: AuthUser }) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className={className}>
-        {/* eslint @next/next/no-img-element:off */}
-        <img
-          src={avatar ?? "https://source.boringavatars.com/marble/60/" + email}
-          alt="Avatar"
-          className="block h-8 w-8 rounded-full leading-none"
-          width={64}
-          height={64}
-        ></img>
+      <DropdownMenuTrigger aria-label="user dropdown menu" asChild>
+        <Button variant="secondary" className="gap-1">
+          <PersonIcon className="size-4 leading-none" />
+          account
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel className="text-muted-foreground">{email}</DropdownMenuLabel>
@@ -73,24 +62,13 @@ export const UserDropdown = ({
 
 const SignoutConfirmation = () => {
   const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [state, logout, isLoading] = useActionState(logoutAction, null);
 
-  const handleSignout = async () => {
-    setIsLoading(true);
-    try {
-      await logout();
-      toast("Signed out successfully");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast(error.message, {
-          icon: <ExclamationTriangleIcon className="h-4 w-4 text-destructive" />,
-        });
-      }
-    } finally {
-      setOpen(false);
-      setIsLoading(false);
+  useEffect(() => {
+    if (!state?.success && state?.message) {
+      toast.error(state.message);
     }
-  };
+  }, [state?.success, state?.message]);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -105,14 +83,14 @@ const SignoutConfirmation = () => {
           <AlertDialogTitle className="text-center">Sign out from {APP_TITLE}?</AlertDialogTitle>
           <AlertDialogDescription>You will be redirected to the home page.</AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
-          <Button variant="outline" onClick={() => setOpen(false)}>
+        <form className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-center" action={logout}>
+          <Button variant="outline" onClick={() => setOpen(false)} type="button">
             Cancel
           </Button>
-          <LoadingButton loading={isLoading} onClick={handleSignout}>
+          <LoadingButton loading={isLoading} type="submit">
             Continue
           </LoadingButton>
-        </div>
+        </form>
       </AlertDialogContent>
     </AlertDialog>
   );

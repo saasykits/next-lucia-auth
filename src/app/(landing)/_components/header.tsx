@@ -1,6 +1,4 @@
-import Link from "next/link";
 import { RocketIcon } from "@/components/icons";
-import { APP_TITLE } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,14 +6,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { APP_TITLE } from "@/lib/constants";
 import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 const routes = [
   { name: "Home", href: "/" },
   { name: "Features", href: "/#features" },
   {
     name: "Documentation",
-    href: "https://www.touha.dev/posts/simple-nextjs-t3-authentication-with-lucia",
+    href: "/documentation",
   },
 ] as const;
 
@@ -43,10 +43,7 @@ export const Header = () => {
             </div>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Link
-          className="flex items-center justify-center text-xl font-medium"
-          href="/"
-        >
+        <Link className="flex items-center justify-center text-xl font-medium" href="/">
           <RocketIcon className="mr-2 h-5 w-5" /> {APP_TITLE}
         </Link>
         <nav className="ml-10 hidden gap-4 sm:gap-6 md:flex">

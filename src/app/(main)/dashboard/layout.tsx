@@ -7,9 +7,9 @@ interface Props {
 
 export default function DashboardLayout({ children }: Props) {
   return (
-    <div className="container min-h-[calc(100vh-180px)] px-2 pt-6 md:px-4">
-      <div className="flex flex-col gap-6 md:flex-row lg:gap-10">
-        <DashboardNav className="flex flex-shrink-0 gap-2 md:w-48 md:flex-col lg:w-80" />
+    <div className="container min-h-[calc(100dvh-60px)] px-2 pt-6 md:px-4">
+      <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
+        <DashboardNav className="flex flex-shrink-0 gap-2 md:w-48 lg:flex-col xl:w-80" />
         <main className="w-full space-y-4">
           <VerificiationWarning />
           <div>{children}</div>

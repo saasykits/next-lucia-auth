@@ -1,24 +1,24 @@
 "use client";
 
+import { ExclamationTriangleIcon } from "@/components/icons";
+import { PasswordInput } from "@/components/password-input";
+import { SubmitButton } from "@/components/submit-button";
+import { Label } from "@/components/ui/label";
+import { resetPasswordAction } from "@/lib/auth/actions";
 import { useEffect } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "sonner";
-import { ExclamationTriangleIcon } from "@/components/icons";
-import { SubmitButton } from "@/components/submit-button";
-import { PasswordInput } from "@/components/password-input";
-import { Label } from "@/components/ui/label";
-import { resetPassword } from "@/lib/auth/actions";
 
 export function ResetPassword({ token }: { token: string }) {
-  const [state, formAction] = useFormState(resetPassword, null);
+  const [state, formAction] = useFormState(resetPasswordAction, null);
 
   useEffect(() => {
-    if (state?.error) {
-      toast(state.error, {
+    if (state?.success === false) {
+      toast(state?.message, {
         icon: <ExclamationTriangleIcon className="h-5 w-5 text-destructive" />,
       });
     }
-  }, [state?.error]);
+  }, [state?.success, state?.message]);
 
   return (
     <form action={formAction} className="space-y-4">
@@ -29,6 +29,7 @@ export function ResetPassword({ token }: { token: string }) {
           name="password"
           required
           autoComplete="new-password"
+          defaultValue={state?.input?.password}
           placeholder="********"
         />
       </div>

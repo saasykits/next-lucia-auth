@@ -7,7 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 
-import { uncachedValidateRequest } from "@/lib/auth/validate-request";
+import { unCachedValidateRequest } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/server/db";
 import { initTRPC, TRPCError, type inferAsyncReturnType } from "@trpc/server";
@@ -27,7 +27,7 @@ import { ZodError } from "zod";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const { session, user } = await uncachedValidateRequest();
+  const { session, user } = await unCachedValidateRequest();
   return {
     session,
     user,

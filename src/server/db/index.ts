@@ -1,11 +1,19 @@
+import { env } from "@/env";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { env } from "@/env";
-import * as schema from "./schema";
+import * as posts from "./schema/posts";
+import * as users from "./schema/users";
 
-export const connection = postgres(env.DATABASE_URL, {
-  max_lifetime: 10, // Remove this line if you're deploying to Docker / VPS
-  // idle_timeout: 20, // Uncomment this line if you're deploying to Docker / VPS
-});
+export type DB = typeof db;
+const globalForDb = globalThis as unknown as { connection: postgres.Sql | undefined };
 
+export const connection = globalForDb.connection ?? postgres(env.DATABASE_URL);
+
+if (env.NODE_ENV !== "production") globalForDb.connection = connection;
+
+export const schema = {
+  ...users,
+  ...posts,
+} as const;
+export * from "./types";
 export const db = drizzle(connection, { schema });

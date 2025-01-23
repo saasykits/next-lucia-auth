@@ -7,10 +7,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { logout } from "@/lib/auth/actions";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { validateRequest } from "@/lib/auth";
+import { logoutAction } from "@/lib/auth/actions";
 import { Paths } from "@/lib/constants";
 import { redirect } from "next/navigation";
+
+const logout = async () => {
+  "use server";
+  await logoutAction(null);
+};
 
 export default async function AccountPage() {
   const { user } = await validateRequest();

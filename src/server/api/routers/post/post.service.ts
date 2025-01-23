@@ -1,4 +1,6 @@
-import { generateId } from "lucia";
+import { posts } from "@/server/db/schema";
+import { eq } from "drizzle-orm";
+import { nanoid } from "nanoid";
 import type { ProtectedTRPCContext } from "../../trpc";
 import type {
   CreatePostInput,
@@ -8,8 +10,6 @@ import type {
   MyPostsInput,
   UpdatePostInput,
 } from "./post.input";
-import { posts } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
 
 export const listPosts = async (ctx: ProtectedTRPCContext, input: ListPostsInput) => {
   return ctx.db.query.posts.findMany({
@@ -17,13 +17,7 @@ export const listPosts = async (ctx: ProtectedTRPCContext, input: ListPostsInput
     offset: (input.page - 1) * input.perPage,
     limit: input.perPage,
     orderBy: (table, { desc }) => desc(table.createdAt),
-    columns: {
-      id: true,
-      title: true,
-      excerpt: true,
-      status: true,
-      createdAt: true,
-    },
+    columns: { content: false },
     with: { user: { columns: { email: true } } },
   });
 };
@@ -36,30 +30,20 @@ export const getPost = async (ctx: ProtectedTRPCContext, { id }: GetPostInput) =
 };
 
 export const createPost = async (ctx: ProtectedTRPCContext, input: CreatePostInput) => {
-  const id = generateId(15);
-
-  await ctx.db.insert(posts).values({
-    id,
-    userId: ctx.user.id,
-    title: input.title,
-    excerpt: input.excerpt,
-    content: input.content,
+  const data = { id: nanoid(15), userId: ctx.user.id, ...input };
+  const userPosts = await ctx.db.query.posts.findMany({
+    where: (table, { eq }) => eq(table.userId, ctx.user.id),
+    columns: { id: true },
   });
-
-  return { id };
+  if (userPosts.length >= 5) {
+    throw new Error("You can't have more than 5 posts");
+  }
+  await ctx.db.insert(posts).values(data);
+  return data;
 };
 
-export const updatePost = async (ctx: ProtectedTRPCContext, input: UpdatePostInput) => {
-  const [item] = await ctx.db
-    .update(posts)
-    .set({
-      title: input.title,
-      excerpt: input.excerpt,
-      content: input.content,
-    })
-    .where(eq(posts.id, input.id))
-    .returning();
-
+export const updatePost = async (ctx: ProtectedTRPCContext, { id, ...input }: UpdatePostInput) => {
+  const [item] = await ctx.db.update(posts).set(input).where(eq(posts.id, id)).returning();
   return item;
 };
 
@@ -74,12 +58,6 @@ export const myPosts = async (ctx: ProtectedTRPCContext, input: MyPostsInput) =>
     offset: (input.page - 1) * input.perPage,
     limit: input.perPage,
     orderBy: (table, { desc }) => desc(table.createdAt),
-    columns: {
-      id: true,
-      title: true,
-      excerpt: true,
-      status: true,
-      createdAt: true,
-    },
+    columns: { id: true, title: true, status: true, excerpt: true, createdAt: true },
   });
 };

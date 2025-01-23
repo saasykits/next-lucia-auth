@@ -1,17 +1,19 @@
-import { cookies } from "next/headers";
-import { generateId } from "lucia";
+import { discord } from "@/lib/auth/config";
+import { createSession, setCookie } from "@/lib/auth/utils";
+import { Paths } from "@/lib/constants";
+import { db } from "@/server/db";
+import { users } from "@/server/db/schema";
 import { OAuth2RequestError } from "arctic";
 import { eq } from "drizzle-orm";
-import { discord, lucia } from "@/lib/auth";
-import { db } from "@/server/db";
-import { Paths } from "@/lib/constants";
-import { users } from "@/server/db/schema";
+import { nanoid } from "nanoid";
+import { cookies } from "next/headers";
 
 export async function GET(request: Request): Promise<Response> {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   const state = url.searchParams.get("state");
-  const storedState = cookies().get("discord_oauth_state")?.value ?? null;
+  const cookieStore = await cookies();
+  const storedState = cookieStore.get("discord_oauth_state")?.value ?? null;
 
   if (!code || !state || !storedState || state !== storedState) {
     return new Response(null, {
@@ -48,7 +50,7 @@ export async function GET(request: Request): Promise<Response> {
       : null;
 
     if (!existingUser) {
-      const userId = generateId(21);
+      const userId = nanoid(21);
       await db.insert(users).values({
         id: userId,
         email: discordUser.email,
@@ -56,9 +58,8 @@ export async function GET(request: Request): Promise<Response> {
         discordId: discordUser.id,
         avatar,
       });
-      const session = await lucia.createSession(userId, {});
-      const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+      const session = await createSession(userId);
+      await setCookie(session.id);
       return new Response(null, {
         status: 302,
         headers: { Location: Paths.Dashboard },
@@ -75,9 +76,9 @@ export async function GET(request: Request): Promise<Response> {
         })
         .where(eq(users.id, existingUser.id));
     }
-    const session = await lucia.createSession(existingUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    const session = await createSession(existingUser.id);
+    await setCookie(session.id);
+
     return new Response(null, {
       status: 302,
       headers: { Location: Paths.Dashboard },

@@ -1,11 +1,25 @@
 {
-  "name": "Next.js Auth Template",
+  "name": "Next.js Dev",
   "dockerComposeFile": ["compose.dev.yml"],
   "service": "workspace",
   "workspaceFolder": "/workspace",
-  "postCreateCommand": "pnpm config set store-dir $HOME/.pnpm-store",
+  "postCreateCommand": "bash ./.devcontainer/postCreateCommand.sh",
   "postStartCommand": "pnpm install",
-  "forwardPorts": [3000],
+  "forwardPorts": [3000, 9323, 4983],
+  "portsAttributes": {
+    "3000": {
+      "label": "Next.js Server",
+      "onAutoForward": "silent"
+    },
+    "9323": {
+      "label": "Playwright Reports",
+      "onAutoForward": "silent"
+    },
+    "4983": {
+      "label": "Drizzle-kit Studio",
+      "onAutoForward": "silent"
+    }
+  },
   "features": {
     "ghcr.io/devcontainers-extra/features/pnpm": "latest"
   },

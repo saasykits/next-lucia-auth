@@ -1,6 +1,6 @@
 import { UserDropdown } from "@/app/(main)/_components/user-dropdown";
 import { RocketIcon } from "@/components/icons";
-import { validateRequest } from "@/lib/auth/validate-request";
+import { validateRequest } from "@/lib/auth";
 import { APP_TITLE } from "@/lib/constants";
 import Link from "next/link";
 
@@ -13,7 +13,11 @@ export const Header = async () => {
         <Link className="flex items-center justify-center text-xl font-medium" href="/">
           <RocketIcon className="mr-2 h-5 w-5" /> {APP_TITLE} Dashboard
         </Link>
-        {user ? <UserDropdown email={user.email} avatar={user.avatar} className="ml-auto" /> : null}
+        {user ? (
+          <div className="ml-auto">
+            <UserDropdown user={user} />
+          </div>
+        ) : null}
       </div>
     </header>
   );

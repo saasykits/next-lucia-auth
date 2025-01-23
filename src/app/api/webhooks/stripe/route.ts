@@ -10,21 +10,17 @@ import { eq } from "drizzle-orm";
 
 export async function POST(req: Request) {
   const body = await req.text();
-  const signature = headers().get("Stripe-Signature") ?? "";
+  const headerStore = await headers();
+  const signature = headerStore.get("Stripe-Signature") ?? "";
 
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      env.STRIPE_WEBHOOK_SECRET,
-    );
+    event = stripe.webhooks.constructEvent(body, signature, env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
-    return new Response(
-      `Webhook Error: ${err instanceof Error ? err.message : "Unknown error."}`,
-      { status: 400 },
-    );
+    return new Response(`Webhook Error: ${err instanceof Error ? err.message : "Unknown error."}`, {
+      status: 400,
+    });
   }
 
   switch (event.type) {
@@ -53,9 +49,7 @@ export async function POST(req: Request) {
           stripeSubscriptionId: subscription.id,
           stripeCustomerId: subscription.customer as string,
           stripePriceId: subscription.items.data[0]?.price.id,
-          stripeCurrentPeriodEnd: new Date(
-            subscription.current_period_end * 1000,
-          ),
+          stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
         })
         .where(eq(users.id, userId));
 
@@ -82,9 +76,7 @@ export async function POST(req: Request) {
         .update(users)
         .set({
           stripePriceId: subscription.items.data[0]?.price.id,
-          stripeCurrentPeriodEnd: new Date(
-            subscription.current_period_end * 1000,
-          ),
+          stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
         })
         .where(eq(users.id, userId));
 

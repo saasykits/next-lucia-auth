@@ -1,19 +1,18 @@
 "use client";
 
-import { useFormState } from "react-dom";
-import Link from "next/link";
-import { PasswordInput } from "@/components/password-input";
+import { DiscordLogoIcon } from "@/components/icons";
+import { SubmitButton } from "@/components/submit-button";
+import TextInput from "@/components/text-input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { DiscordLogoIcon } from "@/components/icons";
+import { signupAction } from "@/lib/auth/actions";
 import { APP_TITLE } from "@/lib/constants";
-import { Label } from "@/components/ui/label";
-import { signup } from "@/lib/auth/actions";
-import { SubmitButton } from "@/components/submit-button";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useActionState } from "react";
 
 export function Signup() {
-  const [state, formAction] = useFormState(signup, null);
+  const [state, formAction] = useActionState(signupAction, null);
 
   return (
     <Card className="w-full max-w-md">
@@ -35,39 +34,40 @@ export function Signup() {
         </div>
 
         <form action={formAction} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              required
-              placeholder="email@example.com"
-              autoComplete="email"
-              name="email"
-              type="email"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <PasswordInput
-              id="password"
-              name="password"
-              required
-              autoComplete="current-password"
-              placeholder="********"
-            />
-          </div>
+          <TextInput
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            defaultValue={state?.input?.email}
+            placeholder="email@example.com"
+            error={!!state?.errors?.fieldErrors.email}
+            helperText={state?.errors?.fieldErrors.email?.[0]}
+          />
+          <TextInput
+            label="Password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            defaultValue={state?.input?.password}
+            placeholder="********"
+            minLength={8}
+            error={!!state?.errors?.fieldErrors.password}
+            helperText={state?.errors?.fieldErrors.password?.[0]}
+          />
 
-          {state?.fieldError ? (
-            <ul className="list-disc space-y-1 rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-              {Object.values(state.fieldError).map((err) => (
-                <li className="ml-4" key={err}>
-                  {err}
-                </li>
-              ))}
-            </ul>
-          ) : state?.formError ? (
-            <p className="rounded-lg border bg-destructive/10 p-2 text-[0.8rem] font-medium text-destructive">
-              {state?.formError}
+          {state?.message ? (
+            <p
+              className={cn(
+                "rounded-lg border p-2 text-[0.8rem] font-medium",
+                state?.success
+                  ? "bg-success/10 text-success"
+                  : "bg-destructive/10 text-destructive",
+              )}
+            >
+              {state?.message}
             </p>
           ) : null}
           <div>

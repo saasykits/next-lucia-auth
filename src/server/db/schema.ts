@@ -7,10 +7,13 @@ import {
   text,
   timestamp,
   varchar,
+  json,
 } from "drizzle-orm/pg-core";
 import { DATABASE_PREFIX as prefix } from "@/lib/constants";
 
 export const pgTable = pgTableCreator((name) => `${prefix}_${name}`);
+
+export type Role = 'user' | 'admin' | 'moderator' | 'content-creator';
 
 export const users = pgTable(
   "users",
@@ -27,6 +30,7 @@ export const users = pgTable(
     stripeCurrentPeriodEnd: timestamp("stripe_current_period_end"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdate(() => new Date()),
+    roles: json("roles").$type<Role[]>().default(['user']),
   },
   (t) => ({
     emailIdx: index("user_email_idx").on(t.email),
@@ -106,3 +110,4 @@ export const postRelations = relations(posts, ({ one }) => ({
 
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
+export type PostWithUser = Post & { user: User };
